@@ -1,0 +1,1 @@
+- be able to click on wall lines for actions

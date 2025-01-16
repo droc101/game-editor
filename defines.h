@@ -1,0 +1,175 @@
+//
+// Created by droc101 on 1/13/25.
+//
+
+#ifndef DEFINES_H
+#define DEFINES_H
+
+#include <stdbool.h>
+#include <stdint.h>
+#include "Helpers/List.h"
+
+#pragma region Forward Declarations/Typedefs
+
+// Basic types
+typedef uint8_t byte;
+typedef uint16_t ushort;
+typedef uint32_t uint;
+typedef uint64_t ulong;
+
+// Enum forward declarations
+typedef enum ImageDataOffsets ImageDataOffsets;
+typedef enum AssetType AssetType;
+
+// Struct forward declarations
+typedef struct Vector2 Vector2;
+typedef struct Player Player;
+typedef struct Wall Wall;
+typedef struct Level Level;
+typedef struct Model Model;
+typedef struct Actor Actor;
+typedef struct Asset Asset;
+typedef struct Image Image;
+typedef struct Trigger Trigger;
+typedef struct PlacedModel PlacedModel;
+
+#pragma endregion
+
+#pragma region Utility defines
+
+#define STR(x) #x
+#define TO_STR(x) STR(x)
+#define PI 3.14159265358979323846
+
+#pragma endregion
+
+#pragma region Enum definitions
+
+enum AssetType
+{
+	ASSET_TYPE_TEXTURE = 0,
+	ASSET_TYPE_MP3 = 1,
+	ASSET_TYPE_WAV = 2,
+	ASSET_TYPE_LEVEL = 3,
+	ASSET_TYPE_GLSL = 4,
+	// ... vulkan branch stuff 5 - 6
+	ASSET_TYPE_MODEL = 7,
+};
+
+/**
+ * Use to get data from a decompressed image asset using @c ReadUintA
+ */
+enum ImageDataOffsets
+{
+	IMAGE_SIZE_OFFSET = 0,
+	IMAGE_WIDTH_OFFSET = 4,
+	IMAGE_HEIGHT_OFFSET = 8,
+	IMAGE_ID_OFFSET = 12
+};
+
+#pragma endregion
+
+#pragma region Struct definitions
+
+// Utility functions are in Structs/Vector2.h
+struct Vector2
+{
+	double x;
+	double y;
+};
+
+struct Player
+{
+	Vector2 pos;
+	double angle;
+};
+
+// Utility functions are in Structs/wall.h
+struct Wall
+{
+	Vector2 a; // The first point of the wall
+	Vector2 b; // The second point of the wall
+	const char tex[32]; // The texture name
+	float uvScale; // The X scale of the texture
+	float uvOffset; // The X offset of the texture
+};
+
+// Utility functions are in Structs/level.h
+struct Level
+{
+	char name[32];
+	short courseNum;
+
+	List *actors; // The list of actors in the level. You must bake this into staticActors before it is used.
+	List *walls; // The list of walls in the level. You must bake this into staticWalls before it is used.
+	List *triggers;
+	List *models;
+
+	bool hasCeiling;
+	char ceilOrSkyTex[32];
+	char floorTex[32];
+
+	char music[32];
+
+	uint fogColor;
+	double fogStart;
+	double fogEnd;
+
+	Player player;
+};
+
+// Actor (interactable/moving wall) struct
+struct Actor
+{
+	Vector2 position; // The position of the actor
+	double rotation; // The rotation of the actor
+	int actorType; // type of actor. do not change this after creation.
+	byte paramA; // extra parameters for the actor. saved in level data, so can be used during Init
+	byte paramB;
+	byte paramC;
+	byte paramD;
+};
+
+struct Trigger
+{
+	Vector2 position;
+	double rotation;
+	Vector2 extents;
+	char command[64];
+	uint flags;
+};
+
+struct PlacedModel
+{
+	Vector2 position;
+	double rotation;
+	char model[32];
+};
+
+struct Asset
+{
+	uint compressedSize;
+	uint size;
+	uint assetId;
+	AssetType type;
+	byte *data;
+};
+
+struct Image
+{
+	uint pixelDataSize;
+	uint width;
+	uint height;
+	uint id;
+	char *name;
+	byte *pixelData;
+};
+
+struct EditorOptions
+{
+	char gameDirectory[260];
+} __attribute__((packed));
+
+#pragma endregion
+
+#endif //DEFINES_H

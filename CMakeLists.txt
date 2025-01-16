@@ -1,0 +1,42 @@
+cmake_minimum_required(VERSION 3.30)
+project(geditor C)
+
+set(CMAKE_C_STANDARD 11)
+
+set(CMAKE_C_FLAGS_DEBUG "-g -O0 -DBUILDSTYLE_DEBUG")
+set(CMAKE_C_FLAGS_RELEASE "-g0 -O3 -s -DNDEBUG -Wl,--gc-sections -fdata-sections -ffunction-sections -DBUILDSTYLE_RELEASE")
+set(CMAKE_C_FLAGS_RELWITHDEBINFO "-g -O3 -Wl,--gc-sections -fdata-sections -ffunction-sections -DBUILDSTYLE_DEBUG")
+
+find_package(ZLIB REQUIRED)
+include_directories(${ZLIB_INCLUDE_DIRS})
+
+find_package(PkgConfig REQUIRED)
+pkg_check_modules(GTK4 REQUIRED gtk4)
+
+include_directories(${GTK4_INCLUDE_DIRS})
+link_directories(${GTK4_LIBRARY_DIRS})
+
+add_executable(
+        geditor
+        main.c
+        defines.h
+        Helpers/List.c
+        Helpers/List.h
+        UI/MainWindow.c
+        UI/MainWindow.h
+        Helpers/FileIO.c
+        Helpers/FileIO.h
+        Helpers/Vector2.c
+        Helpers/Vector2.h
+        Helpers/Drawing.c
+        Helpers/Drawing.h
+        Helpers/Input.c
+        Helpers/Input.h
+        Editor.c
+        Editor.h
+)
+
+target_link_libraries(geditor ${GTK4_LIBRARIES} m z)
+
+# Copy the runtime assets to the build directory
+file(COPY Assets DESTINATION ${CMAKE_BINARY_DIR})
