@@ -354,7 +354,6 @@ static GActionEntry menu_entries[] = {
 	{"reset_zoom", reset_zoom_activated, NULL, NULL, NULL},
 	{"center_origin", center_origin_activated, NULL, NULL, NULL},
 	{"setup", setup_activated, NULL, NULL, NULL},
-	{"refresh_assets", NULL, NULL, NULL, NULL},
 	{"run_game", NULL, NULL, NULL, NULL},
 	{"about", about_activated, NULL, NULL, NULL},
 };
