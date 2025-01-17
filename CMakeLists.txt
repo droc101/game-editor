@@ -40,6 +40,8 @@ add_executable(
         UI/OptionsWindow.h
         Helpers/Options.c
         Helpers/Options.h
+        Helpers/LevelWriter.c
+        Helpers/LevelWriter.h
 )
 
 target_link_libraries(geditor ${GTK4_LIBRARIES} m z)

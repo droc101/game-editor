@@ -6,6 +6,7 @@
 #include "../Editor.h"
 #include "../Helpers/Drawing.h"
 #include "../Helpers/Input.h"
+#include "../Helpers/LevelWriter.h"
 #include "../Helpers/Options.h"
 #include "OptionsWindow.h"
 
@@ -16,6 +17,7 @@ GtkWidget *leftSidebarVLayout;
 GtkWidget *leftSidebarCurrent;
 
 GtkWindow *mainWindow = NULL;
+GtkFileDialog *fileDialog;
 
 #pragma region Signal Handlers
 
@@ -69,6 +71,50 @@ void delete_selected_clicked(GtkButton *, gpointer)
 static void quit_activated(GSimpleAction *, GVariant *, gpointer app)
 {
 	g_application_quit(G_APPLICATION(app));
+}
+
+static void save_file_selected(GObject *, GAsyncResult *res, gpointer)
+{
+	GError *error = NULL;
+	GFile *f = gtk_file_dialog_save_finish(fileDialog, res, &error);
+	if (error != NULL)
+	{
+		printf("Save file dialog error: %s\n", error->message);
+		g_error_free(error);
+		return;
+	}
+	char *path = g_file_get_path(f);
+	WriteLevel(l, path);
+}
+
+static void open_file_selected(GObject *, GAsyncResult *res, gpointer)
+{
+	GError *error = NULL;
+	GFile *f = gtk_file_dialog_open_finish(fileDialog, res, &error);
+	if (error != NULL)
+	{
+		printf("Open file dialog error: %s\n", error->message);
+		g_error_free(error);
+		return;
+	}
+	char *path = g_file_get_path(f);
+	EditorDestroyLevel();
+	l = ReadLevel(path);
+}
+
+static void save_activated(GSimpleAction *, GVariant *, gpointer)
+{
+	gtk_file_dialog_save(fileDialog, mainWindow, NULL, save_file_selected, NULL);
+}
+
+static void open_activated(GSimpleAction *, GVariant *, gpointer)
+{
+	gtk_file_dialog_open(fileDialog, mainWindow, NULL, open_file_selected, NULL);
+}
+
+static void new_activated(GSimpleAction *, GVariant *, gpointer)
+{
+	EditorNewLevel();
 }
 
 #pragma endregion
@@ -296,10 +342,9 @@ void fog_end_value_changed(GtkRange *self, gpointer)
 #pragma endregion
 
 static GActionEntry menu_entries[] = {
-	{"new", NULL, NULL, NULL, NULL},
-	{"open", NULL, NULL, NULL, NULL},
-	{"save", NULL, NULL, NULL, NULL},
-	{"save_as", NULL, NULL, NULL, NULL},
+	{"new", new_activated, NULL, NULL, NULL},
+	{"open", open_activated, NULL, NULL, NULL},
+	{"save", save_activated, NULL, NULL, NULL},
 	{"quit", quit_activated, NULL, NULL, NULL},
 	{"add_wall", add_wall_menu_item_activated, NULL, NULL, NULL},
 	{"add_actor", add_actor_menu_item_activated, NULL, NULL, NULL},
@@ -345,7 +390,6 @@ GtkWidget *SetupMenuBar(GtkApplication *app)
 	g_menu_append(file_menu, "New", "app.new");
 	g_menu_append(file_menu, "Open", "app.open");
 	g_menu_append(file_menu, "Save", "app.save");
-	g_menu_append(file_menu, "Save As", "app.save_as");
 	g_menu_append(file_menu, "Quit", "app.quit");
 	g_menu_append_submenu(menu, "File", G_MENU_MODEL(file_menu));
 	g_object_unref(file_menu);
@@ -389,9 +433,6 @@ GtkWidget *SetupMenuBar(GtkApplication *app)
 
 	const gchar *save_accels[] = {"<Ctrl>S", NULL};
 	gtk_application_set_accels_for_action(app, "app.save", save_accels);
-
-	const gchar *save_as_accels[] = {"<Ctrl><Shift>S", NULL};
-	gtk_application_set_accels_for_action(app, "app.save_as", save_as_accels);
 
 	const gchar *quit_accels[] = {"<Ctrl>Q", NULL};
 	gtk_application_set_accels_for_action(app, "app.quit", quit_accels);
@@ -860,6 +901,8 @@ void MainWindowActivate(GtkApplication *app, gpointer *)
 	gtk_box_append(GTK_BOX(mainVLayout), statusBar);
 
 	gtk_window_set_child(GTK_WINDOW(window), mainVLayout);
+
+	fileDialog = gtk_file_dialog_new();
 
 	mainWindow = GTK_WINDOW(window);
 

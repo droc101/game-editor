@@ -77,7 +77,7 @@ void RescanAssets()
 List *ScanAssetFolder(const char *folderName, const char *extension)
 {
 	List *fileList = CreateList();
-	char *levelDataPath = malloc(strlen(options.gameDirectory) + strlen(folderName) + 2);
+	char *levelDataPath = malloc(strlen(options.gameDirectory) + strlen(folderName) + 10);
 	strcpy(levelDataPath, options.gameDirectory);
 	strcat(levelDataPath, "/assets/");
 	strcat(levelDataPath, folderName);
@@ -90,7 +90,6 @@ List *ScanAssetFolder(const char *folderName, const char *extension)
 		free(levelDataPath);
 		return fileList;
 	}
-
 	struct dirent *ent;
 	while ((ent = readdir(dir)) != NULL)
 	{
@@ -103,8 +102,8 @@ List *ScanAssetFolder(const char *folderName, const char *extension)
 			ListAdd(fileList, levelName);
 		}
 	}
-	closedir(dir);
 	free(levelDataPath);
+	closedir(dir);
 
 	return fileList;
 }
@@ -117,8 +116,8 @@ void EditorDestroyLevel()
 	}
 	ListFreeWithData(l->actors);
 	ListFreeWithData(l->walls);
-	ListFreeWithData(l->triggers);
-	ListFreeWithData(l->models);
+	//ListFreeWithData(l->triggers);
+	//ListFreeWithData(l->models);
 	free(l);
 	l = NULL;
 }
@@ -135,8 +134,8 @@ void EditorNewLevel()
 
 	l->walls = CreateList();
 	l->actors = CreateList();
-	l->triggers = CreateList();
-	l->models = CreateList();
+	//l->triggers = CreateList();
+	//l->models = CreateList();
 	strcpy(l->name, "Unnamed Level");
 	l->courseNum = -1;
 	l->hasCeiling = false;
@@ -364,6 +363,7 @@ void EditorUpdate()
 				memset(a, 0, sizeof(Actor));
 				a->position = ScreenToWorldSnapped(GetLocalMousePos());
 				a->rotation = 0.0;
+				a->actorType = 1;
 				ListAdd(l->actors, a);
 				selectionType = SELTYPE_ACTOR;
 				selectionIndex = l->actors->size - 1;

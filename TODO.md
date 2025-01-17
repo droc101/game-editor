@@ -1,3 +1,5 @@
 - [x] be able to click on wall lines for actions~~ do
 - [x] drag wall from line, moves both ends
   - [x] snap to grid is...strange
+- [ ] Save to compressed level file
+  - might need asset id to be unique, gotta look into that
