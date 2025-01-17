@@ -11,19 +11,19 @@ InputState mouseButtons[2] = {RELEASED, RELEASED};
 bool mouseInBounds = false;
 
 Vector2 frameScroll = {0};
-Vector2 _LastFrameMousePos = {0};
+Vector2 lastFrameMousePos = {0};
 
-void mouse_enter(GtkEventControllerMotion *self, gdouble x, gdouble y, gpointer user_data)
+void mouse_enter(GtkEventControllerMotion *, gdouble, gdouble, gpointer)
 {
 	mouseInBounds = true;
 }
 
-void mouse_leave(GtkEventControllerMotion *self, gpointer user_data)
+void mouse_leave(GtkEventControllerMotion *, gpointer)
 {
 	mouseInBounds = false;
 }
 
-void motion(GtkEventControllerMotion *self, gdouble x, gdouble y, gpointer user_data)
+void motion(GtkEventControllerMotion *, gdouble x, gdouble y, gpointer user_data)
 {
 	const graphene_point_t inPoint = {x, y};
 	graphene_point_t outPoint;
@@ -36,68 +36,68 @@ void motion(GtkEventControllerMotion *self, gdouble x, gdouble y, gpointer user_
 	localMousePos = v2(outPoint.x, outPoint.y);
 }
 
-gboolean scroll(GtkEventControllerScroll *self, gdouble dx, gdouble dy, gpointer user_data)
+gboolean scroll(GtkEventControllerScroll *, gdouble dx, gdouble dy, gpointer)
 {
 	frameScroll.x += dx;
 	frameScroll.y += dy;
 	return true;
 }
 
-void lmb_pressed(GtkGestureClick *self, gint n_press, gdouble x, gdouble y, gpointer user_data)
+void lmb_pressed(GtkGestureClick *, gint, gdouble, gdouble, gpointer)
 {
 	// printf("lm pressed\n");
 	mouseButtons[LMB] = JUST_PRESSED;
 }
 
-void lmb_released(GtkGestureClick *self, gint n_press, gdouble x, gdouble y, gpointer user_data)
+void lmb_released(GtkGestureClick *, gint, gdouble, gdouble, gpointer)
 {
 	// printf("lm released\n");
 	mouseButtons[LMB] = JUST_RELEASED;
 }
 
-void lmb_stopped(GtkGestureClick *self, gpointer user_data)
+void lmb_stopped(GtkGestureClick *, gpointer)
 {
 	// printf("lm stopped\n");
 	mouseButtons[LMB] = JUST_RELEASED;
 }
 
 
-void rmb_pressed(GtkGestureClick *self, gint n_press, gdouble x, gdouble y, gpointer user_data)
+void rmb_pressed(GtkGestureClick *, gint, gdouble, gdouble, gpointer)
 {
 	// printf("rm pressed\n");
 	mouseButtons[RMB] = JUST_PRESSED;
 }
 
-void rmb_released(GtkGestureClick *self, gint n_press, gdouble x, gdouble y, gpointer user_data)
+void rmb_released(GtkGestureClick *, gint, gdouble, gdouble, gpointer)
 {
 	// printf("rm released\n");
 	mouseButtons[RMB] = JUST_RELEASED;
 }
 
-void rmb_stopped(GtkGestureClick *self, gpointer user_data)
+void rmb_stopped(GtkGestureClick *, gpointer)
 {
 	// printf("rm stopped\n");
 	mouseButtons[RMB] = JUST_RELEASED;
 }
 
-void lmb_unpaired_release(GtkGestureClick *self,
-						  gdouble x,
-						  gdouble y,
+void lmb_unpaired_release(GtkGestureClick *,
+						  gdouble,
+						  gdouble,
 						  guint button,
-						  GdkEventSequence *sequence,
-						  gpointer user_data)
+						  GdkEventSequence *,
+						  gpointer)
 {
 	if (button != GDK_BUTTON_PRIMARY) return;
 	// printf("lm unpaired release\n");
 	mouseButtons[LMB] = JUST_RELEASED;
 }
 
-void rmb_unpaired_release(GtkGestureClick *self,
-						  gdouble x,
-						  gdouble y,
+void rmb_unpaired_release(GtkGestureClick *,
+						  gdouble,
+						  gdouble,
 						  guint button,
-						  GdkEventSequence *sequence,
-						  gpointer user_data)
+						  GdkEventSequence *,
+						  gpointer)
 {
 	if (button != GDK_BUTTON_SECONDARY) return;
 	// printf("rm unpaired release\n");
@@ -124,7 +124,7 @@ void TickInput()
 		mouseButtons[i] = TickInputState(mouseButtons[i]);
 	}
 
-	_LastFrameMousePos = localMousePos;
+	lastFrameMousePos = localMousePos;
 }
 
 bool IsMouseButtonPressed(MouseButton button)
@@ -158,7 +158,7 @@ Vector2 GetLocalMousePos()
 
 Vector2 GetRelativeMouseMotion()
 {
-	return v2(localMousePos.x - _LastFrameMousePos.x, localMousePos.y - _LastFrameMousePos.y);
+	return v2(localMousePos.x - lastFrameMousePos.x, localMousePos.y - lastFrameMousePos.y);
 }
 
 Vector2 GetScroll()

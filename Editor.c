@@ -87,6 +87,7 @@ List *ScanAssetFolder(const char *folderName, const char *extension)
 	if (dir == NULL)
 	{
 		printf("Failed to open level directory: %s\n", levelDataPath);
+		free(levelDataPath);
 		return fileList;
 	}
 
@@ -103,6 +104,7 @@ List *ScanAssetFolder(const char *folderName, const char *extension)
 		}
 	}
 	closedir(dir);
+	free(levelDataPath);
 
 	return fileList;
 }
@@ -289,7 +291,7 @@ void ProcessDrag()
 			} else if (selectionType == SELTYPE_WALL_LINE)
 			{
 				Wall *w = ListGet(l->walls, selectionIndex);
-				Vector2 wp = ScreenToWorldSnapped(GetLocalMousePos());
+				const Vector2 wp = ScreenToWorldSnapped(GetLocalMousePos());
 				w->a = v2(round(wp.x - wallDragAOffset.x), round(wp.y - wallDragAOffset.y));
 				w->b = v2(round(wp.x - wallDragBOffset.x), round(wp.y - wallDragBOffset.y));
 			}

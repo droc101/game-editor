@@ -13,9 +13,9 @@ GtkWidget *gamePathEntry;
 bool optionsWindowOpen = false;
 bool optionsRequired = false;
 
-GtkApplication *_oapp;
+GtkApplication *optionsApplication;
 
-void game_folder_selected(GObject *source_object, GAsyncResult *res, gpointer data)
+void game_folder_selected(GObject *, GAsyncResult *res, gpointer)
 {
 	GError *error = NULL;
 	GFile *f = gtk_file_dialog_select_folder_finish(gameFolderDialog, res, &error);
@@ -30,18 +30,18 @@ void game_folder_selected(GObject *source_object, GAsyncResult *res, gpointer da
 	gtk_entry_buffer_set_text(buffer, path, -1);
 }
 
-void pick_folder_clicked(GtkButton *self, gpointer user_data)
+void pick_folder_clicked(GtkButton *, gpointer)
 {
 	gameFolderDialog = gtk_file_dialog_new();
 	gtk_file_dialog_select_folder(gameFolderDialog, optionsWindow, NULL, game_folder_selected, NULL);
 }
 
-void cancel_clicked(GtkButton *self, gpointer user_data)
+void cancel_clicked(GtkButton *, gpointer)
 {
 	gtk_window_close(optionsWindow);
 }
 
-void ok_clicked(GtkButton *self, gpointer user_data)
+void ok_clicked(GtkButton *, gpointer)
 {
 	GtkEntryBuffer *buffer = gtk_entry_get_buffer(GTK_ENTRY(gamePathEntry));
 	const char *path = gtk_entry_buffer_get_text(buffer);
@@ -67,11 +67,11 @@ void ok_clicked(GtkButton *self, gpointer user_data)
 	gtk_window_close(optionsWindow);
 }
 
-void options_closed(GtkWindow *self, gpointer user_data)
+void options_closed(GtkWindow *, gpointer)
 {
 	if (optionsRequired)
 	{
-		g_application_quit(G_APPLICATION(_oapp));
+		g_application_quit(G_APPLICATION(optionsApplication));
 		EditorDestroy();
 		exit(1);
 	}
@@ -143,7 +143,7 @@ void OptionsWindowShow(GtkWindow *parent, GtkApplication *app, bool required)
 
 	optionsWindow = GTK_WINDOW(window);
 	optionsRequired = required;
-	_oapp = app;
+	optionsApplication = app;
 
 	g_signal_connect(window, "destroy", G_CALLBACK(options_closed), NULL);
 

@@ -10,7 +10,7 @@
 
 void BeginRender(GtkDrawingArea *ar, cairo_t *c);
 
-#define Color(clr) {((int)(clr >> 24 & 0xFF) / 255.0), ((int)(clr >> 16 & 0xFF) / 255.0), ((int)(clr >> 8 & 0xFF) / 255.0), ((int)(clr & 0xFF) / 255.0)}
+#define Color(clr) {((int)((clr) >> 24 & 0xFF) / 255.0), ((int)((clr) >> 16 & 0xFF) / 255.0), ((int)((clr) >> 8 & 0xFF) / 255.0), ((int)((clr) & 0xFF) / 255.0)}
 
 void DrawRect(Vector2 start, Vector2 size, GdkRGBA color);
 

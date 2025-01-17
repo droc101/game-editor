@@ -16,7 +16,7 @@ Vector2 v2s(double xy);
 // Get the distance between two vectors
 double Vector2Distance(Vector2 a, Vector2 b);
 
-double Vector2DistanceToLine(const Vector2 lineStart, const Vector2 lineEnd, const Vector2 testPoint);
+double Vector2DistanceToLine(Vector2 lineStart, Vector2 lineEnd, Vector2 testPoint);
 
 // Get the length of a vector
 double Vector2Length(Vector2 vec);

@@ -4,8 +4,6 @@
 
 #ifndef EDITOR_H
 #define EDITOR_H
-#include <gtk/gtk.h>
-
 
 #include "defines.h"
 

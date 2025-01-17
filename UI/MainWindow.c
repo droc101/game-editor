@@ -3,7 +3,6 @@
 //
 
 #include "MainWindow.h"
-
 #include "../Editor.h"
 #include "../Helpers/Drawing.h"
 #include "../Helpers/Input.h"
@@ -20,7 +19,7 @@ GtkWindow *mainWindow = NULL;
 
 #pragma region Signal Handlers
 
-void drawMainArea(GtkDrawingArea *drawing_area, cairo_t *cr, int width, int height, gpointer user_data)
+void drawMainArea(GtkDrawingArea *drawing_area, cairo_t *cr, int, int, gpointer)
 {
 	frame++;
 	EditorUpdate();
@@ -39,17 +38,17 @@ gboolean on_timeout(gpointer user_data)
 	return TRUE;
 }
 
-void add_wall_clicked(GtkButton *self, gpointer user_data)
+void add_wall_clicked(GtkButton *, gpointer)
 {
 	addRequest = ADDREQ_WALL;
 }
 
-void add_actor_clicked(GtkButton *self, gpointer user_data)
+void add_actor_clicked(GtkButton *, gpointer)
 {
 	addRequest = ADDREQ_ACTOR;
 }
 
-void delete_selected_clicked(GtkButton *self, gpointer user_data)
+void delete_selected_clicked(GtkButton *, gpointer)
 {
 	if (selectionType == SELTYPE_WALL_A || selectionType == SELTYPE_WALL_B || selectionType == SELTYPE_WALL_LINE)
 	{
@@ -67,7 +66,7 @@ void delete_selected_clicked(GtkButton *self, gpointer user_data)
 
 #pragma region File Menu
 
-static void quit_activated(GSimpleAction *action, GVariant *parameter, gpointer app)
+static void quit_activated(GSimpleAction *, GVariant *, gpointer app)
 {
 	g_application_quit(G_APPLICATION(app));
 }
@@ -76,17 +75,17 @@ static void quit_activated(GSimpleAction *action, GVariant *parameter, gpointer 
 
 #pragma region Edit Menu
 
-void add_wall_menu_item_activated(GSimpleAction *action, GVariant *parameter, gpointer app)
+void add_wall_menu_item_activated(GSimpleAction *, GVariant *, gpointer)
 {
 	add_wall_clicked(NULL, NULL);
 }
 
-void add_actor_menu_item_activated(GSimpleAction *action, GVariant *parameter, gpointer app)
+void add_actor_menu_item_activated(GSimpleAction *, GVariant *, gpointer)
 {
 	add_actor_clicked(NULL, NULL);
 }
 
-void delete_selected_menu_item_activated(GSimpleAction *action, GVariant *parameter, gpointer app)
+void delete_selected_menu_item_activated(GSimpleAction *, GVariant *, gpointer)
 {
 	delete_selected_clicked(NULL, NULL);
 }
@@ -95,22 +94,22 @@ void delete_selected_menu_item_activated(GSimpleAction *action, GVariant *parame
 
 #pragma region View Menu
 
-static void zoom_out_activated(GSimpleAction *action, GVariant *parameter, gpointer app)
+static void zoom_out_activated(GSimpleAction *, GVariant *, gpointer)
 {
 	zoom -= 1.0;
 }
 
-static void zoom_in_activated(GSimpleAction *action, GVariant *parameter, gpointer app)
+static void zoom_in_activated(GSimpleAction *, GVariant *, gpointer)
 {
 	zoom += 1.0;
 }
 
-static void reset_zoom_activated(GSimpleAction *action, GVariant *parameter, gpointer app)
+static void reset_zoom_activated(GSimpleAction *, GVariant *, gpointer)
 {
 	zoom = 20.0;
 }
 
-static void center_origin_activated(GSimpleAction *action, GVariant *parameter, gpointer app)
+static void center_origin_activated(GSimpleAction *, GVariant *, gpointer)
 {
 	scrollPos = v2s(0);
 }
@@ -119,7 +118,7 @@ static void center_origin_activated(GSimpleAction *action, GVariant *parameter, 
 
 #pragma region Tools Menu
 
-void setup_activated(GSimpleAction *action, GVariant *parameter, gpointer app)
+void setup_activated(GSimpleAction *, GVariant *, gpointer app)
 {
 	OptionsWindowShow(mainWindow, GTK_APPLICATION(app), false);
 }
@@ -128,7 +127,7 @@ void setup_activated(GSimpleAction *action, GVariant *parameter, gpointer app)
 
 #pragma region Help Menu
 
-static void about_activated(GSimpleAction *action, GVariant *parameter, gpointer app)
+static void about_activated(GSimpleAction *, GVariant *, gpointer app)
 {
 	GtkWindow *window = gtk_application_get_active_window(GTK_APPLICATION(app));
 
@@ -158,7 +157,7 @@ static void about_activated(GSimpleAction *action, GVariant *parameter, gpointer
 
 #pragma region Player Sidebar
 
-void plr_rot_value_changed(GtkSpinButton *self, gpointer user_data)
+void plr_rot_value_changed(GtkSpinButton *self, gpointer)
 {
 	l->player.rotation = degToRad(gtk_spin_button_get_value(self));
 }
@@ -167,20 +166,20 @@ void plr_rot_value_changed(GtkSpinButton *self, gpointer user_data)
 
 #pragma region Wall Sidebar
 
-void wall_texture_changed(GtkEditable *self, gpointer user_data)
+void wall_texture_changed(GtkEditable *self, gpointer)
 {
 	Wall *w = ListGet(l->walls, selectionIndex);
 	const char *text = gtk_editable_get_text(self);
 	strcpy(w->tex, text);
 }
 
-void wall_uv_scale_value_changed(GtkSpinButton *self, gpointer user_data)
+void wall_uv_scale_value_changed(GtkSpinButton *self, gpointer)
 {
 	Wall *w = ListGet(l->walls, selectionIndex);
 	w->uvScale = gtk_spin_button_get_value(self);
 }
 
-void wall_uv_offset_value_changed(GtkSpinButton *self, gpointer user_data)
+void wall_uv_offset_value_changed(GtkSpinButton *self, gpointer)
 {
 	Wall *w = ListGet(l->walls, selectionIndex);
 	w->uvOffset = gtk_spin_button_get_value(self);
@@ -190,37 +189,37 @@ void wall_uv_offset_value_changed(GtkSpinButton *self, gpointer user_data)
 
 #pragma region Actor Sidebar
 
-void actor_type_value_changed(GtkSpinButton *self, gpointer user_data)
+void actor_type_value_changed(GtkSpinButton *self, gpointer)
 {
 	Actor *a = ListGet(l->actors, selectionIndex);
 	a->actorType = gtk_spin_button_get_value(self);
 }
 
-void actor_param_a_value_changed(GtkSpinButton *self, gpointer user_data)
+void actor_param_a_value_changed(GtkSpinButton *self, gpointer)
 {
 	Actor *a = ListGet(l->actors, selectionIndex);
 	a->paramA = gtk_spin_button_get_value(self);
 }
 
-void actor_param_b_value_changed(GtkSpinButton *self, gpointer user_data)
+void actor_param_b_value_changed(GtkSpinButton *self, gpointer)
 {
 	Actor *a = ListGet(l->actors, selectionIndex);
 	a->paramB = gtk_spin_button_get_value(self);
 }
 
-void actor_param_c_value_changed(GtkSpinButton *self, gpointer user_data)
+void actor_param_c_value_changed(GtkSpinButton *self, gpointer)
 {
 	Actor *a = ListGet(l->actors, selectionIndex);
 	a->paramC = gtk_spin_button_get_value(self);
 }
 
-void actor_param_d_value_changed(GtkSpinButton *self, gpointer user_data)
+void actor_param_d_value_changed(GtkSpinButton *self, gpointer)
 {
 	Actor *a = ListGet(l->actors, selectionIndex);
 	a->paramD = gtk_spin_button_get_value(self);
 }
 
-void actor_rot_value_changed(GtkSpinButton *self, gpointer user_data)
+void actor_rot_value_changed(GtkSpinButton *self, gpointer)
 {
 	Actor *a = ListGet(l->actors, selectionIndex);
 	a->rotation = degToRad(gtk_spin_button_get_value(self));
@@ -230,18 +229,18 @@ void actor_rot_value_changed(GtkSpinButton *self, gpointer user_data)
 
 #pragma region Level Sidebar
 
-void level_name_changed(GtkEditable *self, gpointer user_data)
+void level_name_changed(GtkEditable *self, gpointer)
 {
 	const char *text = gtk_editable_get_text(self);
 	strcpy(l->name, text);
 }
 
-void level_course_num_value_changed(GtkSpinButton *self, gpointer user_data)
+void level_course_num_value_changed(GtkSpinButton *self, gpointer)
 {
 	l->courseNum = gtk_spin_button_get_value(self);
 }
 
-gboolean level_ceil_or_sky_state_set(GtkSwitch *self, gboolean state, gpointer user_data)
+gboolean level_ceil_or_sky_state_set(GtkSwitch *, gboolean state, gpointer)
 {
 	if (state)
 	{
@@ -253,25 +252,25 @@ gboolean level_ceil_or_sky_state_set(GtkSwitch *self, gboolean state, gpointer u
 	return TRUE;
 }
 
-void level_ceil_or_sky_tex_changed(GtkEditable *self, gpointer user_data)
+void level_ceil_or_sky_tex_changed(GtkEditable *self, gpointer)
 {
 	const char *text = gtk_editable_get_text(self);
 	strcpy(l->ceilOrSkyTex, text);
 }
 
-void level_floor_tex_changed(GtkEditable *self, gpointer user_data)
+void level_floor_tex_changed(GtkEditable *self, gpointer)
 {
 	const char *text = gtk_editable_get_text(self);
 	strcpy(l->floorTex, text);
 }
 
-void level_music_changed(GtkEditable *self, gpointer user_data)
+void level_music_changed(GtkEditable *self, gpointer)
 {
 	const char *text = gtk_editable_get_text(self);
 	strcpy(l->music, text);
 }
 
-void color_set(GtkColorButton *self, gpointer user_data)
+void color_set(GtkColorButton *self, gpointer)
 {
 	GdkRGBA gtkColor;
 	gtk_color_chooser_get_rgba(GTK_COLOR_CHOOSER(self), &gtkColor);
@@ -282,12 +281,12 @@ void color_set(GtkColorButton *self, gpointer user_data)
 	l->fogColor = color;
 }
 
-void fog_start_value_changed(GtkRange *self, gpointer user_data)
+void fog_start_value_changed(GtkRange *self, gpointer)
 {
 	l->fogStart = gtk_range_get_value(self);
 }
 
-void fog_end_value_changed(GtkRange *self, gpointer user_data)
+void fog_end_value_changed(GtkRange *self, gpointer)
 {
 	l->fogEnd = gtk_range_get_value(self);
 }
@@ -792,7 +791,7 @@ GtkWidget *SetupLSidebar_PlayerSelection()
 
 #pragma endregion
 
-void SetupCss(GtkWindow *window)
+void SetupCss(GtkWindow *)
 {
 	// Load CSS
 	GtkCssProvider *provider = gtk_css_provider_new();

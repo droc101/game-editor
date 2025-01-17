@@ -13,7 +13,7 @@ void DefaultOptions(Options *options)
 	options->gameDirectory[0] = '\0';
 }
 
-bool ValidateOptions(const Options *options)
+bool ValidateOptions(const Options *)
 {
 	return true;
 }
