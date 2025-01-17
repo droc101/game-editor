@@ -62,6 +62,7 @@ void delete_selected_clicked(GtkButton *self, gpointer user_data)
 		selectionType = SELTYPE_NONE;
 		selectionIndex = -1;
 	}
+	SelectionTypeChanged();
 }
 
 #pragma region File Menu
