@@ -145,7 +145,7 @@ static void about_activated(GSimpleAction *action, GVariant *parameter, gpointer
 	gtk_about_dialog_set_authors(GTK_ABOUT_DIALOG(about_dialog), (const gchar *[]){"droc101", "NBT22", NULL});
 	gtk_about_dialog_add_credit_section(GTK_ABOUT_DIALOG(about_dialog),
 										"Third-Party Libraries",
-										(const gchar *[]){"GTK4", NULL});
+										(const gchar *[]){"GTK4", "ZLIB", NULL});
 	gtk_about_dialog_set_logo(GTK_ABOUT_DIALOG(about_dialog), GDK_PAINTABLE(logo));
 
 	gtk_window_set_transient_for(GTK_WINDOW(about_dialog), GTK_WINDOW(window));
