@@ -517,6 +517,7 @@ GtkWidget *SetupDrawingArea()
 GtkWidget *SetupRSidebar()
 {
 	GtkWidget *rightSidebar = gtk_scrolled_window_new();
+	gtk_widget_set_margin_end(rightSidebar, 8);
 	gtk_widget_set_size_request(rightSidebar, 250, -1);
 	gtk_widget_set_hexpand(rightSidebar, FALSE);
 
@@ -566,9 +567,9 @@ GtkWidget *SetupRSidebar()
 	gtk_switch_set_state(GTK_SWITCH(ceilSkySwitch), l->hasCeiling);
 	g_signal_connect(ceilSkySwitch, "state-set", G_CALLBACK(level_ceil_or_sky_state_set), NULL);
 
-	gtk_center_box_set_start_widget(GTK_CENTER_BOX(ceilOrSkyHBox), ceilLabel);
+	gtk_center_box_set_end_widget(GTK_CENTER_BOX(ceilOrSkyHBox), ceilLabel);
 	gtk_center_box_set_center_widget(GTK_CENTER_BOX(ceilOrSkyHBox), ceilSkySwitch);
-	gtk_center_box_set_end_widget(GTK_CENTER_BOX(ceilOrSkyHBox), skyLabel);
+	gtk_center_box_set_start_widget(GTK_CENTER_BOX(ceilOrSkyHBox), skyLabel);
 
 	GtkWidget *ceilOrSkyLabel = gtk_label_new("Ceiling/Sky Texture");
 	gtk_label_set_xalign(GTK_LABEL(ceilOrSkyLabel), 0);
@@ -828,6 +829,7 @@ void MainWindowActivate(GtkApplication *app, gpointer *)
 	GtkWidget *drawingArea = SetupDrawingArea();
 
 	GtkWidget *leftSidebar = gtk_scrolled_window_new();
+	gtk_widget_set_margin_start(leftSidebar, 8);
 	gtk_widget_set_size_request(leftSidebar, 250, -1);
 	gtk_widget_set_hexpand(leftSidebar, FALSE);
 	leftSidebarVLayout = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0);
@@ -844,7 +846,7 @@ void MainWindowActivate(GtkApplication *app, gpointer *)
 
 	GtkGrid *mainHLayout = GTK_GRID(gtk_grid_new());
 	gtk_grid_set_column_homogeneous(mainHLayout, FALSE);
-	gtk_grid_set_column_spacing(mainHLayout, 4);
+	gtk_grid_set_column_spacing(mainHLayout, 8);
 	gtk_grid_attach(mainHLayout, leftSidebar, 0, 0, 1, 1);
 	gtk_grid_attach(mainHLayout, drawingArea, 1, 0, 1, 1);
 	gtk_grid_attach(mainHLayout, rightSidebar, 2, 0, 1, 1);

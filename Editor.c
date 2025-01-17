@@ -137,34 +137,36 @@ void EditorNewLevel()
 	l->models = CreateList();
 	strcpy(l->name, "Unnamed Level");
 	l->courseNum = -1;
-	strcpy(l->ceilOrSkyTex, "level_sky");
-	strcpy(l->floorTex, "level_uvtest");
+	l->hasCeiling = false;
+	strcpy(l->ceilOrSkyTex, "level_sky_test");
+	strcpy(l->floorTex, "level_floor_test");
 	strcpy(l->music, "none");
 	l->fogColor = 0x99c0f1FF;
 	l->fogStart = 50.0f;
 	l->fogEnd = 100.0f;
+	l->player.rotation = degToRad(-90.0);
 
-	srand(time(NULL));
-	for (int i = 0; i < 20; i++)
-	{
-		Wall *w = malloc(sizeof(Wall));
-		memset(w, 0, sizeof(Wall));
-		w->a = v2(rand() % 50 - 25, rand() % 50 - 25);
-		w->b = v2(rand() % 50 - 25, rand() % 50 - 25);
-		strcpy(w->tex, "level_uvtest");
-		w->uvScale = 1.0;
-
-		ListAdd(l->walls, w);
-	}
-
-	for (int i = 0; i < 50; i++)
-	{
-		Actor *a = malloc(sizeof(Actor));
-		memset(a, 0, sizeof(Actor));
-		a->position = v2(rand() % 50 - 25, rand() % 50 - 25);
-		a->rotation = (rand() % 360) * (M_PI / 180.0);
-		ListAdd(l->actors, a);
-	}
+	// srand(time(NULL));
+	// for (int i = 0; i < 20; i++)
+	// {
+	// 	Wall *w = malloc(sizeof(Wall));
+	// 	memset(w, 0, sizeof(Wall));
+	// 	w->a = v2(rand() % 50 - 25, rand() % 50 - 25);
+	// 	w->b = v2(rand() % 50 - 25, rand() % 50 - 25);
+	// 	strcpy(w->tex, "level_wall_test");
+	// 	w->uvScale = 1.0;
+	//
+	// 	ListAdd(l->walls, w);
+	// }
+	//
+	// for (int i = 0; i < 50; i++)
+	// {
+	// 	Actor *a = malloc(sizeof(Actor));
+	// 	memset(a, 0, sizeof(Actor));
+	// 	a->position = v2(rand() % 50 - 25, rand() % 50 - 25);
+	// 	a->rotation = (rand() % 360) * (M_PI / 180.0);
+	// 	ListAdd(l->actors, a);
+	// }
 }
 
 Vector2 WorldToScreen(Vector2 wp)
@@ -348,7 +350,7 @@ void EditorUpdate()
 				memset(w, 0, sizeof(Wall));
 				w->a = ScreenToWorldSnapped(GetLocalMousePos());
 				w->b = ScreenToWorldSnapped(GetLocalMousePos());
-				strcpy(w->tex, "level_uvtest");
+				strcpy(w->tex, "level_wall_test");
 				w->uvScale = 1.0;
 				ListAdd(l->walls, w);
 				selectionType = SELTYPE_WALL_B;
