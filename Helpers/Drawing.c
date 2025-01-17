@@ -15,47 +15,33 @@ void BeginRender(GtkDrawingArea *ar, cairo_t *c)
 	frameSize = v2(gtk_widget_get_width(GTK_WIDGET(ar)), gtk_widget_get_height(GTK_WIDGET(ar)));
 }
 
-GdkRGBA Color(uint color) /* Color is RGBA 0-255 */
+void DrawRect(Vector2 start, Vector2 size, GdkRGBA color) /* RGBA 0-255 */
 {
-    GdkRGBA c;
-    c.red = (color >> 24 & 0xFF) / 255.0;
-    c.green = (color >> 16 & 0xFF) / 255.0;
-    c.blue = (color >> 8 & 0xFF) / 255.0;
-    c.alpha = (color & 0xFF) / 255.0;
-    return c;
-}
-
-void DrawRect(Vector2 start, Vector2 size, uint color) /* RGBA 0-255 */
-{
-    const GdkRGBA c = Color(color);
-    gdk_cairo_set_source_rgba (cr, &c);
+    gdk_cairo_set_source_rgba (cr, &color);
     cairo_rectangle(cr, start.x, start.y, size.x, size.y);
     cairo_fill(cr);
 }
 
-void DrawRectOutline(Vector2 start, Vector2 size, uint color, double thickness)
+void DrawRectOutline(Vector2 start, Vector2 size, GdkRGBA color, double thickness)
 {
-	const GdkRGBA c = Color(color);
-	gdk_cairo_set_source_rgba (cr, &c);
+	gdk_cairo_set_source_rgba (cr, &color);
 	cairo_rectangle(cr, start.x, start.y, size.x, size.y);
 	cairo_set_line_width(cr, thickness);
 	cairo_stroke(cr);
 }
 
-void DrawLine(Vector2 start, Vector2 end, uint color, float thickness)
+void DrawLine(Vector2 start, Vector2 end, GdkRGBA color, float thickness)
 {
-    const GdkRGBA c = Color(color);
-    gdk_cairo_set_source_rgba (cr, &c);
+    gdk_cairo_set_source_rgba (cr, &color);
     cairo_set_line_width(cr, thickness);
     cairo_move_to(cr, start.x, start.y);
     cairo_line_to(cr, end.x, end.y);
     cairo_stroke(cr);
 }
 
-void Clear(uint color)
+void Clear(GdkRGBA color)
 {
-    const GdkRGBA c = Color(color);
-    gdk_cairo_set_source_rgba (cr, &c);
+    gdk_cairo_set_source_rgba (cr, &color);
     cairo_paint(cr);
 }
 

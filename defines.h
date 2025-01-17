@@ -32,6 +32,7 @@ typedef struct Asset Asset;
 typedef struct Image Image;
 typedef struct Trigger Trigger;
 typedef struct PlacedModel PlacedModel;
+typedef struct Options Options;
 
 #pragma endregion
 
@@ -40,6 +41,18 @@ typedef struct PlacedModel PlacedModel;
 #define STR(x) #x
 #define TO_STR(x) STR(x)
 #define PI 3.14159265358979323846
+
+/**
+ * Convert degrees to radians
+ * @param d Degrees
+ */
+#define degToRad(d) ((d) * PI / 180)
+
+/**
+ * Convert radians to degrees
+ * @param r Radians
+ */
+#define radToDeg(r) ((r) * 180 / PI)
 
 #pragma endregion
 
@@ -81,7 +94,7 @@ struct Vector2
 struct Player
 {
 	Vector2 pos;
-	double angle;
+	double rotation;
 };
 
 // Utility functions are in Structs/wall.h
@@ -165,8 +178,9 @@ struct Image
 	byte *pixelData;
 };
 
-struct EditorOptions
+struct Options
 {
+	ushort checksum;
 	char gameDirectory[260];
 } __attribute__((packed));
 

@@ -34,9 +34,18 @@ add_executable(
         Helpers/Input.h
         Editor.c
         Editor.h
+        UI/OptionsWindow.c
+        UI/OptionsWindow.h
+        Helpers/Options.c
+        Helpers/Options.h
 )
 
 target_link_libraries(geditor ${GTK4_LIBRARIES} m z)
 
-# Copy the runtime assets to the build directory
-file(COPY Assets DESTINATION ${CMAKE_BINARY_DIR})
+# Copy the runtime assets to the build directory ("Assets" folder)
+add_custom_target(
+        copy_assets
+        COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/Assets ${CMAKE_BINARY_DIR}/Assets
+)
+add_dependencies(geditor copy_assets)
+

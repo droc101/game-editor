@@ -10,13 +10,15 @@
 
 void BeginRender(GtkDrawingArea *ar, cairo_t *c);
 
-void DrawRect(Vector2 start, Vector2 size, uint color);
+#define Color(clr) {((int)(clr >> 24 & 0xFF) / 255.0), ((int)(clr >> 16 & 0xFF) / 255.0), ((int)(clr >> 8 & 0xFF) / 255.0), ((int)(clr & 0xFF) / 255.0)}
 
-void DrawRectOutline(Vector2 start, Vector2 size, uint color, double thickness);
+void DrawRect(Vector2 start, Vector2 size, GdkRGBA color);
 
-void DrawLine(Vector2 start, Vector2 end, uint color, float thickness);
+void DrawRectOutline(Vector2 start, Vector2 size, GdkRGBA color, double thickness);
 
-void Clear(uint color);
+void DrawLine(Vector2 start, Vector2 end, GdkRGBA color, float thickness);
+
+void Clear(GdkRGBA color);
 
 void DrawImage(Vector2 start, Vector2 size, const char *path);
 

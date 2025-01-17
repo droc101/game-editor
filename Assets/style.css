@@ -1,0 +1,17 @@
+.sidebarHeader {
+    font-weight: bold;
+    text-decoration: underline;
+}
+
+.grayText {
+    opacity: 50%;
+}
+
+switch:checked {
+    background: none;
+    box-shadow: none;
+}
+
+window {
+    border-radius: 0;
+}
