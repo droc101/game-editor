@@ -290,8 +290,8 @@ void ProcessDrag()
 			{
 				Wall *w = ListGet(l->walls, selectionIndex);
 				Vector2 wp = ScreenToWorldSnapped(GetLocalMousePos());
-				w->a = v2(wp.x - wallDragAOffset.x, wp.y - wallDragAOffset.y);
-				w->b = v2(wp.x - wallDragBOffset.x, wp.y - wallDragBOffset.y);
+				w->a = v2(round(wp.x - wallDragAOffset.x), round(wp.y - wallDragAOffset.y));
+				w->b = v2(round(wp.x - wallDragBOffset.x), round(wp.y - wallDragBOffset.y));
 			}
 		}
 	}

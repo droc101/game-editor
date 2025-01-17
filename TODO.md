@@ -1,3 +1,3 @@
-~~- be able to click on wall lines for actions~~ done
-- drag wall from line, moves both ends
-  - snap to grid is...strange
+- [x] be able to click on wall lines for actions~~ do
+- [x] drag wall from line, moves both ends
+  - [x] snap to grid is...strange
