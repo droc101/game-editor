@@ -14,6 +14,8 @@ void BeginRender(GtkDrawingArea *ar, cairo_t *c);
 
 void DrawRect(Vector2 start, Vector2 size, GdkRGBA color);
 
+void DrawArea(Vector2 center, Vector2 size, double rotation, GdkRGBA color);
+
 void DrawRectOutline(Vector2 start, Vector2 size, GdkRGBA color, double thickness);
 
 void DrawLine(Vector2 start, Vector2 end, GdkRGBA color, float thickness);
@@ -27,6 +29,8 @@ void TransformForLevelRender(Vector2 translation);
 void ResetTransform();
 
 Vector2 GetWindowSize();
+
+void RenderText(const char *str, const Vector2 pos, const double size, const GdkRGBA color);
 
 #define WindowWidth() GetWindowSize().x
 #define WindowHeight() GetWindowSize().y

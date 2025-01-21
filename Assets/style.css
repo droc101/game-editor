@@ -15,3 +15,11 @@ switch:checked {
 window {
     border-radius: 0;
 }
+
+placeholder {
+    color: gray;
+}
+
+.command {
+    font-family: monospace;
+}

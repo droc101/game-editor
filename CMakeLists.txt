@@ -26,8 +26,6 @@ add_executable(
         Helpers/List.h
         UI/MainWindow.c
         UI/MainWindow.h
-        Helpers/FileIO.c
-        Helpers/FileIO.h
         Helpers/Vector2.c
         Helpers/Vector2.h
         Helpers/Drawing.c

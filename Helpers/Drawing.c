@@ -17,9 +17,20 @@ void BeginRender(GtkDrawingArea *ar, cairo_t *c)
 
 void DrawRect(Vector2 start, Vector2 size, GdkRGBA color) /* RGBA 0-255 */
 {
-    gdk_cairo_set_source_rgba (cr, &color);
+    gdk_cairo_set_source_rgba(cr, &color);
     cairo_rectangle(cr, start.x, start.y, size.x, size.y);
     cairo_fill(cr);
+}
+
+void DrawArea(Vector2 center, Vector2 size, double rotation, GdkRGBA color)
+{
+	gdk_cairo_set_source_rgba(cr, &color);
+	cairo_save(cr);
+	cairo_translate(cr, center.x, center.y);
+	cairo_rotate(cr, rotation);
+	cairo_rectangle(cr, -size.x / 2, -size.y / 2, size.x, size.y);
+	cairo_fill(cr);
+	cairo_restore(cr);
 }
 
 void DrawRectOutline(Vector2 start, Vector2 size, GdkRGBA color, double thickness)
@@ -85,4 +96,13 @@ void ResetTransform()
 Vector2 GetWindowSize()
 {
 	return frameSize;
+}
+
+void RenderText(const char *str, const Vector2 pos, const double size, const GdkRGBA color)
+{
+	gdk_cairo_set_source_rgba (cr, &color);
+	cairo_set_font_size(cr, size);
+	cairo_set_font_face(cr, cairo_toy_font_face_create("monospace", CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_NORMAL));
+	cairo_move_to(cr, pos.x, pos.y);
+	cairo_show_text(cr, str);
 }

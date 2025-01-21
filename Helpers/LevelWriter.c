@@ -43,7 +43,7 @@ void WriteLevel(const Level *level, const char *path)
 	// Write the actors
 	for (int i = 0; i < actorCount; i++)
 	{
-		Actor *actor = ListGet(level->actors, i);
+		const Actor *actor = ListGet(level->actors, i);
 		fwrite(&actor->position.x, sizeof(double), 1, file);
 		fwrite(&actor->position.y, sizeof(double), 1, file);
 		fwrite(&actor->rotation, sizeof(double), 1, file);
@@ -61,7 +61,7 @@ void WriteLevel(const Level *level, const char *path)
 	// Write the walls
 	for (int i = 0; i < wallCount; i++)
 	{
-		Wall *wall = ListGet(level->walls, i);
+		const Wall *wall = ListGet(level->walls, i);
 		fwrite(&wall->a.x, sizeof(double), 1, file);
 		fwrite(&wall->a.y, sizeof(double), 1, file);
 		fwrite(&wall->b.x, sizeof(double), 1, file);
@@ -71,8 +71,22 @@ void WriteLevel(const Level *level, const char *path)
 		fwrite(&wall->uvOffset, sizeof(float), 1, file);
 	}
 
-	const ulong future = 0;
-	fwrite(&future, sizeof(ulong), 1, file);
+	const uint triggerCount = level->triggers->size;
+	fwrite(&triggerCount, sizeof(uint), 1, file);
+
+	for (int i = 0; i < triggerCount; i++)
+	{
+		const Trigger *trigger = ListGet(level->triggers, i);
+		fwrite(&trigger->position.x, sizeof(double), 1, file);
+		fwrite(&trigger->position.y, sizeof(double), 1, file);
+		fwrite(&trigger->rotation, sizeof(double), 1, file);
+		fwrite(&trigger->extents.x, sizeof(double), 1, file);
+		fwrite(&trigger->extents.y, sizeof(double), 1, file);
+		fwrite(&trigger->command, sizeof(char) * 64, 1, file);
+	}
+
+	const uint future = 0;
+	fwrite(&future, sizeof(uint), 1, file);
 
 	fclose(file);
 }
@@ -89,6 +103,7 @@ Level *ReadLevel(const char *path)
 	Level *level = malloc(sizeof(Level));
 	level->walls = CreateList();
 	level->actors = CreateList();
+	level->triggers = CreateList();
 
 	fread(&level->name, sizeof(char), 32, file);
 	fread(&level->courseNum, sizeof(short), 1, file);
@@ -136,6 +151,22 @@ Level *ReadLevel(const char *path)
 		fread(&wall->uvOffset, sizeof(float), 1, file);
 
 		ListAdd(level->walls, wall);
+	}
+
+	uint triggerCount = 0;
+	fread(&triggerCount, sizeof(uint), 1, file);
+
+	for (int i = 0; i < triggerCount; i++)
+	{
+		Trigger *trigger = malloc(sizeof(Trigger));
+		fread(&trigger->position.x, sizeof(double), 1, file);
+		fread(&trigger->position.y, sizeof(double), 1, file);
+		fread(&trigger->rotation, sizeof(double), 1, file);
+		fread(&trigger->extents.x, sizeof(double), 1, file);
+		fread(&trigger->extents.y, sizeof(double), 1, file);
+		fread(&trigger->command, sizeof(char) * 64, 1, file);
+
+		ListAdd(level->triggers, trigger);
 	}
 
 	return level;

@@ -19,7 +19,7 @@ AddRequestType addRequest;
 
 Vector2 scrollPos = {0};
 Vector2 scrollPosCentered = {0};
-double zoom = 20.0;
+double zoom = 30.0;
 
 SelectionType selectionType = SELTYPE_NONE;
 int selectionIndex = -1;
@@ -49,6 +49,10 @@ GdkRGBA actorNodeHover = Color(0x00000040);
 GdkRGBA playerRotationLine = Color(0x008000FF);
 GdkRGBA playerNode = Color(0x00FF00FF);
 GdkRGBA playerNodeHover = Color(0x00000040);
+GdkRGBA triggerNode = Color(0xFF00FFFF);
+GdkRGBA triggerNodeHover = Color(0x00000040);
+GdkRGBA triggerArea = Color(0xFF00FF40);
+GdkRGBA triggerCommand = Color(0xFFFFFF80);
 
 void EditorInit()
 {
@@ -116,7 +120,7 @@ void EditorDestroyLevel()
 	}
 	ListFreeWithData(l->actors);
 	ListFreeWithData(l->walls);
-	//ListFreeWithData(l->triggers);
+	ListFreeWithData(l->triggers);
 	//ListFreeWithData(l->models);
 	free(l);
 	l = NULL;
@@ -134,7 +138,7 @@ void EditorNewLevel()
 
 	l->walls = CreateList();
 	l->actors = CreateList();
-	//l->triggers = CreateList();
+	l->triggers = CreateList();
 	//l->models = CreateList();
 	strcpy(l->name, "Unnamed Level");
 	l->courseNum = -1;
@@ -148,12 +152,12 @@ void EditorNewLevel()
 	l->player.rotation = degToRad(-90.0);
 
 	// srand(time(NULL));
-	// for (int i = 0; i < 20; i++)
+	// for (int i = 0; i < 2000; i++)
 	// {
 	// 	Wall *w = malloc(sizeof(Wall));
 	// 	memset(w, 0, sizeof(Wall));
-	// 	w->a = v2(rand() % 50 - 25, rand() % 50 - 25);
-	// 	w->b = v2(rand() % 50 - 25, rand() % 50 - 25);
+	// 	w->a = v2(rand() % 100 - 50, rand() % 100 - 50);
+	// 	w->b = v2(rand() % 100 - 50, rand() % 100 - 50);
 	// 	strcpy(w->tex, "level_wall_test");
 	// 	w->uvScale = 1.0;
 	//
@@ -168,11 +172,27 @@ void EditorNewLevel()
 	// 	a->rotation = (rand() % 360) * (M_PI / 180.0);
 	// 	ListAdd(l->actors, a);
 	// }
+	//
+	// for (int i = 0; i < 50; i++)
+	// {
+	// 	Trigger *t = malloc(sizeof(Trigger));
+	// 	memset(t, 0, sizeof(Trigger));
+	// 	t->position = v2(rand() % 50 - 25, rand() % 50 - 25);
+	// 	t->extents = v2(rand() % 10 - 5, rand() % 10 - 5);
+	// 	t->rotation = (rand() % 360) * (M_PI / 180.0);
+	// 	ListAdd(l->triggers, t);
+	// }
+
 }
 
 Vector2 WorldToScreen(Vector2 wp)
 {
 	return v2(round((wp.x * zoom) + scrollPosCentered.x), round((wp.y * zoom) + scrollPosCentered.y));
+}
+
+Vector2 WorldToScreenSize(Vector2 wp)
+{
+	return v2(wp.x * zoom, wp.y * zoom);
 }
 
 Vector2 ScreenToWorld(Vector2 sp)
@@ -250,6 +270,18 @@ void ProcessHover()
 		}
 	}
 
+	for (int t = 0; t < l->triggers->size; t++)
+	{
+		Trigger *trig = ListGet(l->triggers, t);
+		Vector2 scaledTriggerPos = WorldToScreen(trig->position);
+		if (Vector2Distance(scaledTriggerPos, GetLocalMousePos()) < 10)
+		{
+			hoverType = SELTYPE_TRIGGER;
+			hoverIndex = t;
+			break;
+		}
+	}
+
 	Vector2 scaledPlayerPos = WorldToScreen(l->player.pos);
 	if (Vector2Distance(scaledPlayerPos, GetLocalMousePos()) < 10)
 	{
@@ -293,6 +325,10 @@ void ProcessDrag()
 				const Vector2 wp = ScreenToWorldSnapped(GetLocalMousePos());
 				w->a = v2(round(wp.x - wallDragAOffset.x), round(wp.y - wallDragAOffset.y));
 				w->b = v2(round(wp.x - wallDragBOffset.x), round(wp.y - wallDragBOffset.y));
+			} else if (selectionType == SELTYPE_TRIGGER)
+			{
+				Trigger *t = ListGet(l->triggers, selectionIndex);
+				t->position = ScreenToWorldSnapped(GetLocalMousePos());
 			}
 		}
 	}
@@ -317,9 +353,9 @@ void EditorUpdate()
 	{
 		zoom = 4;
 	}
-	if (zoom > 30.0)
+	if (zoom > 40.0)
 	{
-		zoom = 30.0;
+		zoom = 40.0;
 	}
 
 	if (addRequest == ADDREQ_NONE)
@@ -367,6 +403,17 @@ void EditorUpdate()
 				ListAdd(l->actors, a);
 				selectionType = SELTYPE_ACTOR;
 				selectionIndex = l->actors->size - 1;
+				SelectionTypeChanged();
+			} else if (addRequest == ADDREQ_TRIGGER)
+			{
+				Trigger *t = malloc(sizeof(Trigger));
+				memset(t, 0, sizeof(Trigger));
+				t->position = ScreenToWorldSnapped(GetLocalMousePos());
+				t->extents = v2(5, 5);
+				t->rotation = 0.0;
+				ListAdd(l->triggers, t);
+				selectionType = SELTYPE_TRIGGER;
+				selectionIndex = l->triggers->size - 1;
 				SelectionTypeChanged();
 			}
 			isDragging = true;
@@ -429,6 +476,28 @@ void RenderActor(const Actor *actor, const int a)
 	}
 }
 
+void RenderTrigger(const Trigger *trigger, const int t)
+{
+	Vector2 scaledTriggerPos = WorldToScreen(trigger->position);
+
+	DrawArea(scaledTriggerPos, WorldToScreenSize(trigger->extents), trigger->rotation, triggerArea);
+
+	DrawRect(v2(scaledTriggerPos.x - 6, scaledTriggerPos.y - 6), v2(12, 12), triggerNode);
+
+	if (hoverType == SELTYPE_TRIGGER && hoverIndex == t)
+	{
+		DrawRect(v2(scaledTriggerPos.x - 6, scaledTriggerPos.y - 6), v2(12, 12), triggerNodeHover);
+	}
+	if (selectionType == SELTYPE_TRIGGER && selectionIndex == t)
+	{
+		DrawRectOutline(v2(scaledTriggerPos.x - 6, scaledTriggerPos.y - 6), v2(12, 12), selectionOutline, 2.0);
+	}
+	Vector2 textPos = scaledTriggerPos;
+	textPos = Vector2Add(textPos, v2(0, 16));
+	textPos = Vector2Sub(textPos, Vector2Scale(WorldToScreenSize(trigger->extents), 0.5));
+	RenderText(trigger->command, textPos, 16, triggerCommand);
+}
+
 void RenderPlayer(const Player *plr)
 {
 	Vector2 scaledActorPos = WorldToScreen(plr->pos);
@@ -462,6 +531,12 @@ void EditorRenderLevel()
 	scrollPosCentered = v2(scrollPos.x + (GetWindowSize().x / 2), scrollPos.y + (GetWindowSize().y / 2));
 
 	RenderGrid();
+
+	for (int t = 0; t < l->triggers->size; t++)
+	{
+		Trigger *trigger = ListGet(l->triggers, t);
+		RenderTrigger(trigger, t);
+	}
 
 	for (int w = 0; w < l->walls->size; w++)
 	{

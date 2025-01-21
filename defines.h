@@ -102,7 +102,7 @@ struct Wall
 {
 	Vector2 a; // The first point of the wall
 	Vector2 b; // The second point of the wall
-	const char tex[32]; // The texture name
+	char tex[32]; // The texture name
 	float uvScale; // The X scale of the texture
 	float uvOffset; // The X offset of the texture
 };

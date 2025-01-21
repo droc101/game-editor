@@ -19,6 +19,11 @@ void LoadOptions(Options *options);
  */
 void SaveOptions(Options *options);
 
+/**
+ * Check if the game directory is valid
+ * @param options The options to check
+ * @return Whether the game directory is valid
+ */
 bool IsValidGameDirectory(Options *options);
 
 #endif //GAME_OPTIONS_H
