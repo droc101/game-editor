@@ -83,6 +83,7 @@ void WriteLevel(const Level *level, const char *path)
 		fwrite(&trigger->extents.x, sizeof(double), 1, file);
 		fwrite(&trigger->extents.y, sizeof(double), 1, file);
 		fwrite(&trigger->command, sizeof(char) * 64, 1, file);
+		fwrite(&trigger->flags, sizeof(uint), 1, file);
 	}
 
 	const uint future = 0;
@@ -165,6 +166,7 @@ Level *ReadLevel(const char *path)
 		fread(&trigger->extents.x, sizeof(double), 1, file);
 		fread(&trigger->extents.y, sizeof(double), 1, file);
 		fread(&trigger->command, sizeof(char) * 64, 1, file);
+		fread(&trigger->flags, sizeof(uint), 1, file);
 
 		ListAdd(level->triggers, trigger);
 	}

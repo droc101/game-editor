@@ -71,6 +71,12 @@ void delete_selected_clicked(GtkButton *, gpointer)
 	SelectionTypeChanged();
 }
 
+void trigger_one_shot_toggled(GtkToggleButton *self, gpointer)
+{
+	Trigger *t = ListGet(l->triggers, selectionIndex);
+	t->flags |= TRIGGER_FLAG_ONE_SHOT;
+}
+
 #pragma region File Menu
 
 static void quit_activated(GSimpleAction *, GVariant *, gpointer app)
@@ -912,6 +918,16 @@ GtkWidget *SetupLSidebar_TriggerSelection()
 	gtk_entry_buffer_set_text(gtk_entry_get_buffer(GTK_ENTRY(commandBox)), t->command, -1);
 	g_signal_connect(commandBox, "changed", G_CALLBACK(trigget_command_changed), NULL);
 	gtk_box_append(GTK_BOX(triggerSelectionSidebar), commandBox);
+
+	GtkWidget *sep1 = gtk_separator_new(GTK_ORIENTATION_HORIZONTAL);
+	gtk_widget_set_margin_top(sep1, 8);
+	gtk_widget_set_margin_bottom(sep1, 8);
+	gtk_box_append(GTK_BOX(triggerSelectionSidebar), sep1);
+
+	GtkWidget *oneShotCheckbox = gtk_check_button_new_with_label("One Shot");
+	gtk_check_button_set_active(GTK_CHECK_BUTTON(oneShotCheckbox), t->flags & TRIGGER_FLAG_ONE_SHOT);
+	g_signal_connect(oneShotCheckbox, "toggled", G_CALLBACK(trigger_one_shot_toggled), NULL);
+	gtk_box_append(GTK_BOX(triggerSelectionSidebar), oneShotCheckbox);
 
 	return triggerSelectionSidebar;
 }

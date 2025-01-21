@@ -20,6 +20,7 @@ typedef uint64_t ulong;
 // Enum forward declarations
 typedef enum ImageDataOffsets ImageDataOffsets;
 typedef enum AssetType AssetType;
+typedef enum TriggerFlag TriggerFlag;
 
 // Struct forward declarations
 typedef struct Vector2 Vector2;
@@ -78,6 +79,11 @@ enum ImageDataOffsets
 	IMAGE_WIDTH_OFFSET = 4,
 	IMAGE_HEIGHT_OFFSET = 8,
 	IMAGE_ID_OFFSET = 12
+};
+
+enum TriggerFlag
+{
+	TRIGGER_FLAG_ONE_SHOT = 1
 };
 
 #pragma endregion
