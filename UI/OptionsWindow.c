@@ -15,6 +15,9 @@ bool optionsRequired = false;
 
 GtkApplication *optionsApplication;
 
+/**
+ * The callback for when a game folder was selected from the folder dialog
+ */
 void game_folder_selected(GObject *, GAsyncResult *res, gpointer)
 {
 	GError *error = NULL;
@@ -30,17 +33,26 @@ void game_folder_selected(GObject *, GAsyncResult *res, gpointer)
 	gtk_entry_buffer_set_text(buffer, path, -1);
 }
 
+/**
+ * Callback for when the pick folder ("...") button is clicked
+ */
 void pick_folder_clicked(GtkButton *, gpointer)
 {
 	gameFolderDialog = gtk_file_dialog_new();
 	gtk_file_dialog_select_folder(gameFolderDialog, optionsWindow, NULL, game_folder_selected, NULL);
 }
 
+/**
+ * Callback for when the cancel button is pressed
+ */
 void cancel_clicked(GtkButton *, gpointer)
 {
 	gtk_window_close(optionsWindow);
 }
 
+/**
+ * Callback for when the OK button is pressed
+ */
 void ok_clicked(GtkButton *, gpointer)
 {
 	GtkEntryBuffer *buffer = gtk_entry_get_buffer(GTK_ENTRY(gamePathEntry));
@@ -67,6 +79,9 @@ void ok_clicked(GtkButton *, gpointer)
 	gtk_window_close(optionsWindow);
 }
 
+/**
+ * Callback for when the options window is closed
+ */
 void options_closed(GtkWindow *, gpointer)
 {
 	if (optionsRequired)
@@ -78,7 +93,7 @@ void options_closed(GtkWindow *, gpointer)
 	optionsWindowOpen = false;
 }
 
-void OptionsWindowShow(GtkWindow *parent, GtkApplication *app, bool required)
+void OptionsWindowShow(GtkWindow *parent, GtkApplication *app, const bool required)
 {
 	optionsWindowOpen = true;
 	GtkWidget *window = gtk_application_window_new(GTK_APPLICATION(app));

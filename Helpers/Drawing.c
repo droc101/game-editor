@@ -56,43 +56,6 @@ void Clear(GdkRGBA color)
     cairo_paint(cr);
 }
 
-void DrawImage(Vector2 start, Vector2 size, const char *path) {
-    // Load the image
-    cairo_surface_t *image = cairo_image_surface_create_from_png(path);
-
-    // Get image dimensions
-    int img_width = cairo_image_surface_get_width(image);
-    int img_height = cairo_image_surface_get_height(image);
-
-    // Save the current state of the context
-    cairo_save(cr);
-
-    // Translate and scale the context to stretch the image
-    cairo_translate(cr, start.x, start.y);
-    cairo_scale(cr, size.x / img_width, size.y / img_height);
-
-    // Draw the image
-    cairo_set_source_surface(cr, image, 0, 0);
-    cairo_paint(cr);
-
-    // Restore the context to remove the scaling
-    cairo_restore(cr);
-
-    // Destroy the image surface
-    cairo_surface_destroy(image);
-}
-
-void TransformForLevelRender(Vector2 translation)
-{
-	cairo_save(cr);
-	cairo_translate(cr, translation.x, translation.y);
-}
-
-void ResetTransform()
-{
-	cairo_restore(cr);
-}
-
 Vector2 GetWindowSize()
 {
 	return frameSize;

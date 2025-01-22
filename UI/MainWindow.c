@@ -21,6 +21,11 @@ GtkFileDialog *fileDialog;
 
 #pragma region Signal Handlers
 
+/**
+ * Draw callback from the drawing area
+ * @param drawing_area The drawing area to draw to
+ * @param cr The cairo instance to use
+ */
 void drawMainArea(GtkDrawingArea *drawing_area, cairo_t *cr, int, int, gpointer)
 {
 	frame++;
@@ -32,7 +37,9 @@ void drawMainArea(GtkDrawingArea *drawing_area, cairo_t *cr, int, int, gpointer)
 	EditorRenderLevel();
 }
 
-// Timer callback to continuously update the drawing area
+/**
+ * Timer callback to continuously update the drawing area
+ */
 gboolean on_timeout(gpointer user_data)
 {
 	GtkWidget *drawing_area = GTK_WIDGET(user_data);
@@ -40,21 +47,33 @@ gboolean on_timeout(gpointer user_data)
 	return TRUE;
 }
 
+/**
+ * Callback for when the add wall button is clicked
+ */
 void add_wall_clicked(GtkButton *, gpointer)
 {
 	addRequest = ADDREQ_WALL;
 }
 
+/**
+ * Callback for when the add actor button is clicked
+ */
 void add_actor_clicked(GtkButton *, gpointer)
 {
 	addRequest = ADDREQ_ACTOR;
 }
 
+/**
+ * Callback for when the add trigger button is clicked
+ */
 void add_trigger_clicked(GtkButton *, gpointer)
 {
 	addRequest = ADDREQ_TRIGGER;
 }
 
+/**
+ * Callback for when the delete selected button is clicked
+ */
 void delete_selected_clicked(GtkButton *, gpointer)
 {
 	if (selectionType == SELTYPE_WALL_A || selectionType == SELTYPE_WALL_B || selectionType == SELTYPE_WALL_LINE)
@@ -71,19 +90,19 @@ void delete_selected_clicked(GtkButton *, gpointer)
 	SelectionTypeChanged();
 }
 
-void trigger_one_shot_toggled(GtkToggleButton *self, gpointer)
-{
-	Trigger *t = ListGet(l->triggers, selectionIndex);
-	t->flags |= TRIGGER_FLAG_ONE_SHOT;
-}
-
 #pragma region File Menu
 
+/**
+ * Callback for when the quit menu item is clicked
+ */
 static void quit_activated(GSimpleAction *, GVariant *, gpointer app)
 {
 	g_application_quit(G_APPLICATION(app));
 }
 
+/**
+ * Callback for when a file is selected from the save file dialog
+ */
 static void save_file_selected(GObject *, GAsyncResult *res, gpointer)
 {
 	GError *error = NULL;
@@ -98,6 +117,9 @@ static void save_file_selected(GObject *, GAsyncResult *res, gpointer)
 	WriteLevel(l, path);
 }
 
+/**
+ * Callback for when a file is selected from the open file dialog
+ */
 static void open_file_selected(GObject *, GAsyncResult *res, gpointer)
 {
 	GError *error = NULL;
@@ -113,16 +135,25 @@ static void open_file_selected(GObject *, GAsyncResult *res, gpointer)
 	l = ReadLevel(path);
 }
 
+/**
+ * Callback for when the save level menu item is pressed
+ */
 static void save_activated(GSimpleAction *, GVariant *, gpointer)
 {
 	gtk_file_dialog_save(fileDialog, mainWindow, NULL, save_file_selected, NULL);
 }
 
+/**
+ * Callback for when the open level menu item is pressed
+ */
 static void open_activated(GSimpleAction *, GVariant *, gpointer)
 {
 	gtk_file_dialog_open(fileDialog, mainWindow, NULL, open_file_selected, NULL);
 }
 
+/**
+ * Callback for when the new level menu item is pressed
+ */
 static void new_activated(GSimpleAction *, GVariant *, gpointer)
 {
 	EditorNewLevel();
@@ -132,21 +163,33 @@ static void new_activated(GSimpleAction *, GVariant *, gpointer)
 
 #pragma region Edit Menu
 
+/**
+ * Callback for when the add wall menu item is pressed
+ */
 void add_wall_menu_item_activated(GSimpleAction *, GVariant *, gpointer)
 {
 	add_wall_clicked(NULL, NULL);
 }
 
+/**
+ * Callback for when the add actor menu item is pressed
+ */
 void add_actor_menu_item_activated(GSimpleAction *, GVariant *, gpointer)
 {
 	add_actor_clicked(NULL, NULL);
 }
 
+/**
+ * Callback for when the add trigger menu item is pressed
+ */
 void add_trigger_menu_item_activated(GSimpleAction *, GVariant *, gpointer)
 {
 	add_trigger_clicked(NULL, NULL);
 }
 
+/**
+ * Callback for when the delete selected menu item is pressed
+ */
 void delete_selected_menu_item_activated(GSimpleAction *, GVariant *, gpointer)
 {
 	delete_selected_clicked(NULL, NULL);
@@ -156,21 +199,33 @@ void delete_selected_menu_item_activated(GSimpleAction *, GVariant *, gpointer)
 
 #pragma region View Menu
 
+/**
+ * Callback for when the zoom out menu item is pressed
+ */
 static void zoom_out_activated(GSimpleAction *, GVariant *, gpointer)
 {
 	zoom -= 1.0;
 }
 
+/**
+ * Callback for when the zoom in menu item is pressed
+ */
 static void zoom_in_activated(GSimpleAction *, GVariant *, gpointer)
 {
 	zoom += 1.0;
 }
 
+/**
+ * Callback for when the reset zoom menu item is pressed
+ */
 static void reset_zoom_activated(GSimpleAction *, GVariant *, gpointer)
 {
 	zoom = 20.0;
 }
 
+/**
+ * Callback for when the center origin menu item is pressed
+ */
 static void center_origin_activated(GSimpleAction *, GVariant *, gpointer)
 {
 	scrollPos = v2s(0);
@@ -180,6 +235,9 @@ static void center_origin_activated(GSimpleAction *, GVariant *, gpointer)
 
 #pragma region Tools Menu
 
+/**
+ * Callback for when the setup menu item is pressed
+ */
 void setup_activated(GSimpleAction *, GVariant *, gpointer app)
 {
 	OptionsWindowShow(mainWindow, GTK_APPLICATION(app), false);
@@ -189,6 +247,9 @@ void setup_activated(GSimpleAction *, GVariant *, gpointer app)
 
 #pragma region Help Menu
 
+/**
+ * Callback for when the about menu item is pressed
+ */
 static void about_activated(GSimpleAction *, GVariant *, gpointer app)
 {
 	GtkWindow *window = gtk_application_get_active_window(GTK_APPLICATION(app));
@@ -219,6 +280,9 @@ static void about_activated(GSimpleAction *, GVariant *, gpointer app)
 
 #pragma region Player Sidebar
 
+/**
+ * Callback for when the player rotation value is changed
+ */
 void plr_rot_value_changed(GtkSpinButton *self, gpointer)
 {
 	l->player.rotation = degToRad(gtk_spin_button_get_value(self));
@@ -228,6 +292,9 @@ void plr_rot_value_changed(GtkSpinButton *self, gpointer)
 
 #pragma region Wall Sidebar
 
+/**
+ * Callback for when the wall texture is changed
+ */
 void wall_texture_changed(GtkEditable *self, gpointer)
 {
 	Wall *w = ListGet(l->walls, selectionIndex);
@@ -235,12 +302,18 @@ void wall_texture_changed(GtkEditable *self, gpointer)
 	strcpy(w->tex, text);
 }
 
+/**
+ * Callback for when the wall uv scale is changed
+ */
 void wall_uv_scale_value_changed(GtkSpinButton *self, gpointer)
 {
 	Wall *w = ListGet(l->walls, selectionIndex);
 	w->uvScale = gtk_spin_button_get_value(self);
 }
 
+/**
+ * Callback for when the wall uv offset is changed
+ */
 void wall_uv_offset_value_changed(GtkSpinButton *self, gpointer)
 {
 	Wall *w = ListGet(l->walls, selectionIndex);
@@ -251,36 +324,54 @@ void wall_uv_offset_value_changed(GtkSpinButton *self, gpointer)
 
 #pragma region Actor Sidebar
 
+/**
+ * Callback for when the actor type is changed
+ */
 void actor_type_value_changed(GtkSpinButton *self, gpointer)
 {
 	Actor *a = ListGet(l->actors, selectionIndex);
 	a->actorType = gtk_spin_button_get_value(self);
 }
 
+/**
+ * Callback for when actor param a is changed
+ */
 void actor_param_a_value_changed(GtkSpinButton *self, gpointer)
 {
 	Actor *a = ListGet(l->actors, selectionIndex);
 	a->paramA = gtk_spin_button_get_value(self);
 }
 
+/**
+ * Callback for when actor param b is changed
+ */
 void actor_param_b_value_changed(GtkSpinButton *self, gpointer)
 {
 	Actor *a = ListGet(l->actors, selectionIndex);
 	a->paramB = gtk_spin_button_get_value(self);
 }
 
+/**
+ * Callback for when actor param c is changed
+ */
 void actor_param_c_value_changed(GtkSpinButton *self, gpointer)
 {
 	Actor *a = ListGet(l->actors, selectionIndex);
 	a->paramC = gtk_spin_button_get_value(self);
 }
 
+/**
+ * Callback for when actor param d is changed
+ */
 void actor_param_d_value_changed(GtkSpinButton *self, gpointer)
 {
 	Actor *a = ListGet(l->actors, selectionIndex);
 	a->paramD = gtk_spin_button_get_value(self);
 }
 
+/**
+ * Callback for when actor rotation is changed
+ */
 void actor_rot_value_changed(GtkSpinButton *self, gpointer)
 {
 	Actor *a = ListGet(l->actors, selectionIndex);
@@ -291,17 +382,26 @@ void actor_rot_value_changed(GtkSpinButton *self, gpointer)
 
 #pragma region Level Sidebar
 
+/**
+ * Callback for when the level name is changed
+ */
 void level_name_changed(GtkEditable *self, gpointer)
 {
 	const char *text = gtk_editable_get_text(self);
 	strcpy(l->name, text);
 }
 
+/**
+ * Callback for when the level course number is changed
+ */
 void level_course_num_value_changed(GtkSpinButton *self, gpointer)
 {
 	l->courseNum = gtk_spin_button_get_value(self);
 }
 
+/**
+ * Callback for when the level ceil/sky switch is toggled
+ */
 gboolean level_ceil_or_sky_state_set(GtkSwitch *, gboolean state, gpointer)
 {
 	if (state)
@@ -314,25 +414,37 @@ gboolean level_ceil_or_sky_state_set(GtkSwitch *, gboolean state, gpointer)
 	return TRUE;
 }
 
+/**
+ * Callback for when the level ceil/sky texture is changed
+ */
 void level_ceil_or_sky_tex_changed(GtkEditable *self, gpointer)
 {
 	const char *text = gtk_editable_get_text(self);
 	strcpy(l->ceilOrSkyTex, text);
 }
 
+/**
+ * Callback for when the level floor texture is changed
+ */
 void level_floor_tex_changed(GtkEditable *self, gpointer)
 {
 	const char *text = gtk_editable_get_text(self);
 	strcpy(l->floorTex, text);
 }
 
+/**
+ * Callback for when the level music is changed
+ */
 void level_music_changed(GtkEditable *self, gpointer)
 {
 	const char *text = gtk_editable_get_text(self);
 	strcpy(l->music, text);
 }
 
-void color_set(GtkColorButton *self, gpointer)
+/**
+ * Callback for when the level fog color is changed
+ */
+void fog_color_set(GtkColorButton *self, gpointer)
 {
 	GdkRGBA gtkColor;
 	gtk_color_chooser_get_rgba(GTK_COLOR_CHOOSER(self), &gtkColor);
@@ -343,11 +455,17 @@ void color_set(GtkColorButton *self, gpointer)
 	l->fogColor = color;
 }
 
+/**
+ * Callback for when the fog start value is changed
+ */
 void fog_start_value_changed(GtkRange *self, gpointer)
 {
 	l->fogStart = gtk_range_get_value(self);
 }
 
+/**
+ * Callback for when the level fog end value is changed
+ */
 void fog_end_value_changed(GtkRange *self, gpointer)
 {
 	l->fogEnd = gtk_range_get_value(self);
@@ -357,35 +475,59 @@ void fog_end_value_changed(GtkRange *self, gpointer)
 
 #pragma region Trigger Sidebar
 
+/**
+ * Callback for when the trigger rotation value is changed
+ */
 static void trigger_rotation_value_changed(GtkSpinButton *self, gpointer)
 {
 	Trigger *t = ListGet(l->triggers, selectionIndex);
 	t->rotation = degToRad(gtk_spin_button_get_value(self));
 }
 
+/**
+ * Callback for when the trigger extents x value is changed
+ */
 static void trigger_extents_x_value_changed(GtkSpinButton *self, gpointer)
 {
 	Trigger *t = ListGet(l->triggers, selectionIndex);
 	t->extents.x = gtk_spin_button_get_value(self);
 }
 
+/**
+ * Callback for when the trigger extents y value is changed
+ */
 static void trigger_extents_y_value_changed(GtkSpinButton *self, gpointer)
 {
 	Trigger *t = ListGet(l->triggers, selectionIndex);
 	t->extents.y = gtk_spin_button_get_value(self);
 }
 
-static void trigget_command_changed(GtkEditable *self, gpointer)
+/**
+ * Callback for when the trigger command is changed
+ */
+static void trigger_command_changed(GtkEditable *self, gpointer)
 {
 	Trigger *t = ListGet(l->triggers, selectionIndex);
 	const char *text = gtk_editable_get_text(self);
 	strcpy(t->command, text);
 }
 
-#pragma endregion
+/**
+ * Callback for when the trigger one shot flag is changed
+ */
+static void trigger_one_shot_toggled(GtkToggleButton *self, gpointer)
+{
+	Trigger *t = ListGet(l->triggers, selectionIndex);
+	t->flags |= TRIGGER_FLAG_ONE_SHOT;
+}
 
 #pragma endregion
 
+#pragma endregion
+
+/**
+ * Menu item actions and callbacks
+ */
 static GActionEntry menu_entries[] = {
 	{"new", new_activated, NULL, NULL, NULL},
 	{"open", open_activated, NULL, NULL, NULL},
@@ -406,6 +548,9 @@ static GActionEntry menu_entries[] = {
 
 #pragma region UI Setup
 
+/**
+ * Populate a combo box with texture names
+ */
 void PopulateComboBoxTextures(GtkWidget *box)
 {
 	GtkComboBoxText *combo = GTK_COMBO_BOX_TEXT(box);
@@ -416,6 +561,9 @@ void PopulateComboBoxTextures(GtkWidget *box)
 	}
 }
 
+/**
+ * Populate a combo box with music names
+ */
 void PopulateComboBoxMusic(GtkWidget *box)
 {
 	GtkComboBoxText *combo = GTK_COMBO_BOX_TEXT(box);
@@ -427,6 +575,9 @@ void PopulateComboBoxMusic(GtkWidget *box)
 	}
 }
 
+/**
+ * Create and populate the menu bar
+ */
 GtkWidget *SetupMenuBar(GtkApplication *app)
 {
 	GMenu *menu = g_menu_new();
@@ -509,6 +660,9 @@ GtkWidget *SetupMenuBar(GtkApplication *app)
 	return menuBar;
 }
 
+/**
+ * Create and populate the toolbar
+ */
 GtkWidget *SetupToolbar()
 {
 	GtkWidget *sep = gtk_separator_new(GTK_ORIENTATION_VERTICAL);
@@ -542,6 +696,9 @@ GtkWidget *SetupToolbar()
 	return toolbar;
 }
 
+/**
+ * Create and populate the toolbar
+ */
 GtkWidget *SetupStatusBar()
 {
 	statusLabel = gtk_label_new("Status");
@@ -553,6 +710,9 @@ GtkWidget *SetupStatusBar()
 	return statusBar;
 }
 
+/**
+ * Create the drawing area
+ */
 GtkWidget *SetupDrawingArea()
 {
 	GtkWidget *drawingArea = gtk_drawing_area_new();
@@ -601,6 +761,9 @@ GtkWidget *SetupDrawingArea()
 	return drawingArea;
 }
 
+/**
+ * Create and populate the level sidebar
+ */
 GtkWidget *SetupRSidebar()
 {
 	GtkWidget *rightSidebar = gtk_scrolled_window_new();
@@ -710,7 +873,7 @@ GtkWidget *SetupRSidebar()
 	fogColorRGBA.blue = ((l->fogColor >> 8) & 0xFF) / 255.0;
 	fogColorRGBA.alpha = (l->fogColor & 0xFF) / 255.0;
 	GtkWidget *fogColor = gtk_color_button_new_with_rgba(&fogColorRGBA);
-	g_signal_connect(fogColor, "color-set", G_CALLBACK(color_set), NULL);
+	g_signal_connect(fogColor, "color-set", G_CALLBACK(fog_color_set), NULL);
 	gtk_box_append(GTK_BOX(rightSidebarVLayout), fogColor);
 
 	GtkWidget *fogStartLabel = gtk_label_new("Fog Start");
@@ -740,6 +903,9 @@ GtkWidget *SetupRSidebar()
 	return rightSidebar;
 }
 
+/**
+ * Create the no selection sidebar
+ */
 GtkWidget *SetupLSidebar_NoSelection()
 {
 	GtkWidget *noSelectionSidebar = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0);
@@ -752,6 +918,9 @@ GtkWidget *SetupLSidebar_NoSelection()
 	return noSelectionSidebar;
 }
 
+/**
+ * Create the wall sidebar
+ */
 GtkWidget *SetupLSidebar_WallSelection(const Wall *w)
 {
 	GtkWidget *wallSelectionSidebar = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0);
@@ -794,6 +963,9 @@ GtkWidget *SetupLSidebar_WallSelection(const Wall *w)
 	return wallSelectionSidebar;
 }
 
+/**
+ * Create the actor sidebar
+ */
 GtkWidget *SetupLSidebar_ActorSelection(const Actor *a)
 {
 	GtkWidget *actorSelectionSidebar = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0);
@@ -861,6 +1033,9 @@ GtkWidget *SetupLSidebar_ActorSelection(const Actor *a)
 	return actorSelectionSidebar;
 }
 
+/**
+ * Create the player sidebar
+ */
 GtkWidget *SetupLSidebar_PlayerSelection()
 {
 	GtkWidget *playerSelectionSidebar = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0);
@@ -877,6 +1052,9 @@ GtkWidget *SetupLSidebar_PlayerSelection()
 	return playerSelectionSidebar;
 }
 
+/**
+ * Create the trigger sidebar
+ */
 GtkWidget *SetupLSidebar_TriggerSelection()
 {
 	GtkWidget *triggerSelectionSidebar = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0);
@@ -916,7 +1094,7 @@ GtkWidget *SetupLSidebar_TriggerSelection()
 	gtk_entry_set_placeholder_text(GTK_ENTRY(commandBox), "Command");
 	gtk_entry_set_max_length(GTK_ENTRY(commandBox), 60);
 	gtk_entry_buffer_set_text(gtk_entry_get_buffer(GTK_ENTRY(commandBox)), t->command, -1);
-	g_signal_connect(commandBox, "changed", G_CALLBACK(trigget_command_changed), NULL);
+	g_signal_connect(commandBox, "changed", G_CALLBACK(trigger_command_changed), NULL);
 	gtk_box_append(GTK_BOX(triggerSelectionSidebar), commandBox);
 
 	GtkWidget *sep1 = gtk_separator_new(GTK_ORIENTATION_HORIZONTAL);
@@ -934,6 +1112,9 @@ GtkWidget *SetupLSidebar_TriggerSelection()
 
 #pragma endregion
 
+/**
+ * Apply the CSS styles
+ */
 void SetupCss(GtkWindow *)
 {
 	// Load CSS
