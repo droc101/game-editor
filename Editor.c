@@ -6,10 +6,11 @@
 
 #include <stdlib.h>
 #include <string.h>
-#include "Helpers/Options.h"
 #include "defines.h"
 #include "Helpers/Drawing.h"
+#include "Helpers/GameInterface.h"
 #include "Helpers/Input.h"
+#include "Helpers/Options.h"
 #include "UI/MainWindow.h"
 
 Level *l;
@@ -68,6 +69,11 @@ void EditorDestroy()
 
 void RescanAssets()
 {
+	if (!LoadExecutable())
+	{
+		printf("Failed to load game symbols!\n");
+		return;
+	}
 	if (textureList != NULL)
 	{
 		ListFreeWithData(textureList);

@@ -8,6 +8,8 @@
 #include "../Editor.h"
 #include <gtk/gtk.h>
 
+void UpdateActorSidebar();
+
 /**
  * Show the main window
  * @param app The GTK Application

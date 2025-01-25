@@ -4,6 +4,8 @@
 
 #include "Drawing.h"
 
+#include "Vector2.h"
+
 GtkDrawingArea *area;
 cairo_t *cr;
 Vector2 frameSize;
