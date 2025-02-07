@@ -517,7 +517,7 @@ static void trigger_command_changed(GtkEditable *self, gpointer)
 /**
  * Callback for when the trigger one shot flag is changed
  */
-static void trigger_one_shot_toggled(GtkToggleButton *self, gpointer)
+static void trigger_one_shot_toggled(GtkToggleButton *, gpointer)
 {
 	Trigger *t = ListGet(l->triggers, selectionIndex);
 	t->flags |= TRIGGER_FLAG_ONE_SHOT;
@@ -1206,6 +1206,12 @@ void MainWindowActivate(GtkApplication *app, gpointer *)
 	gtk_window_set_child(GTK_WINDOW(window), mainVLayout);
 
 	fileDialog = gtk_file_dialog_new();
+	GtkFileFilter *binFilter = gtk_file_filter_new();
+	gtk_file_filter_add_pattern(binFilter, "*.bin");
+	gtk_file_filter_set_name(binFilter, "Level Files (Uncompressed) (*.bin)");
+
+	gtk_file_dialog_set_filters(fileDialog, G_LIST_MODEL(g_list_store_new(GTK_TYPE_FILE_FILTER)));
+	g_list_store_append(G_LIST_STORE(gtk_file_dialog_get_filters(fileDialog)), binFilter);
 
 	mainWindow = GTK_WINDOW(window);
 
