@@ -13,11 +13,6 @@ void DefaultOptions(Options *options)
 	options->gameDirectory[0] = '\0';
 }
 
-bool ValidateOptions(const Options *)
-{
-	return true;
-}
-
 ushort GetOptionsChecksum(Options *options)
 {
 	const byte *data = (byte *)options;
@@ -36,7 +31,7 @@ char *GetOptionsPath()
 
 void LoadOptions(Options *options)
 {
-	char *filePath = GetOptionsPath();
+	const char *filePath = GetOptionsPath();
 
 	FILE *file = fopen(filePath, "rb");
 	if (file == NULL)
@@ -68,12 +63,6 @@ void LoadOptions(Options *options)
 			DefaultOptions(options);
 		}
 
-		if (!ValidateOptions(options))
-		{
-			printf("Options file is invalid, using defaults\n");
-			DefaultOptions(options);
-		}
-
 		fclose(file);
 	}
 }
@@ -82,7 +71,7 @@ void SaveOptions(Options *options)
 {
 	options->checksum = GetOptionsChecksum(options);
 
-	char *filePath = GetOptionsPath();
+	const char *filePath = GetOptionsPath();
 
 	FILE *file = fopen(filePath, "wb");
 	fwrite(options, sizeof(Options), 1, file);

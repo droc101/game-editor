@@ -3,8 +3,8 @@
 //
 
 #include "GameInterface.h"
-#include <stdio.h>
 #include <dlfcn.h>
+#include <stdio.h>
 #include "../Editor.h"
 
 GetActorNameFunc GetActorName = NULL;

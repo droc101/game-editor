@@ -35,25 +35,25 @@ Vector2 wallDragBOffset = {0};
 List *textureList = NULL;
 List *musicList = NULL;
 
-GdkRGBA bg = Color(0x123456FF);
-GdkRGBA grid = Color(0x808080FF);
-GdkRGBA xAxis = Color(0xFF0000FF);
-GdkRGBA zAxis = Color(0x0000FFFF);
-GdkRGBA selectionOutline = Color(0xFF0000FF);
-GdkRGBA wallLine = Color(0xFFFFFF80);
-GdkRGBA wallLineHover = Color(-1);
-GdkRGBA wallNode = Color(0x0000FFFF);
-GdkRGBA wallNodeHover = Color(0xFFFFFF40);
-GdkRGBA actorRotationLine = Color(0x808000FF);
-GdkRGBA actorNode = Color(0xFFFF00FF);
-GdkRGBA actorNodeHover = Color(0x00000040);
-GdkRGBA playerRotationLine = Color(0x008000FF);
-GdkRGBA playerNode = Color(0x00FF00FF);
-GdkRGBA playerNodeHover = Color(0x00000040);
-GdkRGBA triggerNode = Color(0xFF00FFFF);
-GdkRGBA triggerNodeHover = Color(0x00000040);
-GdkRGBA triggerArea = Color(0xFF00FF40);
-GdkRGBA triggerCommand = Color(0xFFFFFF80);
+const GdkRGBA bg = Color(0x123456FF);
+const GdkRGBA grid = Color(0x808080FF);
+const GdkRGBA xAxis = Color(0xFF0000FF);
+const GdkRGBA zAxis = Color(0x0000FFFF);
+const GdkRGBA selectionOutline = Color(0xFF0000FF);
+const GdkRGBA wallLine = Color(0xFFFFFF80);
+const GdkRGBA wallLineHover = Color(-1);
+const GdkRGBA wallNode = Color(0x0000FFFF);
+const GdkRGBA wallNodeHover = Color(0xFFFFFF40);
+const GdkRGBA actorRotationLine = Color(0x808000FF);
+const GdkRGBA actorNode = Color(0xFFFF00FF);
+const GdkRGBA actorNodeHover = Color(0x00000040);
+const GdkRGBA playerRotationLine = Color(0x008000FF);
+const GdkRGBA playerNode = Color(0x00FF00FF);
+const GdkRGBA playerNodeHover = Color(0x00000040);
+const GdkRGBA triggerNode = Color(0xFF00FFFF);
+const GdkRGBA triggerNodeHover = Color(0x00000040);
+const GdkRGBA triggerArea = Color(0xFF00FF40);
+const GdkRGBA triggerCommand = Color(0xFFFFFF80);
 
 void EditorInit()
 {
@@ -191,22 +191,22 @@ void EditorNewLevel()
 
 }
 
-Vector2 WorldToScreen(Vector2 wp)
+Vector2 WorldToScreen(const Vector2 wp)
 {
 	return v2(round((wp.x * zoom) + scrollPosCentered.x), round((wp.y * zoom) + scrollPosCentered.y));
 }
 
-Vector2 WorldToScreenSize(Vector2 wp)
+Vector2 WorldToScreenSize(const Vector2 wp)
 {
 	return v2(wp.x * zoom, wp.y * zoom);
 }
 
-Vector2 ScreenToWorld(Vector2 sp)
+Vector2 ScreenToWorld(const Vector2 sp)
 {
     return v2((sp.x - scrollPosCentered.x) / zoom, (sp.y - scrollPosCentered.y) / zoom);
 }
 
-Vector2 ScreenToWorldSnapped(Vector2 sp)
+Vector2 ScreenToWorldSnapped(const Vector2 sp)
 {
 	Vector2 realPos = ScreenToWorld(sp);
 	realPos.x = round(realPos.x);
@@ -239,10 +239,10 @@ void ProcessHover()
 
 	for (int w = 0; w < l->walls->size; w++)
 	{
-		Wall *wall = ListGet(l->walls, w);
+		const Wall *wall = ListGet(l->walls, w);
 
-		Vector2 scaledWallA = WorldToScreen(wall->a);
-		Vector2 scaledWallB = WorldToScreen(wall->b);
+		const Vector2 scaledWallA = WorldToScreen(wall->a);
+		const Vector2 scaledWallB = WorldToScreen(wall->b);
 
 		if (Vector2Distance(scaledWallA, GetLocalMousePos()) < 10)
 		{
@@ -266,8 +266,8 @@ void ProcessHover()
 
 	for (int a = 0; a < l->actors->size; a++)
 	{
-		Actor *act = ListGet(l->actors, a);
-		Vector2 scaledActorPos = WorldToScreen(act->position);
+		const Actor *act = ListGet(l->actors, a);
+		const Vector2 scaledActorPos = WorldToScreen(act->position);
 		if (Vector2Distance(scaledActorPos, GetLocalMousePos()) < 10)
 		{
 			hoverType = SELTYPE_ACTOR;
@@ -278,8 +278,8 @@ void ProcessHover()
 
 	for (int t = 0; t < l->triggers->size; t++)
 	{
-		Trigger *trig = ListGet(l->triggers, t);
-		Vector2 scaledTriggerPos = WorldToScreen(trig->position);
+		const Trigger *trig = ListGet(l->triggers, t);
+		const Vector2 scaledTriggerPos = WorldToScreen(trig->position);
 		if (Vector2Distance(scaledTriggerPos, GetLocalMousePos()) < 10)
 		{
 			hoverType = SELTYPE_TRIGGER;
@@ -288,7 +288,7 @@ void ProcessHover()
 		}
 	}
 
-	Vector2 scaledPlayerPos = WorldToScreen(l->player.pos);
+	const Vector2 scaledPlayerPos = WorldToScreen(l->player.pos);
 	if (Vector2Distance(scaledPlayerPos, GetLocalMousePos()) < 10)
 	{
 		hoverType = SELTYPE_PLAYER;
@@ -435,8 +435,8 @@ void EditorUpdate()
 
 void RenderWall(const Wall *wall, const int w)
 {
-	Vector2 scaledWallA = WorldToScreen(wall->a);
-	Vector2 scaledWallB = WorldToScreen(wall->b);
+	const Vector2 scaledWallA = WorldToScreen(wall->a);
+	const Vector2 scaledWallB = WorldToScreen(wall->b);
 
 	GdkRGBA wallLineColor = wallLine;
 	if (hoverType == SELTYPE_WALL_LINE && hoverIndex == w)
@@ -467,10 +467,10 @@ void RenderWall(const Wall *wall, const int w)
 
 void RenderActor(const Actor *actor, const int a)
 {
-	Vector2 scaledActorPos = WorldToScreen(actor->position);
+	const Vector2 scaledActorPos = WorldToScreen(actor->position);
 
-	Vector2 dir = v2(cos(actor->rotation), sin(actor->rotation));
-	Vector2 end = v2(scaledActorPos.x + (dir.x * 20), scaledActorPos.y + (dir.y * 20));
+	const Vector2 dir = v2(cos(actor->rotation), sin(actor->rotation));
+	const Vector2 end = v2(scaledActorPos.x + (dir.x * 20), scaledActorPos.y + (dir.y * 20));
 	DrawLine(scaledActorPos, end, actorRotationLine, 2.0);
 
 	DrawRect(v2(scaledActorPos.x - 6, scaledActorPos.y - 6), v2(12, 12), actorNode);
@@ -487,7 +487,7 @@ void RenderActor(const Actor *actor, const int a)
 
 void RenderTrigger(const Trigger *trigger, const int t)
 {
-	Vector2 scaledTriggerPos = WorldToScreen(trigger->position);
+	const Vector2 scaledTriggerPos = WorldToScreen(trigger->position);
 
 	DrawArea(scaledTriggerPos, WorldToScreenSize(trigger->extents), trigger->rotation, triggerArea);
 
@@ -509,10 +509,10 @@ void RenderTrigger(const Trigger *trigger, const int t)
 
 void RenderPlayer(const Player *plr)
 {
-	Vector2 scaledActorPos = WorldToScreen(plr->pos);
+	const Vector2 scaledActorPos = WorldToScreen(plr->pos);
 
-	Vector2 dir = v2(cos(plr->rotation), sin(plr->rotation));
-	Vector2 end = v2(scaledActorPos.x + (dir.x * 20), scaledActorPos.y + (dir.y * 20));
+	const Vector2 dir = v2(cos(plr->rotation), sin(plr->rotation));
+	const Vector2 end = v2(scaledActorPos.x + (dir.x * 20), scaledActorPos.y + (dir.y * 20));
 	DrawLine(scaledActorPos, end, playerRotationLine, 2.0);
 
 	DrawRect(v2(scaledActorPos.x - 6, scaledActorPos.y - 6), v2(12, 12), playerNode);
@@ -543,19 +543,19 @@ void EditorRenderLevel()
 
 	for (int t = 0; t < l->triggers->size; t++)
 	{
-		Trigger *trigger = ListGet(l->triggers, t);
+		const Trigger *trigger = ListGet(l->triggers, t);
 		RenderTrigger(trigger, t);
 	}
 
 	for (int w = 0; w < l->walls->size; w++)
 	{
-		Wall *wall = ListGet(l->walls, w);
+		const Wall *wall = ListGet(l->walls, w);
 		RenderWall(wall, w);
 	}
 
 	for (int a = 0; a < l->actors->size; a++)
 	{
-		Actor *actor = ListGet(l->actors, a);
+		const Actor *actor = ListGet(l->actors, a);
 		RenderActor(actor, a);
 	}
 

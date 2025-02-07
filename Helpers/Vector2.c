@@ -31,14 +31,14 @@ double Vector2Distance(const Vector2 a, const Vector2 b) // Get the distance bet
 
 double Vector2DistanceToLine(const Vector2 lineStart, const Vector2 lineEnd, const Vector2 testPoint)
 {
-	double lineMag = Vector2Distance(lineEnd, lineStart);
+	const double lineMag = Vector2Distance(lineEnd, lineStart);
 
 	if (lineMag == 0.0)
 	{
 		return Vector2Distance(lineStart, testPoint);
 	}
 
-	double u = (((testPoint.x - lineStart.x) * (lineEnd.x - lineStart.x)) +
+	const double u = (((testPoint.x - lineStart.x) * (lineEnd.x - lineStart.x)) +
 				((testPoint.y - lineStart.y) * (lineEnd.y - lineStart.y))) / (lineMag * lineMag);
 
 	if (u < 0.0)
