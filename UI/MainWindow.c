@@ -57,9 +57,11 @@ gboolean on_timeout(gpointer user_data)
 /**
  * Callback for when the add wall button is clicked
  */
-void add_wall_clicked(GtkButton *, gpointer)
+void add_wall_clicked(GtkToggleButton* self,
+  gpointer)
 {
-	addRequest = ADDREQ_WALL;
+	const bool toggled = gtk_toggle_button_get_active(self);
+	addRequest = toggled ? ADDREQ_WALL : ADDREQ_NONE;
 }
 
 /**
@@ -169,14 +171,6 @@ static void new_activated(GSimpleAction *, GVariant *, gpointer)
 #pragma endregion
 
 #pragma region Edit Menu
-
-/**
- * Callback for when the add wall menu item is pressed
- */
-void add_wall_menu_item_activated(GSimpleAction *, GVariant *, gpointer)
-{
-	add_wall_clicked(NULL, NULL);
-}
 
 /**
  * Callback for when the add actor menu item is pressed
@@ -541,7 +535,6 @@ static GActionEntry menu_entries[] = {
 	{"open", open_activated, NULL, NULL, NULL},
 	{"save", save_activated, NULL, NULL, NULL},
 	{"quit", quit_activated, NULL, NULL, NULL},
-	{"add_wall", add_wall_menu_item_activated, NULL, NULL, NULL},
 	{"add_actor", add_actor_menu_item_activated, NULL, NULL, NULL},
 	{"add_trigger", add_trigger_menu_item_activated, NULL, NULL, NULL},
 	{"delete_selected", delete_selected_menu_item_activated, NULL, NULL, NULL},
@@ -615,7 +608,6 @@ GtkWidget *SetupMenuBar(GtkApplication *app)
 	g_object_unref(file_menu);
 
 	GMenu *edit_menu = g_menu_new();
-	g_menu_append(edit_menu, "Add Wall", "app.add_wall");
 	g_menu_append(edit_menu, "Add Actor", "app.add_actor");
 	g_menu_append(edit_menu, "Add Trigger", "app.add_trigger");
 	//g_menu_append(edit_menu, "Add Model", "app.add_model");
@@ -690,8 +682,9 @@ GtkWidget *SetupMenuBar(GtkApplication *app)
 GtkWidget *SetupToolbar()
 {
 	GtkWidget *sep = gtk_separator_new(GTK_ORIENTATION_VERTICAL);
+	GtkWidget *sep2 = gtk_separator_new(GTK_ORIENTATION_VERTICAL);
 
-	GtkWidget *addWallButton = gtk_button_new_with_label("Add Wall");
+	GtkWidget *addWallButton = gtk_toggle_button_new_with_label("Add Walls");
 	g_signal_connect(addWallButton, "clicked", G_CALLBACK(add_wall_clicked), NULL);
 	gtk_button_set_has_frame(GTK_BUTTON(addWallButton), FALSE);
 	GtkWidget *addActorButton = gtk_button_new_with_label("Add Actor");
@@ -711,6 +704,7 @@ GtkWidget *SetupToolbar()
 	gtk_widget_set_size_request(toolbar, -1, 30);
 
 	gtk_box_append(GTK_BOX(toolbar), addWallButton);
+	gtk_box_append(GTK_BOX(toolbar), sep2);
 	gtk_box_append(GTK_BOX(toolbar), addActorButton);
 	gtk_box_append(GTK_BOX(toolbar), addTriggerButton);
 	//gtk_box_append(GTK_BOX(toolbar), addModelButton);

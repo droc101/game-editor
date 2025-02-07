@@ -364,7 +364,7 @@ void EditorUpdate()
 		zoom = 40.0;
 	}
 
-	if (addRequest == ADDREQ_NONE)
+	if (addRequest == ADDREQ_NONE || isDragging)
 	{
 		ProcessHover();
 
@@ -423,7 +423,10 @@ void EditorUpdate()
 				SelectionTypeChanged();
 			}
 			isDragging = true;
-			addRequest = ADDREQ_NONE;
+			if (addRequest != ADDREQ_WALL)
+			{
+				addRequest = ADDREQ_NONE;
+			}
 		}
 	}
 
