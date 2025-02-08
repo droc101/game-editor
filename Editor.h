@@ -40,6 +40,8 @@ extern double zoom;
 extern List *textureList;
 extern List *musicList;
 
+void Zoom(const double by);
+
 void EditorDestroyLevel();
 
 void EditorRenderLevel();

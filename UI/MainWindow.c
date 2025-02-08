@@ -205,7 +205,7 @@ void delete_selected_menu_item_activated(GSimpleAction *, GVariant *, gpointer)
  */
 static void zoom_out_activated(GSimpleAction *, GVariant *, gpointer)
 {
-	zoom -= 1.0;
+	Zoom(-1.0);
 }
 
 /**
@@ -213,7 +213,7 @@ static void zoom_out_activated(GSimpleAction *, GVariant *, gpointer)
  */
 static void zoom_in_activated(GSimpleAction *, GVariant *, gpointer)
 {
-	zoom += 1.0;
+	Zoom(1.0);
 }
 
 /**
@@ -715,20 +715,6 @@ GtkWidget *SetupToolbar()
 }
 
 /**
- * Create and populate the toolbar
- */
-GtkWidget *SetupStatusBar()
-{
-	statusLabel = gtk_label_new("Status");
-	gtk_widget_set_name(statusLabel, "statusLabel");
-
-	GtkWidget *statusBar = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 4);
-	gtk_widget_set_size_request(statusBar, -1, 20);
-	gtk_box_append(GTK_BOX(statusBar), statusLabel);
-	return statusBar;
-}
-
-/**
  * Create the drawing area
  */
 GtkWidget *SetupDrawingArea()
@@ -1195,13 +1181,11 @@ void MainWindowActivate(GtkApplication *app, gpointer *)
 	gtk_grid_attach(mainHLayout, rightSidebar, 2, 0, 1, 1);
 
 	GtkWidget *toolbar = SetupToolbar();
-	GtkWidget *statusBar = SetupStatusBar();
 
 	GtkWidget *mainVLayout = gtk_box_new(GTK_ORIENTATION_VERTICAL, 4);
 	gtk_box_append(GTK_BOX(mainVLayout), menuBar);
 	gtk_box_append(GTK_BOX(mainVLayout), toolbar);
 	gtk_box_append(GTK_BOX(mainVLayout), GTK_WIDGET(mainHLayout));
-	gtk_box_append(GTK_BOX(mainVLayout), statusBar);
 
 	gtk_window_set_child(GTK_WINDOW(window), mainVLayout);
 

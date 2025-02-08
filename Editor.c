@@ -340,6 +340,29 @@ void ProcessDrag()
 	}
 }
 
+void Zoom(const double by)
+{
+	const Vector2 oldScrollPos = scrollPos;
+	const Vector2 worldMousePos = ScreenToWorld(v2(WindowWidth()/2, WindowHeight()/2));
+	const double oldZoom = zoom;
+
+	zoom += by;
+	const double zoomDiff = zoom - oldZoom;
+	const Vector2 mousePosDiff = v2(worldMousePos.x * zoomDiff, worldMousePos.y * zoomDiff);
+	scrollPos = Vector2Sub(scrollPos, mousePosDiff);
+
+	if (zoom < 4)
+	{
+		zoom = 4;
+		scrollPos = oldScrollPos;
+	}
+	if (zoom > 40.0)
+	{
+		zoom = 40.0;
+		scrollPos = oldScrollPos;
+	}
+}
+
 void EditorUpdate()
 {
 	if (l == NULL)
@@ -354,15 +377,29 @@ void EditorUpdate()
 		scrollPos.y += GetRelativeMouseMotion().y;
 	}
 
-	zoom -= GetScroll().y;
-	if (zoom < 4)
+	if (GetScroll().y != 0)
 	{
-		zoom = 4;
+		const Vector2 oldScrollPos = scrollPos;
+		const Vector2 worldMousePos = ScreenToWorld(GetLocalMousePos());
+		const double oldZoom = zoom;
+
+		zoom -= GetScroll().y;
+		const double zoomDiff = zoom - oldZoom;
+		const Vector2 mousePosDiff = v2(worldMousePos.x * zoomDiff, worldMousePos.y * zoomDiff);
+		scrollPos = Vector2Sub(scrollPos, mousePosDiff);
+
+		if (zoom < 4)
+		{
+			zoom = 4;
+			scrollPos = oldScrollPos;
+		}
+		if (zoom > 40.0)
+		{
+			zoom = 40.0;
+			scrollPos = oldScrollPos;
+		}
 	}
-	if (zoom > 40.0)
-	{
-		zoom = 40.0;
-	}
+
 
 	if (addRequest == ADDREQ_NONE || isDragging)
 	{
