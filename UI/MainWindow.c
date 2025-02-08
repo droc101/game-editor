@@ -661,13 +661,10 @@ GtkWidget *SetupMenuBar(GtkApplication *app)
 	const gchar *center_origin_accels[] = {"<Ctrl>Home", NULL};
 	gtk_application_set_accels_for_action(app, "app.center_origin", center_origin_accels);
 
-	const gchar *add_wall_accels[] = {"<Ctrl>W", NULL};
-	gtk_application_set_accels_for_action(app, "app.add_wall", add_wall_accels);
-
-	const gchar *add_actor_accels[] = {"<Ctrl>A", NULL};
+	const gchar *add_actor_accels[] = {"<Shift>A", NULL};
 	gtk_application_set_accels_for_action(app, "app.add_actor", add_actor_accels);
 
-	const gchar *add_trigger_accels[] = {"<Ctrl>T", NULL};
+	const gchar *add_trigger_accels[] = {"<Shift>T", NULL};
 	gtk_application_set_accels_for_action(app, "app.add_trigger", add_trigger_accels);
 
 	const gchar *delete_selected_accels[] = {"Delete", NULL};
