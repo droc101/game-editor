@@ -18,8 +18,6 @@ typedef uint32_t uint;
 typedef uint64_t ulong;
 
 // Enum forward declarations
-typedef enum ImageDataOffsets ImageDataOffsets;
-typedef enum AssetType AssetType;
 typedef enum TriggerFlag TriggerFlag;
 
 // Struct forward declarations
@@ -29,8 +27,6 @@ typedef struct Wall Wall;
 typedef struct Level Level;
 typedef struct Model Model;
 typedef struct Actor Actor;
-typedef struct Asset Asset;
-typedef struct Image Image;
 typedef struct Trigger Trigger;
 typedef struct PlacedModel PlacedModel;
 typedef struct Options Options;
@@ -58,28 +54,6 @@ typedef struct Options Options;
 #pragma endregion
 
 #pragma region Enum definitions
-
-enum AssetType
-{
-	ASSET_TYPE_TEXTURE = 0,
-	ASSET_TYPE_MP3 = 1,
-	ASSET_TYPE_WAV = 2,
-	ASSET_TYPE_LEVEL = 3,
-	ASSET_TYPE_GLSL = 4,
-	// ... vulkan branch stuff 5 - 6
-	ASSET_TYPE_MODEL = 7,
-};
-
-/**
- * Use to get data from a decompressed image asset using @c ReadUintA
- */
-enum ImageDataOffsets
-{
-	IMAGE_SIZE_OFFSET = 0,
-	IMAGE_WIDTH_OFFSET = 4,
-	IMAGE_HEIGHT_OFFSET = 8,
-	IMAGE_ID_OFFSET = 12
-};
 
 enum TriggerFlag
 {
@@ -163,25 +137,6 @@ struct PlacedModel
 	Vector2 position;
 	double rotation;
 	char model[32];
-};
-
-struct Asset
-{
-	uint compressedSize;
-	uint size;
-	uint assetId;
-	AssetType type;
-	byte *data;
-};
-
-struct Image
-{
-	uint pixelDataSize;
-	uint width;
-	uint height;
-	uint id;
-	char *name;
-	byte *pixelData;
 };
 
 struct Options

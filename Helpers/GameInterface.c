@@ -11,26 +11,26 @@ GetActorNameFunc GetActorName = NULL;
 GetActorParamNameFunc GetActorParamName = NULL;
 GetActorTypeCountFunc GetActorTypeCount = NULL;
 
-void *game = NULL;
+void *libactor = NULL;
 
 bool LoadExecutable()
 {
-	if (game != NULL)
+	if (libactor != NULL)
 	{
 		UnloadExecutable();
 	}
 	char path[261];
 	snprintf(path, 261, "%s%s", options.gameDirectory, "/libactor.so");
-	game = dlopen(path, RTLD_LAZY);
-	if (game == NULL)
+	libactor = dlopen(path, RTLD_LAZY);
+	if (libactor == NULL)
 	{
 		printf("Failed to load game executable: %s\n", dlerror());
 		UnloadExecutable();
 		return false;
 	}
-	GetActorName = (GetActorNameFunc) dlsym(game, "GetActorName");
-	GetActorParamName = (GetActorParamNameFunc) dlsym(game, "GetActorParamName");
-	GetActorTypeCount = (GetActorTypeCountFunc) dlsym(game, "GetActorTypeCount");
+	GetActorName = (GetActorNameFunc) dlsym(libactor, "GetActorName");
+	GetActorParamName = (GetActorParamNameFunc) dlsym(libactor, "GetActorParamName");
+	GetActorTypeCount = (GetActorTypeCountFunc) dlsym(libactor, "GetActorTypeCount");
 	if (GetActorName == NULL || GetActorParamName == NULL || GetActorTypeCount == NULL)
 	{
 		UnloadExecutable();
@@ -42,11 +42,11 @@ bool LoadExecutable()
 
 void UnloadExecutable()
 {
-	if (game != NULL)
+	if (libactor != NULL)
 	{
-		dlclose(game);
+		dlclose(libactor);
 	}
-	game = NULL;
+	libactor = NULL;
 	GetActorName = NULL;
 	GetActorParamName = NULL;
 	GetActorTypeCount = NULL;

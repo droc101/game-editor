@@ -4,7 +4,6 @@
 
 #include <GL/glew.h>
 #include <gtk-4.0/gtk/gtk.h>
-
 #include "Editor.h"
 #include "UI/MainWindow.h"
 

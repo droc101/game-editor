@@ -4,6 +4,7 @@
 
 #ifndef DRAWING_H
 #define DRAWING_H
+
 #include <gtk/gtk.h>
 #include "../defines.h"
 

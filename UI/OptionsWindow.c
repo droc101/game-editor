@@ -3,7 +3,6 @@
 //
 
 #include "OptionsWindow.h"
-
 #include "../Editor.h"
 #include "../Helpers/Options.h"
 

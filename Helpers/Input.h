@@ -6,7 +6,6 @@
 #define INPUT_H
 
 #include <gtk/gtk.h>
-
 #include "Vector2.h"
 
 typedef enum InputState

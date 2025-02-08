@@ -3,7 +3,6 @@
 //
 
 #include "Drawing.h"
-
 #include "Vector2.h"
 
 GtkDrawingArea *area;
