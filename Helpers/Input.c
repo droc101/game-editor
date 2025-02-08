@@ -23,11 +23,11 @@ void mouse_leave(GtkEventControllerMotion *, gpointer)
 	mouseInBounds = false;
 }
 
-void motion(GtkEventControllerMotion *, gdouble x, gdouble y, gpointer user_data)
+void motion(GtkEventControllerMotion *, const gdouble x, const gdouble y, const gpointer user_data)
 {
 	const graphene_point_t inPoint = {x, y};
 	graphene_point_t outPoint;
-	gboolean cmp = gtk_widget_compute_point(GTK_WIDGET(user_data), GTK_WIDGET(user_data), &inPoint, &outPoint);
+	const gboolean cmp = gtk_widget_compute_point(GTK_WIDGET(user_data), GTK_WIDGET(user_data), &inPoint, &outPoint);
 	if (!cmp)
 	{
 		// printf("gtk_widget_compute_point failed\n");
@@ -36,7 +36,7 @@ void motion(GtkEventControllerMotion *, gdouble x, gdouble y, gpointer user_data
 	localMousePos = v2(outPoint.x, outPoint.y);
 }
 
-gboolean scroll(GtkEventControllerScroll *, gdouble dx, gdouble dy, gpointer)
+gboolean scroll(GtkEventControllerScroll *, const gdouble dx, const gdouble dy, gpointer)
 {
 	frameScroll.x += dx;
 	frameScroll.y += dy;
@@ -83,7 +83,7 @@ void rmb_stopped(GtkGestureClick *, gpointer)
 void lmb_unpaired_release(GtkGestureClick *,
 						  gdouble,
 						  gdouble,
-						  guint button,
+						  const guint button,
 						  GdkEventSequence *,
 						  gpointer)
 {
@@ -95,7 +95,7 @@ void lmb_unpaired_release(GtkGestureClick *,
 void rmb_unpaired_release(GtkGestureClick *,
 						  gdouble,
 						  gdouble,
-						  guint button,
+						  const guint button,
 						  GdkEventSequence *,
 						  gpointer)
 {
@@ -104,7 +104,7 @@ void rmb_unpaired_release(GtkGestureClick *,
 	mouseButtons[RMB] = JUST_RELEASED;
 }
 
-InputState TickInputState(InputState st)
+InputState TickInputState(const InputState st)
 {
 	switch (st)
 	{
@@ -127,22 +127,22 @@ void TickInput()
 	lastFrameMousePos = localMousePos;
 }
 
-bool IsMouseButtonPressed(MouseButton button)
+bool IsMouseButtonPressed(const MouseButton button)
 {
 	return mouseButtons[button] == PRESSED || mouseButtons[button] == JUST_PRESSED;
 }
 
-bool IsMouseButtonReleased(MouseButton button)
+bool IsMouseButtonReleased(const MouseButton button)
 {
 	return mouseButtons[button] == RELEASED || mouseButtons[button] == JUST_RELEASED;
 }
 
-bool IsMouseButtonJustPressed(MouseButton button)
+bool IsMouseButtonJustPressed(const MouseButton button)
 {
 	return mouseButtons[button] == JUST_PRESSED;
 }
 
-bool IsMouseButtonJustReleased(MouseButton button)
+bool IsMouseButtonJustReleased(const MouseButton button)
 {
 	return mouseButtons[button] == JUST_RELEASED;
 }

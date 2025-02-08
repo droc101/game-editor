@@ -28,7 +28,7 @@ void game_folder_selected(GObject *, GAsyncResult *res, gpointer)
 		g_error_free(error);
 		return;
 	}
-	char *path = g_file_get_path(f);
+	const char *path = g_file_get_path(f);
 	GtkEntryBuffer *buffer = gtk_entry_get_buffer(GTK_ENTRY(gamePathEntry));
 	gtk_entry_buffer_set_text(buffer, path, -1);
 }

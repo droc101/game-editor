@@ -47,7 +47,7 @@ void drawMainArea(GtkDrawingArea *drawing_area, cairo_t *cr, int, int, gpointer)
 /**
  * Timer callback to continuously update the drawing area
  */
-gboolean on_timeout(gpointer user_data)
+gboolean on_timeout(const gpointer user_data)
 {
 	GtkWidget *drawing_area = GTK_WIDGET(user_data);
 	gtk_widget_queue_draw(drawing_area);
@@ -104,7 +104,7 @@ void delete_selected_clicked(GtkButton *, gpointer)
 /**
  * Callback for when the quit menu item is clicked
  */
-static void quit_activated(GSimpleAction *, GVariant *, gpointer app)
+static void quit_activated(GSimpleAction *, GVariant *, const gpointer app)
 {
 	g_application_quit(G_APPLICATION(app));
 }
@@ -122,7 +122,7 @@ static void save_file_selected(GObject *, GAsyncResult *res, gpointer)
 		g_error_free(error);
 		return;
 	}
-	char *path = g_file_get_path(f);
+	const char *path = g_file_get_path(f);
 	WriteLevel(l, path);
 }
 
@@ -139,7 +139,7 @@ static void open_file_selected(GObject *, GAsyncResult *res, gpointer)
 		g_error_free(error);
 		return;
 	}
-	char *path = g_file_get_path(f);
+	const char *path = g_file_get_path(f);
 	EditorDestroyLevel();
 	l = ReadLevel(path);
 }
@@ -239,7 +239,7 @@ static void center_origin_activated(GSimpleAction *, GVariant *, gpointer)
 /**
  * Callback for when the setup menu item is pressed
  */
-void setup_activated(GSimpleAction *, GVariant *, gpointer app)
+void setup_activated(GSimpleAction *, GVariant *, const gpointer app)
 {
 	OptionsWindowShow(mainWindow, GTK_APPLICATION(app), false);
 }
@@ -251,7 +251,7 @@ void setup_activated(GSimpleAction *, GVariant *, gpointer app)
 /**
  * Callback for when the about menu item is pressed
  */
-static void about_activated(GSimpleAction *, GVariant *, gpointer app)
+static void about_activated(GSimpleAction *, GVariant *, const gpointer app)
 {
 	GtkWindow *window = gtk_application_get_active_window(GTK_APPLICATION(app));
 
@@ -404,7 +404,7 @@ void level_course_num_value_changed(GtkSpinButton *self, gpointer)
 /**
  * Callback for when the level ceil/sky switch is toggled
  */
-gboolean level_ceil_or_sky_state_set(GtkSwitch *, gboolean state, gpointer)
+gboolean level_ceil_or_sky_state_set(GtkSwitch *, const gboolean state, gpointer)
 {
 	if (state)
 	{
@@ -450,7 +450,7 @@ void fog_color_set(GtkColorButton *self, gpointer)
 {
 	GdkRGBA gtkColor;
 	gtk_color_chooser_get_rgba(GTK_COLOR_CHOOSER(self), &gtkColor);
-	uint color = (uint)(gtkColor.red * 255) << 24 |
+	const uint color = (uint)(gtkColor.red * 255) << 24 |
 				 (uint)(gtkColor.green * 255) << 16 |
 				 (uint)(gtkColor.blue * 255) << 8 |
 				 (uint)(gtkColor.alpha * 255);
@@ -551,9 +551,9 @@ static GActionEntry menu_entries[] = {
 
 void UpdateActorSidebar()
 {
-	Actor *a = ListGet(l->actors, selectionIndex);
+	const Actor *a = ListGet(l->actors, selectionIndex);
 	char *type = GetActorName(a->actorType);
-	size_t typeLen = strlen("Actor Type: ") + strlen(type) + 1;
+	const size_t typeLen = strlen("Actor Type: ") + strlen(type) + 1;
 	char *typeStr = (char *)malloc(typeLen);
 	snprintf(typeStr, typeLen, "Actor Type: %s", type);
 	gtk_label_set_text(GTK_LABEL(actorTypeLabel), typeStr);
@@ -1062,7 +1062,7 @@ GtkWidget *SetupLSidebar_TriggerSelection()
 {
 	GtkWidget *triggerSelectionSidebar = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0);
 
-	Trigger *t = ListGet(l->triggers, selectionIndex);
+	const Trigger *t = ListGet(l->triggers, selectionIndex);
 
 	GtkWidget *rotationLabel = gtk_label_new("Rotation");
 	gtk_label_set_xalign(GTK_LABEL(rotationLabel), 0);
