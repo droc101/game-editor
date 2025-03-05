@@ -25,6 +25,11 @@ GtkWidget *paramALabel;
 GtkWidget *paramBLabel;
 GtkWidget *paramCLabel;
 GtkWidget *paramDLabel;
+GtkWidget *paramABox;
+GtkWidget *paramBBox;
+GtkWidget *paramCBox;
+GtkWidget *paramDBox;
+GtkWidget *actorTypeBox;
 
 #pragma region Signal Handlers
 
@@ -268,7 +273,7 @@ static void about_activated(GSimpleAction *, GVariant *, const gpointer app)
 	gtk_about_dialog_set_authors(GTK_ABOUT_DIALOG(about_dialog), (const gchar *[]){"droc101", "NBT22", NULL});
 	gtk_about_dialog_add_credit_section(GTK_ABOUT_DIALOG(about_dialog),
 										"Third-Party Libraries",
-										(const gchar *[]){"GTK4", "ZLIB", NULL});
+										(const gchar *[]){"GTK4", "ZLIB", "JSON-C", NULL});
 	gtk_about_dialog_set_logo(GTK_ABOUT_DIALOG(about_dialog), GDK_PAINTABLE(logo));
 
 	gtk_window_set_transient_for(GTK_WINDOW(about_dialog), GTK_WINDOW(window));
@@ -328,12 +333,23 @@ void wall_uv_offset_value_changed(GtkSpinButton *self, gpointer)
 /**
  * Callback for when the actor type is changed
  */
-void actor_type_value_changed(GtkSpinButton *self, gpointer)
+void actor_type_changed(GtkComboBox *self, gpointer)
 {
 	Actor *a = ListGet(l->actors, selectionIndex);
-	a->actorType = gtk_spin_button_get_value(self);
+	int type = 0;
+	for (int i = 0; i < GetActorTypeCount(); i++)
+	{
+		const ActorDefinition *def = GetActorDefByLoadIndex(i);
+		if (strcmp(def->actorName, gtk_combo_box_text_get_active_text(GTK_COMBO_BOX_TEXT(self))) == 0)
+		{
+			type = def->actorType;
+			break;
+		}
+	}
+	a->actorType = type;
 	UpdateActorSidebar();
 }
+
 
 /**
  * Callback for when actor param a is changed
@@ -552,17 +568,43 @@ static GActionEntry menu_entries[] = {
 void UpdateActorSidebar()
 {
 	const Actor *a = ListGet(l->actors, selectionIndex);
-	char *type = GetActorName(a->actorType);
-	const size_t typeLen = strlen("Actor Type: ") + strlen(type) + 1;
-	char *typeStr = (char *)malloc(typeLen);
-	snprintf(typeStr, typeLen, "Actor Type: %s", type);
-	gtk_label_set_text(GTK_LABEL(actorTypeLabel), typeStr);
-	free(typeStr);
+	ActorDefinition *def = GetActorDef(a->actorType);
+	// Find the actor type in the combo box
+	GtkComboBoxText *combo = GTK_COMBO_BOX_TEXT(actorTypeBox);
+	for (int i = 0; i < GetActorTypeCount(); i++)
+	{
+		const ActorDefinition *cdef = GetActorDefByLoadIndex(i);
+		if (cdef->actorType == a->actorType)
+		{
+			gtk_combo_box_set_active(GTK_COMBO_BOX(combo), i);
+			break;
+		}
+	}
 
-	gtk_label_set_text(GTK_LABEL(paramALabel), GetActorParamName(a->actorType, 0));
-	gtk_label_set_text(GTK_LABEL(paramBLabel), GetActorParamName(a->actorType, 1));
-	gtk_label_set_text(GTK_LABEL(paramCLabel), GetActorParamName(a->actorType, 2));
-	gtk_label_set_text(GTK_LABEL(paramDLabel), GetActorParamName(a->actorType, 3));
+	GtkWidget *params[4] = {paramABox, paramBBox, paramCBox, paramDBox};
+	GtkWidget *labels[4] = {paramALabel, paramBLabel, paramCLabel, paramDLabel};
+
+	for (int i = 0; i < 4; i++)
+	{
+		GtkWidget *box = params[i];
+		GtkWidget *label = labels[i];
+		if (def->numParams <= i)
+		{
+			gtk_widget_set_visible(box, false);
+			gtk_widget_set_visible(label, false);
+			continue;
+		}
+		gtk_widget_set_visible(box, true);
+		gtk_widget_set_visible(label, true);
+		gtk_label_set_text(GTK_LABEL(label), def->params[i].name);
+		gtk_spin_button_set_range(GTK_SPIN_BUTTON(box), def->params[i].min, def->params[i].max);
+	}
+
+	if (def->numParams == 0)
+	{
+		gtk_widget_set_visible(labels[0], TRUE);
+		gtk_label_set_text(GTK_LABEL(labels[0]), "No Parameters");
+	}
 }
 
 /**
@@ -575,6 +617,16 @@ void PopulateComboBoxTextures(GtkWidget *box)
 	{
 		const char *tex = ListGet(textureList, i);
 		gtk_combo_box_text_append_text(combo, tex);
+	}
+}
+
+void PopulateComboBoxActors(GtkWidget *box)
+{
+	GtkComboBoxText *combo = GTK_COMBO_BOX_TEXT(box);
+	for (int i = 0; i < GetActorTypeCount(); i++)
+	{
+		const ActorDefinition *def = GetActorDefByLoadIndex(i);
+		gtk_combo_box_text_append_text(combo, def->actorName);
 	}
 }
 
@@ -975,10 +1027,11 @@ GtkWidget *SetupLSidebar_ActorSelection(const Actor *a)
 	gtk_label_set_xalign(GTK_LABEL(actorTypeLabel), 0);
 	gtk_box_append(GTK_BOX(actorSelectionSidebar), actorTypeLabel);
 
-	GtkWidget *actorTypeBox = gtk_spin_button_new_with_range(0, GetActorTypeCount() - 1, 1);
-	gtk_spin_button_set_value(GTK_SPIN_BUTTON(actorTypeBox), a->actorType);
-	g_signal_connect(actorTypeBox, "value-changed", G_CALLBACK(actor_type_value_changed), NULL);
+	actorTypeBox = gtk_combo_box_text_new();
+	PopulateComboBoxActors(actorTypeBox);
+	gtk_combo_box_set_active(GTK_COMBO_BOX(actorTypeBox), a->actorType);
 	gtk_box_append(GTK_BOX(actorSelectionSidebar), actorTypeBox);
+	g_signal_connect(actorTypeBox, "changed", G_CALLBACK(actor_type_changed), NULL);
 
 	GtkWidget *sep1 = gtk_separator_new(GTK_ORIENTATION_HORIZONTAL);
 	gtk_widget_set_margin_top(sep1, 8);
@@ -988,7 +1041,7 @@ GtkWidget *SetupLSidebar_ActorSelection(const Actor *a)
 	paramALabel = gtk_label_new("Param A");
 	gtk_label_set_xalign(GTK_LABEL(paramALabel), 0);
 	gtk_box_append(GTK_BOX(actorSelectionSidebar), paramALabel);
-	GtkWidget *paramABox = gtk_spin_button_new_with_range(0, 255, 1);
+	paramABox = gtk_spin_button_new_with_range(0, 255, 1);
 	gtk_spin_button_set_value(GTK_SPIN_BUTTON(paramABox), a->paramA);
 	g_signal_connect(paramABox, "value-changed", G_CALLBACK(actor_param_a_value_changed), NULL);
 	gtk_box_append(GTK_BOX(actorSelectionSidebar), paramABox);
@@ -996,7 +1049,7 @@ GtkWidget *SetupLSidebar_ActorSelection(const Actor *a)
 	paramBLabel = gtk_label_new("Param B");
 	gtk_label_set_xalign(GTK_LABEL(paramBLabel), 0);
 	gtk_box_append(GTK_BOX(actorSelectionSidebar), paramBLabel);
-	GtkWidget *paramBBox = gtk_spin_button_new_with_range(0, 255, 1);
+	paramBBox = gtk_spin_button_new_with_range(0, 255, 1);
 	gtk_spin_button_set_value(GTK_SPIN_BUTTON(paramBBox), a->paramB);
 	g_signal_connect(paramBBox, "value-changed", G_CALLBACK(actor_param_b_value_changed), NULL);
 	gtk_box_append(GTK_BOX(actorSelectionSidebar), paramBBox);
@@ -1004,7 +1057,7 @@ GtkWidget *SetupLSidebar_ActorSelection(const Actor *a)
 	paramCLabel = gtk_label_new("Param C");
 	gtk_label_set_xalign(GTK_LABEL(paramCLabel), 0);
 	gtk_box_append(GTK_BOX(actorSelectionSidebar), paramCLabel);
-	GtkWidget *paramCBox = gtk_spin_button_new_with_range(0, 255, 1);
+	paramCBox = gtk_spin_button_new_with_range(0, 255, 1);
 	gtk_spin_button_set_value(GTK_SPIN_BUTTON(paramCBox), a->paramC);
 	g_signal_connect(paramCBox, "value-changed", G_CALLBACK(actor_param_c_value_changed), NULL);
 	gtk_box_append(GTK_BOX(actorSelectionSidebar), paramCBox);
@@ -1012,7 +1065,7 @@ GtkWidget *SetupLSidebar_ActorSelection(const Actor *a)
 	paramDLabel = gtk_label_new("Param D");
 	gtk_label_set_xalign(GTK_LABEL(paramDLabel), 0);
 	gtk_box_append(GTK_BOX(actorSelectionSidebar), paramDLabel);
-	GtkWidget *paramDBox = gtk_spin_button_new_with_range(0, 255, 1);
+	paramDBox = gtk_spin_button_new_with_range(0, 255, 1);
 	gtk_spin_button_set_value(GTK_SPIN_BUTTON(paramDBox), a->paramD);
 	g_signal_connect(paramDBox, "value-changed", G_CALLBACK(actor_param_d_value_changed), NULL);
 	gtk_box_append(GTK_BOX(actorSelectionSidebar), paramDBox);

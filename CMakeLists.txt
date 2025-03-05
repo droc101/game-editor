@@ -18,6 +18,9 @@ pkg_check_modules(GTK4 REQUIRED gtk4)
 include_directories(${GTK4_INCLUDE_DIRS})
 link_directories(${GTK4_LIBRARY_DIRS})
 
+find_package(json-c CONFIG)
+include_directories(${json-c_INCLUDE_DIRS})
+
 add_executable(
         geditor
         main.c
@@ -44,7 +47,7 @@ add_executable(
         Helpers/GameInterface.h
 )
 
-target_link_libraries(geditor ${GTK4_LIBRARIES} m z)
+target_link_libraries(geditor ${GTK4_LIBRARIES} m z json-c)
 
 # Copy the runtime assets to the build directory ("Assets" folder)
 add_custom_target(

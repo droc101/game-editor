@@ -64,13 +64,14 @@ void EditorDestroy()
 {
 	SaveOptions(&options);
 	EditorDestroyLevel();
+	UnloadDefFiles();
 }
 
 void RescanAssets()
 {
-	if (!LoadExecutable())
+	if (!LoadDefFiles())
 	{
-		printf("Failed to load game symbols!\n");
+		printf("Failed to load game definitions!\n");
 		return;
 	}
 	if (textureList != NULL)
