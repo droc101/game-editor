@@ -7,24 +7,36 @@
 
 #include "../defines.h"
 
-typedef char* (*GetActorNameFunc)(int actor);
-typedef char* (*GetActorParamNameFunc)(int actor, byte param);
-typedef int (*GetActorTypeCountFunc)();
+#define DEF_FILE_VERSION 1
 
-extern GetActorNameFunc GetActorName;
-extern GetActorParamNameFunc GetActorParamName;
-extern GetActorTypeCountFunc GetActorTypeCount;
+typedef struct ActorDefinition ActorDefinition;
+typedef struct ActorDefParam ActorDefParam;
 
-/**
- * Load libactor.so and get the function pointers
- * @return Whether the executable was loaded successfully
- * @todo From what I've experienced, this WILL segfault on failure
- */
-bool LoadExecutable();
+struct ActorDefinition
+{
+	uint actorType;
+	char actorName[64];
+	uint numParams;
+	ActorDefParam *params;
+};
 
-/**
- * Unload the executable and reset the function pointers
- */
-void UnloadExecutable();
+struct ActorDefParam
+{
+	char name[64];
+	byte min;
+	byte max;
+};
+
+bool LoadDefFiles();
+
+void UnloadDefFiles();
+
+void LoadDefFile(char *path);
+
+size_t GetActorTypeCount();
+
+ActorDefinition *GetActorDef(int actor);
+
+ActorDefinition *GetActorDefByLoadIndex(int actor);
 
 #endif //GAMEINTERFACE_H
