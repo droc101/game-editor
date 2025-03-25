@@ -121,6 +121,7 @@ struct Actor
 	byte paramB;
 	byte paramC;
 	byte paramD;
+	char name[64]; // Non-unique name of the actor
 };
 
 struct Trigger

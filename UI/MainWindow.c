@@ -21,6 +21,7 @@ GtkWindow *mainWindow = NULL;
 GtkFileDialog *fileDialog;
 
 GtkWidget *actorTypeLabel;
+GtkWidget *actorNameBox;
 GtkWidget *paramALabel;
 GtkWidget *paramBLabel;
 GtkWidget *paramCLabel;
@@ -378,6 +379,16 @@ void actor_rot_value_changed(GtkSpinButton *self, gpointer)
 {
 	Actor *a = ListGet(l->actors, selectionIndex);
 	a->rotation = degToRad(gtk_spin_button_get_value(self));
+}
+
+/**
+ * Callback for when the trigger command is changed
+ */
+static void actor_name_changed(GtkEditable *self, gpointer)
+{
+	Actor *actor = ListGet(l->actors, selectionIndex);
+	const char *text = gtk_editable_get_text(self);
+	strcpy(actor->name, text);
 }
 
 #pragma endregion
@@ -979,6 +990,17 @@ GtkWidget *SetupLSidebar_ActorSelection(const Actor *a)
 	gtk_spin_button_set_value(GTK_SPIN_BUTTON(actorTypeBox), a->actorType);
 	g_signal_connect(actorTypeBox, "value-changed", G_CALLBACK(actor_type_value_changed), NULL);
 	gtk_box_append(GTK_BOX(actorSelectionSidebar), actorTypeBox);
+
+	GtkWidget *actorNameLabel = gtk_label_new("Actor Name");
+	gtk_label_set_xalign(GTK_LABEL(actorNameLabel), 0);
+	gtk_box_append(GTK_BOX(actorSelectionSidebar), actorNameLabel);
+
+	actorNameBox = gtk_entry_new();
+	gtk_entry_set_placeholder_text(GTK_ENTRY(actorNameBox), "Name");
+	gtk_entry_set_max_length(GTK_ENTRY(actorNameBox), 60);
+	gtk_entry_buffer_set_text(gtk_entry_get_buffer(GTK_ENTRY(actorNameBox)), a->name, -1);
+	g_signal_connect(actorNameBox, "changed", G_CALLBACK(actor_name_changed), NULL);
+	gtk_box_append(GTK_BOX(actorSelectionSidebar), actorNameBox);
 
 	GtkWidget *sep1 = gtk_separator_new(GTK_ORIENTATION_HORIZONTAL);
 	gtk_widget_set_margin_top(sep1, 8);

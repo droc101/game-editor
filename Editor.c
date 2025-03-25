@@ -442,6 +442,7 @@ void EditorUpdate()
 				a->position = ScreenToWorldSnapped(GetLocalMousePos());
 				a->rotation = 0.0;
 				a->actorType = 1;
+				a->name[0] = '\0';
 				ListAdd(l->actors, a);
 				selectionType = SELTYPE_ACTOR;
 				selectionIndex = l->actors->size - 1;

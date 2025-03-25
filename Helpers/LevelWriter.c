@@ -51,6 +51,7 @@ void WriteLevel(const Level *level, const char *path)
 		fwrite(&actor->paramB, sizeof(byte), 1, file);
 		fwrite(&actor->paramC, sizeof(byte), 1, file);
 		fwrite(&actor->paramD, sizeof(byte), 1, file);
+		fwrite(&actor->name, sizeof(char), 64, file);
 	}
 
 	// Write the number of walls
