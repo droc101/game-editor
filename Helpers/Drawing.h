@@ -19,7 +19,11 @@ void BeginRender(GtkDrawingArea *ar, cairo_t *c);
  * Convert an ARGB uint into a GdkRGBA
  * @param clr The uint color
  */
-#define Color(clr) {((int)((clr) >> 24 & 0xFF) / 255.0), ((int)((clr) >> 16 & 0xFF) / 255.0), ((int)((clr) >> 8 & 0xFF) / 255.0), ((int)((clr) & 0xFF) / 255.0)}
+#define Color(clr) \
+	{((int)((clr) >> 24 & 0xFF) / 255.0), \
+	 ((int)((clr) >> 16 & 0xFF) / 255.0), \
+	 ((int)((clr) >> 8 & 0xFF) / 255.0), \
+	 ((int)((clr) & 0xFF) / 255.0)}
 
 /**
  * Draw a rectangle

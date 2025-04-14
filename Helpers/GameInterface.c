@@ -24,7 +24,11 @@ bool LoadDefFiles()
 	List *defs = ScanAssetFolder("defs", ".def");
 	for (int i = 0; i < defs->size; i++)
 	{
-		char *path = malloc(strlen(options.gameDirectory) + strlen("/assets/defs/") + strlen(ListGet(defs, i)) + strlen(".def") + 1);
+		char *path = malloc(strlen(options.gameDirectory) +
+							strlen("/assets/defs/") +
+							strlen(ListGet(defs, i)) +
+							strlen(".def") +
+							1);
 		strcpy(path, options.gameDirectory);
 		strcat(path, "/assets/defs/");
 		strcat(path, ListGet(defs, i));
@@ -138,7 +142,10 @@ bool LoadDefFile(char *path)
 				break;
 			}
 		}
-		if (!def) return false;
+		if (!def)
+		{
+			return false;
+		}
 
 		const char *renderTypeString = json_object_get_string(json_object_object_get(actor, "render_type"));
 		if (strcmp("trigger", renderTypeString) == 0)
@@ -154,7 +161,8 @@ bool LoadDefFile(char *path)
 		def->params = calloc(numParams, sizeof(ActorDefParam));
 		for (int p = 0; p < numParams; p++)
 		{
-			if (json_object_get_type(json_object_array_get_idx(json_object_object_get(actor, "params"), p)) != json_type_object)
+			if (json_object_get_type(json_object_array_get_idx(json_object_object_get(actor, "params"), p)) !=
+				json_type_object)
 			{
 				printf("Invalid def file format: %s\n", path);
 				json_object_put(root);
@@ -179,7 +187,8 @@ bool LoadDefFile(char *path)
 		def->inputs = calloc(numInputs, sizeof(ActorDefSignal));
 		for (int s = 0; s < numInputs; s++)
 		{
-			if (json_object_get_type(json_object_array_get_idx(json_object_object_get(actor, "inputs"), s)) != json_type_object)
+			if (json_object_get_type(json_object_array_get_idx(json_object_object_get(actor, "inputs"), s)) !=
+				json_type_object)
 			{
 				printf("Invalid def file format: %s\n", path);
 				json_object_put(root);
@@ -198,20 +207,16 @@ bool LoadDefFile(char *path)
 			if (strcmp(paramType, "int") == 0)
 			{
 				def->inputs[s].paramType = INT;
-			}
-			else if (strcmp(paramType, "float") == 0)
+			} else if (strcmp(paramType, "float") == 0)
 			{
 				def->inputs[s].paramType = FLOAT;
-			}
-			else if (strcmp(paramType, "string") == 0)
+			} else if (strcmp(paramType, "string") == 0)
 			{
 				def->inputs[s].paramType = STRING;
-			}
-			else if (strcmp(paramType, "actor") == 0)
+			} else if (strcmp(paramType, "actor") == 0)
 			{
 				def->inputs[s].paramType = ACTOR;
-			}
-			else
+			} else
 			{
 				def->inputs[s].paramType = NONE;
 			}
@@ -222,7 +227,8 @@ bool LoadDefFile(char *path)
 		def->outputs = calloc(numOutputs, sizeof(ActorDefSignal));
 		for (int s = 0; s < numOutputs; s++)
 		{
-			if (json_object_get_type(json_object_array_get_idx(json_object_object_get(actor, "outputs"), s)) != json_type_object)
+			if (json_object_get_type(json_object_array_get_idx(json_object_object_get(actor, "outputs"), s)) !=
+				json_type_object)
 			{
 				printf("Invalid def file format: %s\n", path);
 				json_object_put(root);
@@ -241,20 +247,16 @@ bool LoadDefFile(char *path)
 			if (strcmp(paramType, "int") == 0)
 			{
 				def->outputs[s].paramType = INT;
-			}
-			else if (strcmp(paramType, "float") == 0)
+			} else if (strcmp(paramType, "float") == 0)
 			{
 				def->outputs[s].paramType = FLOAT;
-			}
-			else if (strcmp(paramType, "string") == 0)
+			} else if (strcmp(paramType, "string") == 0)
 			{
 				def->outputs[s].paramType = STRING;
-			}
-			else if (strcmp(paramType, "actor") == 0)
+			} else if (strcmp(paramType, "actor") == 0)
 			{
 				def->outputs[s].paramType = ACTOR;
-			}
-			else
+			} else
 			{
 				def->outputs[s].paramType = NONE;
 			}
@@ -294,12 +296,18 @@ ActorDefinition *GetActorDefByLoadIndex(const int actor)
 
 ActorDefSignal *GetActorDefOutput(const int actor, const byte output)
 {
-	if (output >= GetActorDef(actor)->numOutputs) return NULL;
+	if (output >= GetActorDef(actor)->numOutputs)
+	{
+		return NULL;
+	}
 	return GetActorDef(actor)->outputs + output;
 }
 
 ActorDefSignal *GetActorDefInput(const int actor, const byte input)
 {
-    if (input >= GetActorDef(actor)->numInputs) return NULL;
-    return GetActorDef(actor)->inputs + input;
+	if (input >= GetActorDef(actor)->numInputs)
+	{
+		return NULL;
+	}
+	return GetActorDef(actor)->inputs + input;
 }

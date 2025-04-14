@@ -80,26 +80,22 @@ void rmb_stopped(GtkGestureClick *, gpointer)
 	mouseButtons[RMB] = JUST_RELEASED;
 }
 
-void lmb_unpaired_release(GtkGestureClick *,
-						  gdouble,
-						  gdouble,
-						  const guint button,
-						  GdkEventSequence *,
-						  gpointer)
+void lmb_unpaired_release(GtkGestureClick *, gdouble, gdouble, const guint button, GdkEventSequence *, gpointer)
 {
-	if (button != GDK_BUTTON_PRIMARY) return;
+	if (button != GDK_BUTTON_PRIMARY)
+	{
+		return;
+	}
 	// printf("lm unpaired release\n");
 	mouseButtons[LMB] = JUST_RELEASED;
 }
 
-void rmb_unpaired_release(GtkGestureClick *,
-						  gdouble,
-						  gdouble,
-						  const guint button,
-						  GdkEventSequence *,
-						  gpointer)
+void rmb_unpaired_release(GtkGestureClick *, gdouble, gdouble, const guint button, GdkEventSequence *, gpointer)
 {
-	if (button != GDK_BUTTON_SECONDARY) return;
+	if (button != GDK_BUTTON_SECONDARY)
+	{
+		return;
+	}
 	// printf("rm unpaired release\n");
 	mouseButtons[RMB] = JUST_RELEASED;
 }

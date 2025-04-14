@@ -78,7 +78,8 @@ void SaveOptions(Options *options)
 	fclose(file);
 }
 
-bool IsValidGameDirectory(Options *options) {
+bool IsValidGameDirectory(Options *options)
+{
 	/*
 	 *Directory must contain:
 	 * - game or game.exe
@@ -93,7 +94,8 @@ bool IsValidGameDirectory(Options *options) {
 	strcpy(gameExePath, gameDirectory);
 	strcat(gameExePath, "/game.exe");
 
-	if (access(gamePath, F_OK) == -1 && access(gameExePath, F_OK) == -1) {
+	if (access(gamePath, F_OK) == -1 && access(gameExePath, F_OK) == -1)
+	{
 		printf("Invalid game directory: %s\n", gameDirectory);
 		free(gamePath);
 		free(gameExePath);
@@ -104,7 +106,8 @@ bool IsValidGameDirectory(Options *options) {
 	strcpy(assetsPath, gameDirectory);
 	strcat(assetsPath, "/assets");
 
-	if (access(assetsPath, F_OK) == -1) {
+	if (access(assetsPath, F_OK) == -1)
+	{
 		printf("Invalid game directory: %s\n", gameDirectory);
 		free(gamePath);
 		free(gameExePath);

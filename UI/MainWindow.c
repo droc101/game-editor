@@ -69,10 +69,9 @@ gboolean on_timeout(const gpointer user_data)
 /**
  * Callback for when the add wall button is clicked
  */
-void add_wall_clicked(GtkToggleButton* self,
-  gpointer)
+void add_wall_clicked(GtkToggleButton *self, gpointer)
 {
-	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(addActorsButton),FALSE);
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(addActorsButton), FALSE);
 	const bool toggled = gtk_toggle_button_get_active(self);
 	addRequest = toggled ? ADDREQ_WALL : ADDREQ_NONE;
 }
@@ -82,7 +81,7 @@ void add_wall_clicked(GtkToggleButton* self,
  */
 void add_actor_clicked(GtkToggleButton *self, gpointer)
 {
-	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(addWallsButton),FALSE);
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(addWallsButton), FALSE);
 	const bool toggled = gtk_toggle_button_get_active(self);
 	addRequest = toggled ? ADDREQ_ACTOR : ADDREQ_NONE;
 }
@@ -468,9 +467,9 @@ void fog_color_set(GtkColorButton *self, gpointer)
 	GdkRGBA gtkColor;
 	gtk_color_chooser_get_rgba(GTK_COLOR_CHOOSER(self), &gtkColor);
 	const uint color = (uint)(gtkColor.red * 255) << 24 |
-				 (uint)(gtkColor.green * 255) << 16 |
-				 (uint)(gtkColor.blue * 255) << 8 |
-				 (uint)(gtkColor.alpha * 255);
+					   (uint)(gtkColor.green * 255) << 16 |
+					   (uint)(gtkColor.blue * 255) << 8 |
+					   (uint)(gtkColor.alpha * 255);
 	l->fogColor = color;
 }
 

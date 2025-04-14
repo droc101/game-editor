@@ -32,9 +32,9 @@ void IOWindowReloadList()
 	GtkListBoxRow *selectedRow = gtk_list_box_get_selected_row(GTK_LIST_BOX(listBox));
 	int selection = -1;
 	if (selectedRow != NULL)
-    {
-        selection = gtk_list_box_row_get_index(GTK_LIST_BOX_ROW(selectedRow));
-    }
+	{
+		selection = gtk_list_box_row_get_index(GTK_LIST_BOX_ROW(selectedRow));
+	}
 
 	gtk_list_box_remove_all(GTK_LIST_BOX(listBox));
 
@@ -99,9 +99,9 @@ void IOWindowReloadList()
 
 	const size_t rows = ioActor->ioConnections->size;
 	if (selection <= rows)
-    {
+	{
 		gtk_list_box_select_row(GTK_LIST_BOX(listBox), gtk_list_box_get_row_at_index(GTK_LIST_BOX(listBox), selection));
-    }
+	}
 
 
 	updateCount--;

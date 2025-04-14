@@ -173,7 +173,7 @@ Vector2 WorldToScreenSize(const Vector2 wp)
 
 Vector2 ScreenToWorld(const Vector2 sp)
 {
-    return v2((sp.x - scrollPosCentered.x) / zoom, (sp.y - scrollPosCentered.y) / zoom);
+	return v2((sp.x - scrollPosCentered.x) / zoom, (sp.y - scrollPosCentered.y) / zoom);
 }
 
 Vector2 ScreenToWorldSnapped(const Vector2 sp)
@@ -297,7 +297,7 @@ void ProcessDrag()
 void Zoom(const double by)
 {
 	const Vector2 oldScrollPos = scrollPos;
-	const Vector2 worldMousePos = ScreenToWorld(v2(WindowWidth()/2, WindowHeight()/2));
+	const Vector2 worldMousePos = ScreenToWorld(v2(WindowWidth() / 2, WindowHeight() / 2));
 	const double oldZoom = zoom;
 
 	zoom += by;
@@ -407,8 +407,6 @@ void EditorUpdate()
 			isDragging = true;
 		}
 	}
-
-
 }
 
 void RenderWall(const Wall *wall, const int w)
