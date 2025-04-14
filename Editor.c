@@ -67,12 +67,12 @@ void EditorDestroy()
 	UnloadDefFiles();
 }
 
-void RescanAssets()
+bool RescanAssets()
 {
 	if (!LoadDefFiles())
 	{
 		printf("Failed to load game definitions!\n");
-		return;
+		return false;
 	}
 	if (textureList != NULL)
 	{
@@ -82,6 +82,8 @@ void RescanAssets()
 
 	textureList = ScanAssetFolder("texture", ".gtex");
 	musicList = ScanAssetFolder("audio", ".gmus");
+
+	return true;
 }
 
 List *ScanAssetFolder(const char *folderName, const char *extension)
@@ -124,6 +126,11 @@ void EditorDestroyLevel()
 	{
 		return;
 	}
+	for (int i = 0; i < l->actors->size; i++)
+	{
+		const Actor *actor = l->actors->data[i];
+		ListFree(actor->ioConnections);
+	}
 	ListFreeWithData(l->actors);
 	ListFreeWithData(l->walls);
 	ListFreeWithData(l->triggers);
@@ -145,7 +152,6 @@ void EditorNewLevel()
 	l->walls = CreateList();
 	l->actors = CreateList();
 	l->triggers = CreateList();
-	//l->models = CreateList();
 	strcpy(l->name, "Unnamed Level");
 	l->courseNum = -1;
 	l->hasCeiling = false;
@@ -156,39 +162,6 @@ void EditorNewLevel()
 	l->fogStart = 50.0f;
 	l->fogEnd = 100.0f;
 	l->player.rotation = degToRad(-90.0);
-
-	// srand(time(NULL));
-	// for (int i = 0; i < 2000; i++)
-	// {
-	// 	Wall *w = malloc(sizeof(Wall));
-	// 	memset(w, 0, sizeof(Wall));
-	// 	w->a = v2(rand() % 100 - 50, rand() % 100 - 50);
-	// 	w->b = v2(rand() % 100 - 50, rand() % 100 - 50);
-	// 	strcpy(w->tex, "level_wall_test");
-	// 	w->uvScale = 1.0;
-	//
-	// 	ListAdd(l->walls, w);
-	// }
-	//
-	// for (int i = 0; i < 50; i++)
-	// {
-	// 	Actor *a = malloc(sizeof(Actor));
-	// 	memset(a, 0, sizeof(Actor));
-	// 	a->position = v2(rand() % 50 - 25, rand() % 50 - 25);
-	// 	a->rotation = (rand() % 360) * (M_PI / 180.0);
-	// 	ListAdd(l->actors, a);
-	// }
-	//
-	// for (int i = 0; i < 50; i++)
-	// {
-	// 	Trigger *t = malloc(sizeof(Trigger));
-	// 	memset(t, 0, sizeof(Trigger));
-	// 	t->position = v2(rand() % 50 - 25, rand() % 50 - 25);
-	// 	t->extents = v2(rand() % 10 - 5, rand() % 10 - 5);
-	// 	t->rotation = (rand() % 360) * (M_PI / 180.0);
-	// 	ListAdd(l->triggers, t);
-	// }
-
 }
 
 Vector2 WorldToScreen(const Vector2 wp)
@@ -444,6 +417,7 @@ void EditorUpdate()
 				a->rotation = 0.0;
 				a->actorType = 1;
 				a->name[0] = '\0';
+				a->ioConnections = CreateList();
 				ListAdd(l->actors, a);
 				selectionType = SELTYPE_ACTOR;
 				selectionIndex = l->actors->size - 1;

@@ -52,6 +52,16 @@ void WriteLevel(const Level *level, const char *path)
 		fwrite(&actor->paramC, sizeof(byte), 1, file);
 		fwrite(&actor->paramD, sizeof(byte), 1, file);
 		fwrite(&actor->name, sizeof(char), 64, file);
+		uint connectionCount = actor->ioConnections->size;
+		fwrite(&connectionCount, sizeof(uint), 1, file);
+		for (int j = 0; j < connectionCount; j++)
+		{
+			const ActorConnection *connection = ListGet(actor->ioConnections, j);
+			fwrite(&connection->myOutput, sizeof(byte), 1, file);
+			fwrite(&connection->outActorName, sizeof(char) * 64, 1, file);
+			fwrite(&connection->targetInput, sizeof(byte), 1, file);
+			fwrite(&connection->outParamOverride, sizeof(char) * 64, 1, file);
+		}
 	}
 
 	// Write the number of walls
@@ -133,6 +143,19 @@ Level *ReadLevel(const char *path)
 		fread(&actor->paramB, sizeof(byte), 1, file);
 		fread(&actor->paramC, sizeof(byte), 1, file);
 		fread(&actor->paramD, sizeof(byte), 1, file);
+		fread(&actor->name, sizeof(char) * 64, 1, file);
+		uint connectionCount = 0;
+		fread(&connectionCount, sizeof(uint), 1, file);
+		for (int j = 0; j < connectionCount; j++)
+		{
+			ActorConnection *connection = malloc(sizeof(ActorConnection));
+			fread(&connection->myOutput, sizeof(byte), 1, file);
+			fread(&connection->outActorName, sizeof(char) * 64, 1, file);
+			fread(&connection->targetInput, sizeof(byte), 1, file);
+			fread(&connection->outParamOverride, sizeof(char) * 64, 1, file);
+			ListAdd(actor->ioConnections, connection);
+		}
+		actor->ioConnections = CreateList();
 
 		ListAdd(level->actors, actor);
 	}

@@ -7,10 +7,22 @@
 
 #include "../defines.h"
 
-#define DEF_FILE_VERSION 1
+#define DEF_FILE_VERSION 2
+
+typedef enum ActorDefSignalParamType ActorDefSignalParamType;
 
 typedef struct ActorDefinition ActorDefinition;
 typedef struct ActorDefParam ActorDefParam;
+typedef struct ActorDefSignal ActorDefSignal;
+
+enum ActorDefSignalParamType
+{
+	NONE,
+	INT,
+	FLOAT,
+	STRING,
+	ACTOR
+};
 
 struct ActorDefinition
 {
@@ -18,6 +30,10 @@ struct ActorDefinition
 	char actorName[64];
 	uint numParams;
 	ActorDefParam *params;
+	uint numInputs;
+	ActorDefSignal *inputs;
+	uint numOutputs;
+	ActorDefSignal *outputs;
 };
 
 struct ActorDefParam
@@ -27,16 +43,26 @@ struct ActorDefParam
 	byte max;
 };
 
+struct ActorDefSignal
+{
+	char name[64];
+	ActorDefSignalParamType paramType;
+};
+
 bool LoadDefFiles();
 
 void UnloadDefFiles();
 
-void LoadDefFile(char *path);
+bool LoadDefFile(char *path);
 
 size_t GetActorTypeCount();
 
 ActorDefinition *GetActorDef(int actor);
 
 ActorDefinition *GetActorDefByLoadIndex(int actor);
+
+ActorDefSignal *GetActorDefOutput(int actor, byte output);
+
+ActorDefSignal *GetActorDefInput(int actor, byte input);
 
 #endif //GAMEINTERFACE_H

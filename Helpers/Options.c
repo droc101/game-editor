@@ -112,5 +112,9 @@ bool IsValidGameDirectory(Options *options) {
 		return false;
 	}
 
+	free(gamePath);
+	free(gameExePath);
+	free(assetsPath);
+
 	return true;
 }

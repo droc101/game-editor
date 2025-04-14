@@ -4,8 +4,8 @@ project(geditor C)
 set(CMAKE_C_STANDARD 11)
 
 set(CMAKE_C_FLAGS_DEBUG "-g -O0 -DBUILDSTYLE_DEBUG")
-set(CMAKE_C_FLAGS_RELEASE "-g0 -O3 -s -DNDEBUG -Wl,--gc-sections -fdata-sections -ffunction-sections -DBUILDSTYLE_RELEASE")
-set(CMAKE_C_FLAGS_RELWITHDEBINFO "-g -O3 -Wl,--gc-sections -fdata-sections -ffunction-sections -DBUILDSTYLE_DEBUG")
+set(CMAKE_C_FLAGS_RELEASE "-g0 -O3 -s -DNDEBUG -DBUILDSTYLE_RELEASE")
+set(CMAKE_C_FLAGS_RELWITHDEBINFO "-g -O3 -DBUILDSTYLE_DEBUG")
 
 set(CMAKE_C_FLAGS "-Wno-deprecated-declarations")
 
@@ -45,6 +45,8 @@ add_executable(
         Helpers/LevelWriter.h
         Helpers/GameInterface.c
         Helpers/GameInterface.h
+        UI/IOWindow.c
+        UI/IOWindow.h
 )
 
 target_link_libraries(geditor ${GTK4_LIBRARIES} m z json-c)

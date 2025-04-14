@@ -44,7 +44,7 @@ void pick_folder_clicked(GtkButton *, gpointer)
 /**
  * Callback for when the cancel button is pressed
  */
-void cancel_clicked(GtkButton *, gpointer)
+void opt_cancel_clicked(GtkButton *, gpointer)
 {
 	gtk_window_close(optionsWindow);
 }
@@ -52,7 +52,7 @@ void cancel_clicked(GtkButton *, gpointer)
 /**
  * Callback for when the OK button is pressed
  */
-void ok_clicked(GtkButton *, gpointer)
+void opt_ok_clicked(GtkButton *, gpointer)
 {
 	GtkEntryBuffer *buffer = gtk_entry_get_buffer(GTK_ENTRY(gamePathEntry));
 	const char *path = gtk_entry_buffer_get_text(buffer);
@@ -108,6 +108,11 @@ void OptionsWindowShow(GtkWindow *parent, GtkApplication *app, const bool requir
 	gtk_widget_set_margin_top(mainStack, 4);
 	gtk_widget_set_margin_bottom(mainStack, 4);
 
+	GtkWidget *headerLabel = gtk_label_new("");
+	gtk_label_set_markup(GTK_LABEL(headerLabel), "<big><b>Setup</b></big>");
+	gtk_label_set_xalign(GTK_LABEL(headerLabel), 0);
+	gtk_box_append(GTK_BOX(mainStack), headerLabel);
+
 	GtkWidget *gamePathLabel = gtk_label_new("Game Path");
 	gtk_label_set_xalign(GTK_LABEL(gamePathLabel), 0);
 	gtk_box_append(GTK_BOX(mainStack), gamePathLabel);
@@ -138,19 +143,22 @@ void OptionsWindowShow(GtkWindow *parent, GtkApplication *app, const bool requir
 		gtk_box_append(GTK_BOX(mainStack), requiresRestartLabel);
 	}
 
+	GtkWidget *sep = gtk_separator_new(GTK_ORIENTATION_HORIZONTAL);
+	gtk_box_append(GTK_BOX(mainStack), sep);
+
 	GtkWidget *okCancelBox = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 4);
-	gtk_widget_set_margin_top(okCancelBox, 8);
+	gtk_widget_set_margin_top(okCancelBox, 0);
 	gtk_box_append(GTK_BOX(mainStack), okCancelBox);
 	gtk_widget_set_halign(okCancelBox, GTK_ALIGN_END);
 
 	GtkWidget *okButton = gtk_button_new_with_label("OK");
 	gtk_widget_set_size_request(okButton, 80, -1);
-	g_signal_connect(okButton, "clicked", G_CALLBACK(ok_clicked), NULL);
+	g_signal_connect(okButton, "clicked", G_CALLBACK(opt_ok_clicked), NULL);
 	gtk_box_append(GTK_BOX(okCancelBox), okButton);
 
 	GtkWidget *cancelButton = gtk_button_new_with_label(required ? "Quit" : "Cancel");
 	gtk_widget_set_size_request(cancelButton, 80, -1);
-	g_signal_connect(cancelButton, "clicked", G_CALLBACK(cancel_clicked), NULL);
+	g_signal_connect(cancelButton, "clicked", G_CALLBACK(opt_cancel_clicked), NULL);
 	gtk_box_append(GTK_BOX(okCancelBox), cancelButton);
 
 	gtk_window_set_child(GTK_WINDOW(window), mainStack);

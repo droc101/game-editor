@@ -54,7 +54,7 @@ void EditorInit();
 
 void EditorDestroy();
 
-void RescanAssets();
+bool RescanAssets();
 
 List *ScanAssetFolder(const char *folderName, const char *extension);
 

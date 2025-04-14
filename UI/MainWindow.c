@@ -3,12 +3,14 @@
 //
 
 #include "MainWindow.h"
+
 #include "../Editor.h"
 #include "../Helpers/Drawing.h"
 #include "../Helpers/GameInterface.h"
 #include "../Helpers/Input.h"
 #include "../Helpers/LevelWriter.h"
 #include "../Helpers/Options.h"
+#include "IOWindow.h"
 #include "OptionsWindow.h"
 
 int frame = 0;
@@ -19,6 +21,7 @@ GtkWidget *leftSidebarCurrent;
 
 GtkWindow *mainWindow = NULL;
 GtkFileDialog *fileDialog;
+GtkApplication *mainWindowApplication;
 
 GtkWidget *actorTypeLabel;
 GtkWidget *actorNameBox;
@@ -99,6 +102,11 @@ void delete_selected_clicked(GtkButton *, gpointer)
 	} else if (selectionType == SELTYPE_ACTOR)
 	{
 		ListRemoveAt(l->actors, selectionIndex);
+		selectionType = SELTYPE_NONE;
+		selectionIndex = -1;
+	} else if (selectionType == SELTYPE_TRIGGER)
+	{
+		ListRemoveAt(l->triggers, selectionIndex);
 		selectionType = SELTYPE_NONE;
 		selectionIndex = -1;
 	}
@@ -407,6 +415,11 @@ static void actor_name_changed(GtkEditable *self, gpointer)
 	strcpy(actor->name, text);
 }
 
+void edit_io_clicked(GtkButton *, gpointer)
+{
+	IOWindowShow(mainWindow, GTK_APPLICATION(mainWindowApplication), ListGet(l->actors, selectionIndex));
+}
+
 #pragma endregion
 
 #pragma region Level Sidebar
@@ -570,7 +583,6 @@ static GActionEntry menu_entries[] = {
 	{"reset_zoom", reset_zoom_activated, NULL, NULL, NULL},
 	{"center_origin", center_origin_activated, NULL, NULL, NULL},
 	{"setup", setup_activated, NULL, NULL, NULL},
-	{"run_game", NULL, NULL, NULL, NULL},
 	{"about", about_activated, NULL, NULL, NULL},
 };
 
@@ -579,7 +591,7 @@ static GActionEntry menu_entries[] = {
 void UpdateActorSidebar()
 {
 	const Actor *a = ListGet(l->actors, selectionIndex);
-	ActorDefinition *def = GetActorDef(a->actorType);
+	const ActorDefinition *def = GetActorDef(a->actorType);
 	// Find the actor type in the combo box
 	GtkComboBoxText *combo = GTK_COMBO_BOX_TEXT(actorTypeBox);
 	for (int i = 0; i < GetActorTypeCount(); i++)
@@ -686,8 +698,6 @@ GtkWidget *SetupMenuBar(GtkApplication *app)
 
 	GMenu *tools_menu = g_menu_new();
 	g_menu_append(tools_menu, "Setup", "app.setup");
-	//g_menu_append(tools_menu, "Refresh Asset Lists", "app.refresh_assets");
-	g_menu_append(tools_menu, "Launch Game", "app.run_game");
 	g_menu_append_submenu(menu, "Tools", G_MENU_MODEL(tools_menu));
 	g_object_unref(tools_menu);
 
@@ -746,19 +756,13 @@ GtkWidget *SetupToolbar()
 
 	GtkWidget *addWallButton = gtk_toggle_button_new_with_label("Add Walls");
 	g_signal_connect(addWallButton, "clicked", G_CALLBACK(add_wall_clicked), NULL);
-	gtk_button_set_has_frame(GTK_BUTTON(addWallButton), FALSE);
 	GtkWidget *addActorButton = gtk_button_new_with_label("Add Actor");
 	g_signal_connect(addActorButton, "clicked", G_CALLBACK(add_actor_clicked), NULL);
-	gtk_button_set_has_frame(GTK_BUTTON(addActorButton), FALSE);
 	GtkWidget *addTriggerButton = gtk_button_new_with_label("Add Trigger");
 	g_signal_connect(addTriggerButton, "clicked", G_CALLBACK(add_trigger_clicked), NULL);
-	gtk_button_set_has_frame(GTK_BUTTON(addTriggerButton), FALSE);
-	// GtkWidget *addModelButton = gtk_button_new_with_label("Add Model");
-	// gtk_button_set_has_frame(GTK_BUTTON(addModelButton), FALSE);
 
 	GtkWidget *deleteSelectedButton = gtk_button_new_with_label("Delete Selected");
 	g_signal_connect(deleteSelectedButton, "clicked", G_CALLBACK(delete_selected_clicked), NULL);
-	gtk_button_set_has_frame(GTK_BUTTON(deleteSelectedButton), FALSE);
 
 	GtkWidget *toolbar = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 4);
 	gtk_widget_set_size_request(toolbar, -1, 30);
@@ -767,7 +771,6 @@ GtkWidget *SetupToolbar()
 	gtk_box_append(GTK_BOX(toolbar), sep2);
 	gtk_box_append(GTK_BOX(toolbar), addActorButton);
 	gtk_box_append(GTK_BOX(toolbar), addTriggerButton);
-	//gtk_box_append(GTK_BOX(toolbar), addModelButton);
 	gtk_box_append(GTK_BOX(toolbar), sep);
 	gtk_box_append(GTK_BOX(toolbar), deleteSelectedButton);
 
@@ -1106,6 +1109,15 @@ GtkWidget *SetupLSidebar_ActorSelection(const Actor *a)
 	g_signal_connect(rotationSpin, "value-changed", G_CALLBACK(actor_rot_value_changed), NULL);
 	gtk_box_append(GTK_BOX(actorSelectionSidebar), rotationSpin);
 
+	GtkWidget *sep3 = gtk_separator_new(GTK_ORIENTATION_HORIZONTAL);
+	gtk_widget_set_margin_top(sep3, 8);
+	gtk_widget_set_margin_bottom(sep3, 8);
+	gtk_box_append(GTK_BOX(actorSelectionSidebar), sep3);
+
+	GtkWidget *editIoButton = gtk_button_new_with_label("I/O Connections");
+	g_signal_connect(editIoButton, "clicked", G_CALLBACK(edit_io_clicked), NULL);
+	gtk_box_append(GTK_BOX(actorSelectionSidebar), editIoButton);
+
 	UpdateActorSidebar();
 
 	return actorSelectionSidebar;
@@ -1217,7 +1229,12 @@ void MainWindowActivate(GtkApplication *app, gpointer *)
 		}
 	}
 
-	RescanAssets();
+	if (!RescanAssets())
+	{
+		printf("Failed to rescan assets\n");
+	}
+
+	mainWindowApplication = app;
 
 	GtkWidget *window = gtk_application_window_new(app);
 	gtk_window_set_title(GTK_WINDOW(window), "Game Level Editor");

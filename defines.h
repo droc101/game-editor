@@ -25,11 +25,10 @@ typedef struct Vector2 Vector2;
 typedef struct Player Player;
 typedef struct Wall Wall;
 typedef struct Level Level;
-typedef struct Model Model;
 typedef struct Actor Actor;
 typedef struct Trigger Trigger;
-typedef struct PlacedModel PlacedModel;
 typedef struct Options Options;
+typedef struct ActorConnection ActorConnection;
 
 #pragma endregion
 
@@ -96,7 +95,6 @@ struct Level
 	List *actors; // The list of actors in the level. You must bake this into staticActors before it is used.
 	List *walls; // The list of walls in the level. You must bake this into staticWalls before it is used.
 	List *triggers;
-	List *models;
 
 	bool hasCeiling;
 	char ceilOrSkyTex[32];
@@ -122,6 +120,7 @@ struct Actor
 	byte paramC;
 	byte paramD;
 	char name[64]; // Non-unique name of the actor
+	List *ioConnections; // List of I/O connections
 };
 
 struct Trigger
@@ -133,18 +132,19 @@ struct Trigger
 	uint flags;
 };
 
-struct PlacedModel
-{
-	Vector2 position;
-	double rotation;
-	char model[32];
-};
-
 struct Options
 {
 	ushort checksum;
 	char gameDirectory[260];
 } __attribute__((packed));
+
+struct ActorConnection
+{
+	byte targetInput;
+	byte myOutput;
+	char outActorName[64];
+	char outParamOverride[64];
+};
 
 #pragma endregion
 
