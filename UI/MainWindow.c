@@ -23,6 +23,9 @@ GtkWindow *mainWindow = NULL;
 GtkFileDialog *fileDialog;
 GtkApplication *mainWindowApplication;
 
+GtkWidget *addWallsButton;
+GtkWidget *addActorsButton;
+
 GtkWidget *actorTypeLabel;
 GtkWidget *actorNameBox;
 GtkWidget *paramALabel;
@@ -69,6 +72,7 @@ gboolean on_timeout(const gpointer user_data)
 void add_wall_clicked(GtkToggleButton* self,
   gpointer)
 {
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(addActorsButton),FALSE);
 	const bool toggled = gtk_toggle_button_get_active(self);
 	addRequest = toggled ? ADDREQ_WALL : ADDREQ_NONE;
 }
@@ -76,9 +80,11 @@ void add_wall_clicked(GtkToggleButton* self,
 /**
  * Callback for when the add actor button is clicked
  */
-void add_actor_clicked(GtkButton *, gpointer)
+void add_actor_clicked(GtkToggleButton *self, gpointer)
 {
-	addRequest = ADDREQ_ACTOR;
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(addWallsButton),FALSE);
+	const bool toggled = gtk_toggle_button_get_active(self);
+	addRequest = toggled ? ADDREQ_ACTOR : ADDREQ_NONE;
 }
 
 /**
@@ -172,14 +178,6 @@ static void new_activated(GSimpleAction *, GVariant *, gpointer)
 #pragma endregion
 
 #pragma region Edit Menu
-
-/**
- * Callback for when the add actor menu item is pressed
- */
-void add_actor_menu_item_activated(GSimpleAction *, GVariant *, gpointer)
-{
-	add_actor_clicked(NULL, NULL);
-}
 
 /**
  * Callback for when the delete selected menu item is pressed
@@ -504,7 +502,6 @@ static GActionEntry menu_entries[] = {
 	{"open", open_activated, NULL, NULL, NULL},
 	{"save", save_activated, NULL, NULL, NULL},
 	{"quit", quit_activated, NULL, NULL, NULL},
-	{"add_actor", add_actor_menu_item_activated, NULL, NULL, NULL},
 	{"delete_selected", delete_selected_menu_item_activated, NULL, NULL, NULL},
 	{"zoom_in", zoom_in_activated, NULL, NULL, NULL},
 	{"zoom_out", zoom_out_activated, NULL, NULL, NULL},
@@ -611,7 +608,6 @@ GtkWidget *SetupMenuBar(GtkApplication *app)
 	g_object_unref(file_menu);
 
 	GMenu *edit_menu = g_menu_new();
-	g_menu_append(edit_menu, "Add Actor", "app.add_actor");
 	g_menu_append(edit_menu, "Delete Selected", "app.delete_selected");
 	g_menu_append_submenu(menu, "Edit", G_MENU_MODEL(edit_menu));
 
@@ -675,12 +671,11 @@ GtkWidget *SetupMenuBar(GtkApplication *app)
 GtkWidget *SetupToolbar()
 {
 	GtkWidget *sep = gtk_separator_new(GTK_ORIENTATION_VERTICAL);
-	GtkWidget *sep2 = gtk_separator_new(GTK_ORIENTATION_VERTICAL);
 
-	GtkWidget *addWallButton = gtk_toggle_button_new_with_label("Add Walls");
-	g_signal_connect(addWallButton, "clicked", G_CALLBACK(add_wall_clicked), NULL);
-	GtkWidget *addActorButton = gtk_button_new_with_label("Add Actor");
-	g_signal_connect(addActorButton, "clicked", G_CALLBACK(add_actor_clicked), NULL);
+	addWallsButton = gtk_toggle_button_new_with_label("Add Walls");
+	g_signal_connect(addWallsButton, "clicked", G_CALLBACK(add_wall_clicked), NULL);
+	addActorsButton = gtk_toggle_button_new_with_label("Add Actors");
+	g_signal_connect(addActorsButton, "clicked", G_CALLBACK(add_actor_clicked), NULL);
 
 	GtkWidget *deleteSelectedButton = gtk_button_new_with_label("Delete Selected");
 	g_signal_connect(deleteSelectedButton, "clicked", G_CALLBACK(delete_selected_clicked), NULL);
@@ -688,9 +683,8 @@ GtkWidget *SetupToolbar()
 	GtkWidget *toolbar = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 4);
 	gtk_widget_set_size_request(toolbar, -1, 30);
 
-	gtk_box_append(GTK_BOX(toolbar), addWallButton);
-	gtk_box_append(GTK_BOX(toolbar), sep2);
-	gtk_box_append(GTK_BOX(toolbar), addActorButton);
+	gtk_box_append(GTK_BOX(toolbar), addWallsButton);
+	gtk_box_append(GTK_BOX(toolbar), addActorsButton);
 	gtk_box_append(GTK_BOX(toolbar), sep);
 	gtk_box_append(GTK_BOX(toolbar), deleteSelectedButton);
 

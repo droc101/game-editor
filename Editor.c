@@ -405,10 +405,6 @@ void EditorUpdate()
 				SelectionTypeChanged();
 			}
 			isDragging = true;
-			if (addRequest != ADDREQ_WALL)
-			{
-				addRequest = ADDREQ_NONE;
-			}
 		}
 	}
 

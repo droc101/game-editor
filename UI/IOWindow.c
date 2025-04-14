@@ -361,18 +361,18 @@ void IOWindowShow(GtkWindow *parent, GtkApplication *app, Actor *actor)
 	gtk_box_append(GTK_BOX(outSignalHBox), targetSignalCombo);
 	gtk_box_append(GTK_BOX(mainStack), outSignalHBox);
 
-	GtkWidget *paramOverrideHBox = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 4);
-	GtkWidget *paramOverrideLabel = gtk_label_new("Param Override");
-	gtk_label_set_xalign(GTK_LABEL(paramOverrideLabel), 0);
-	gtk_widget_set_size_request(paramOverrideLabel, 100, -1);
-	gtk_box_append(GTK_BOX(paramOverrideHBox), paramOverrideLabel);
-	paramOverrideEntry = gtk_entry_new();
-	gtk_entry_set_placeholder_text(GTK_ENTRY(paramOverrideEntry), "Param Override");
-	gtk_entry_buffer_set_max_length(GTK_ENTRY_BUFFER(gtk_entry_get_buffer(GTK_ENTRY(paramOverrideEntry))), 3);
-	gtk_entry_buffer_set_text(GTK_ENTRY_BUFFER(gtk_entry_get_buffer(GTK_ENTRY(paramOverrideEntry))), "0", -1);
-	gtk_widget_set_hexpand(paramOverrideEntry, TRUE);
-	gtk_box_append(GTK_BOX(paramOverrideHBox), paramOverrideEntry);
-	gtk_box_append(GTK_BOX(mainStack), paramOverrideHBox);
+	// GtkWidget *paramOverrideHBox = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 4);
+	// GtkWidget *paramOverrideLabel = gtk_label_new("Param Override");
+	// gtk_label_set_xalign(GTK_LABEL(paramOverrideLabel), 0);
+	// gtk_widget_set_size_request(paramOverrideLabel, 100, -1);
+	// gtk_box_append(GTK_BOX(paramOverrideHBox), paramOverrideLabel);
+	// paramOverrideEntry = gtk_entry_new();
+	// gtk_entry_set_placeholder_text(GTK_ENTRY(paramOverrideEntry), "Param Override");
+	// gtk_entry_buffer_set_max_length(GTK_ENTRY_BUFFER(gtk_entry_get_buffer(GTK_ENTRY(paramOverrideEntry))), 3);
+	// gtk_entry_buffer_set_text(GTK_ENTRY_BUFFER(gtk_entry_get_buffer(GTK_ENTRY(paramOverrideEntry))), "0", -1);
+	// gtk_widget_set_hexpand(paramOverrideEntry, TRUE);
+	// gtk_box_append(GTK_BOX(paramOverrideHBox), paramOverrideEntry);
+	// gtk_box_append(GTK_BOX(mainStack), paramOverrideHBox);
 
 	IOWindowReloadBoxes();
 
