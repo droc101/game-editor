@@ -17,16 +17,12 @@ typedef uint16_t ushort;
 typedef uint32_t uint;
 typedef uint64_t ulong;
 
-// Enum forward declarations
-typedef enum TriggerFlag TriggerFlag;
-
 // Struct forward declarations
 typedef struct Vector2 Vector2;
 typedef struct Player Player;
 typedef struct Wall Wall;
 typedef struct Level Level;
 typedef struct Actor Actor;
-typedef struct Trigger Trigger;
 typedef struct Options Options;
 typedef struct ActorConnection ActorConnection;
 
@@ -52,14 +48,6 @@ typedef struct ActorConnection ActorConnection;
 
 #pragma endregion
 
-#pragma region Enum definitions
-
-enum TriggerFlag
-{
-	TRIGGER_FLAG_ONE_SHOT = 1
-};
-
-#pragma endregion
 
 #pragma region Struct definitions
 
@@ -94,7 +82,6 @@ struct Level
 
 	List *actors; // The list of actors in the level. You must bake this into staticActors before it is used.
 	List *walls; // The list of walls in the level. You must bake this into staticWalls before it is used.
-	List *triggers;
 
 	bool hasCeiling;
 	char ceilOrSkyTex[32];
@@ -121,15 +108,6 @@ struct Actor
 	byte paramD;
 	char name[64]; // Non-unique name of the actor
 	List *ioConnections; // List of I/O connections
-};
-
-struct Trigger
-{
-	Vector2 position;
-	double rotation;
-	Vector2 extents;
-	char command[64];
-	uint flags;
 };
 
 struct Options

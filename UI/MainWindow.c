@@ -82,14 +82,6 @@ void add_actor_clicked(GtkButton *, gpointer)
 }
 
 /**
- * Callback for when the add trigger button is clicked
- */
-void add_trigger_clicked(GtkButton *, gpointer)
-{
-	addRequest = ADDREQ_TRIGGER;
-}
-
-/**
  * Callback for when the delete selected button is clicked
  */
 void delete_selected_clicked(GtkButton *, gpointer)
@@ -102,11 +94,6 @@ void delete_selected_clicked(GtkButton *, gpointer)
 	} else if (selectionType == SELTYPE_ACTOR)
 	{
 		ListRemoveAt(l->actors, selectionIndex);
-		selectionType = SELTYPE_NONE;
-		selectionIndex = -1;
-	} else if (selectionType == SELTYPE_TRIGGER)
-	{
-		ListRemoveAt(l->triggers, selectionIndex);
 		selectionType = SELTYPE_NONE;
 		selectionIndex = -1;
 	}
@@ -192,14 +179,6 @@ static void new_activated(GSimpleAction *, GVariant *, gpointer)
 void add_actor_menu_item_activated(GSimpleAction *, GVariant *, gpointer)
 {
 	add_actor_clicked(NULL, NULL);
-}
-
-/**
- * Callback for when the add trigger menu item is pressed
- */
-void add_trigger_menu_item_activated(GSimpleAction *, GVariant *, gpointer)
-{
-	add_trigger_clicked(NULL, NULL);
 }
 
 /**
@@ -515,56 +494,6 @@ void fog_end_value_changed(GtkRange *self, gpointer)
 
 #pragma endregion
 
-#pragma region Trigger Sidebar
-
-/**
- * Callback for when the trigger rotation value is changed
- */
-static void trigger_rotation_value_changed(GtkSpinButton *self, gpointer)
-{
-	Trigger *t = ListGet(l->triggers, selectionIndex);
-	t->rotation = degToRad(gtk_spin_button_get_value(self));
-}
-
-/**
- * Callback for when the trigger extents x value is changed
- */
-static void trigger_extents_x_value_changed(GtkSpinButton *self, gpointer)
-{
-	Trigger *t = ListGet(l->triggers, selectionIndex);
-	t->extents.x = gtk_spin_button_get_value(self);
-}
-
-/**
- * Callback for when the trigger extents y value is changed
- */
-static void trigger_extents_y_value_changed(GtkSpinButton *self, gpointer)
-{
-	Trigger *t = ListGet(l->triggers, selectionIndex);
-	t->extents.y = gtk_spin_button_get_value(self);
-}
-
-/**
- * Callback for when the trigger command is changed
- */
-static void trigger_command_changed(GtkEditable *self, gpointer)
-{
-	Trigger *t = ListGet(l->triggers, selectionIndex);
-	const char *text = gtk_editable_get_text(self);
-	strcpy(t->command, text);
-}
-
-/**
- * Callback for when the trigger one shot flag is changed
- */
-static void trigger_one_shot_toggled(GtkToggleButton *, gpointer)
-{
-	Trigger *t = ListGet(l->triggers, selectionIndex);
-	t->flags |= TRIGGER_FLAG_ONE_SHOT;
-}
-
-#pragma endregion
-
 #pragma endregion
 
 /**
@@ -576,7 +505,6 @@ static GActionEntry menu_entries[] = {
 	{"save", save_activated, NULL, NULL, NULL},
 	{"quit", quit_activated, NULL, NULL, NULL},
 	{"add_actor", add_actor_menu_item_activated, NULL, NULL, NULL},
-	{"add_trigger", add_trigger_menu_item_activated, NULL, NULL, NULL},
 	{"delete_selected", delete_selected_menu_item_activated, NULL, NULL, NULL},
 	{"zoom_in", zoom_in_activated, NULL, NULL, NULL},
 	{"zoom_out", zoom_out_activated, NULL, NULL, NULL},
@@ -684,8 +612,6 @@ GtkWidget *SetupMenuBar(GtkApplication *app)
 
 	GMenu *edit_menu = g_menu_new();
 	g_menu_append(edit_menu, "Add Actor", "app.add_actor");
-	g_menu_append(edit_menu, "Add Trigger", "app.add_trigger");
-	//g_menu_append(edit_menu, "Add Model", "app.add_model");
 	g_menu_append(edit_menu, "Delete Selected", "app.delete_selected");
 	g_menu_append_submenu(menu, "Edit", G_MENU_MODEL(edit_menu));
 
@@ -737,9 +663,6 @@ GtkWidget *SetupMenuBar(GtkApplication *app)
 	const gchar *add_actor_accels[] = {"<Shift>A", NULL};
 	gtk_application_set_accels_for_action(app, "app.add_actor", add_actor_accels);
 
-	const gchar *add_trigger_accels[] = {"<Shift>T", NULL};
-	gtk_application_set_accels_for_action(app, "app.add_trigger", add_trigger_accels);
-
 	const gchar *delete_selected_accels[] = {"Delete", NULL};
 	gtk_application_set_accels_for_action(app, "app.delete_selected", delete_selected_accels);
 
@@ -758,8 +681,6 @@ GtkWidget *SetupToolbar()
 	g_signal_connect(addWallButton, "clicked", G_CALLBACK(add_wall_clicked), NULL);
 	GtkWidget *addActorButton = gtk_button_new_with_label("Add Actor");
 	g_signal_connect(addActorButton, "clicked", G_CALLBACK(add_actor_clicked), NULL);
-	GtkWidget *addTriggerButton = gtk_button_new_with_label("Add Trigger");
-	g_signal_connect(addTriggerButton, "clicked", G_CALLBACK(add_trigger_clicked), NULL);
 
 	GtkWidget *deleteSelectedButton = gtk_button_new_with_label("Delete Selected");
 	g_signal_connect(deleteSelectedButton, "clicked", G_CALLBACK(delete_selected_clicked), NULL);
@@ -770,7 +691,6 @@ GtkWidget *SetupToolbar()
 	gtk_box_append(GTK_BOX(toolbar), addWallButton);
 	gtk_box_append(GTK_BOX(toolbar), sep2);
 	gtk_box_append(GTK_BOX(toolbar), addActorButton);
-	gtk_box_append(GTK_BOX(toolbar), addTriggerButton);
 	gtk_box_append(GTK_BOX(toolbar), sep);
 	gtk_box_append(GTK_BOX(toolbar), deleteSelectedButton);
 
@@ -1142,64 +1062,6 @@ GtkWidget *SetupLSidebar_PlayerSelection()
 	return playerSelectionSidebar;
 }
 
-/**
- * Create the trigger sidebar
- */
-GtkWidget *SetupLSidebar_TriggerSelection()
-{
-	GtkWidget *triggerSelectionSidebar = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0);
-
-	const Trigger *t = ListGet(l->triggers, selectionIndex);
-
-	GtkWidget *rotationLabel = gtk_label_new("Rotation");
-	gtk_label_set_xalign(GTK_LABEL(rotationLabel), 0);
-	gtk_box_append(GTK_BOX(triggerSelectionSidebar), rotationLabel);
-	GtkWidget *rotationSpin = gtk_spin_button_new_with_range(0, 359, 1);
-	gtk_spin_button_set_value(GTK_SPIN_BUTTON(rotationSpin), radToDeg(t->rotation));
-	gtk_spin_button_set_wrap(GTK_SPIN_BUTTON(rotationSpin), TRUE);
-	g_signal_connect(rotationSpin, "value-changed", G_CALLBACK(trigger_rotation_value_changed), NULL);
-	gtk_box_append(GTK_BOX(triggerSelectionSidebar), rotationSpin);
-
-	GtkWidget *extentsLabel = gtk_label_new("Extents");
-	gtk_label_set_xalign(GTK_LABEL(extentsLabel), 0);
-	gtk_box_append(GTK_BOX(triggerSelectionSidebar), extentsLabel);
-	GtkWidget *extentsHBox = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 8);
-	gtk_box_append(GTK_BOX(triggerSelectionSidebar), extentsHBox);
-	GtkWidget *extentsXSpin = gtk_spin_button_new_with_range(0.1, 100, 0.1);
-	gtk_spin_button_set_digits(GTK_SPIN_BUTTON(extentsXSpin), 1);
-	gtk_spin_button_set_value(GTK_SPIN_BUTTON(extentsXSpin), t->extents.x);
-	g_signal_connect(extentsXSpin, "value-changed", G_CALLBACK(trigger_extents_x_value_changed), NULL);
-	gtk_box_append(GTK_BOX(extentsHBox), extentsXSpin);
-	GtkWidget *extentsYSpin = gtk_spin_button_new_with_range(0.1, 100, 0.1);
-	gtk_spin_button_set_digits(GTK_SPIN_BUTTON(extentsYSpin), 1);
-	gtk_spin_button_set_value(GTK_SPIN_BUTTON(extentsYSpin), t->extents.y);
-	g_signal_connect(extentsYSpin, "value-changed", G_CALLBACK(trigger_extents_y_value_changed), NULL);
-	gtk_box_append(GTK_BOX(extentsHBox), extentsYSpin);
-
-	GtkWidget *commandLabel = gtk_label_new("Command");
-	gtk_label_set_xalign(GTK_LABEL(commandLabel), 0);
-	gtk_box_append(GTK_BOX(triggerSelectionSidebar), commandLabel);
-	GtkWidget *commandBox = gtk_entry_new();
-	gtk_widget_add_css_class(commandBox, "command");
-	gtk_entry_set_placeholder_text(GTK_ENTRY(commandBox), "Command");
-	gtk_entry_set_max_length(GTK_ENTRY(commandBox), 60);
-	gtk_entry_buffer_set_text(gtk_entry_get_buffer(GTK_ENTRY(commandBox)), t->command, -1);
-	g_signal_connect(commandBox, "changed", G_CALLBACK(trigger_command_changed), NULL);
-	gtk_box_append(GTK_BOX(triggerSelectionSidebar), commandBox);
-
-	GtkWidget *sep1 = gtk_separator_new(GTK_ORIENTATION_HORIZONTAL);
-	gtk_widget_set_margin_top(sep1, 8);
-	gtk_widget_set_margin_bottom(sep1, 8);
-	gtk_box_append(GTK_BOX(triggerSelectionSidebar), sep1);
-
-	GtkWidget *oneShotCheckbox = gtk_check_button_new_with_label("One Shot");
-	gtk_check_button_set_active(GTK_CHECK_BUTTON(oneShotCheckbox), t->flags & TRIGGER_FLAG_ONE_SHOT);
-	g_signal_connect(oneShotCheckbox, "toggled", G_CALLBACK(trigger_one_shot_toggled), NULL);
-	gtk_box_append(GTK_BOX(triggerSelectionSidebar), oneShotCheckbox);
-
-	return triggerSelectionSidebar;
-}
-
 #pragma endregion
 
 /**
@@ -1314,9 +1176,6 @@ void SelectionTypeChanged()
 			break;
 		case SELTYPE_PLAYER:
 			newSidebar = SetupLSidebar_PlayerSelection();
-			break;
-		case SELTYPE_TRIGGER:
-			newSidebar = SetupLSidebar_TriggerSelection();
 			break;
 		default:
 			newSidebar = SetupLSidebar_NoSelection();

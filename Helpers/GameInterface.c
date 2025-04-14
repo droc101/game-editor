@@ -118,7 +118,8 @@ bool LoadDefFile(char *path)
 			json_object_get_type(json_object_object_get(actor, "name")) != json_type_string ||
 			json_object_get_type(json_object_object_get(actor, "params")) != json_type_array ||
 			json_object_get_type(json_object_object_get(actor, "inputs")) != json_type_array ||
-			json_object_get_type(json_object_object_get(actor, "outputs")) != json_type_array)
+			json_object_get_type(json_object_object_get(actor, "outputs")) != json_type_array ||
+			json_object_get_type(json_object_object_get(actor, "render_type")) != json_type_string)
 		{
 			printf("Invalid def file format: %s (invalid actor definition - missing or incorrect keys)\n", path);
 			json_object_put(root);
@@ -138,6 +139,16 @@ bool LoadDefFile(char *path)
 			}
 		}
 		if (!def) return false;
+
+		const char *renderTypeString = json_object_get_string(json_object_object_get(actor, "render_type"));
+		if (strcmp("trigger", renderTypeString) == 0)
+		{
+			def->renderType = TRIGGER;
+		} else
+		{
+			def->renderType = NORMAL;
+		}
+
 		const size_t numParams = json_object_array_length(json_object_object_get(actor, "params"));
 		def->numParams = numParams;
 		def->params = calloc(numParams, sizeof(ActorDefParam));

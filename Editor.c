@@ -133,8 +133,6 @@ void EditorDestroyLevel()
 	}
 	ListFreeWithData(l->actors);
 	ListFreeWithData(l->walls);
-	ListFreeWithData(l->triggers);
-	//ListFreeWithData(l->models);
 	free(l);
 	l = NULL;
 }
@@ -151,7 +149,6 @@ void EditorNewLevel()
 
 	l->walls = CreateList();
 	l->actors = CreateList();
-	l->triggers = CreateList();
 	strcpy(l->name, "Unnamed Level");
 	l->courseNum = -1;
 	l->hasCeiling = false;
@@ -249,18 +246,6 @@ void ProcessHover()
 		}
 	}
 
-	for (int t = 0; t < l->triggers->size; t++)
-	{
-		const Trigger *trig = ListGet(l->triggers, t);
-		const Vector2 scaledTriggerPos = WorldToScreen(trig->position);
-		if (Vector2Distance(scaledTriggerPos, GetLocalMousePos()) < 10)
-		{
-			hoverType = SELTYPE_TRIGGER;
-			hoverIndex = t;
-			break;
-		}
-	}
-
 	const Vector2 scaledPlayerPos = WorldToScreen(l->player.pos);
 	if (Vector2Distance(scaledPlayerPos, GetLocalMousePos()) < 10)
 	{
@@ -304,10 +289,6 @@ void ProcessDrag()
 				const Vector2 wp = ScreenToWorldSnapped(GetLocalMousePos());
 				w->a = v2(round(wp.x - wallDragAOffset.x), round(wp.y - wallDragAOffset.y));
 				w->b = v2(round(wp.x - wallDragBOffset.x), round(wp.y - wallDragBOffset.y));
-			} else if (selectionType == SELTYPE_TRIGGER)
-			{
-				Trigger *t = ListGet(l->triggers, selectionIndex);
-				t->position = ScreenToWorldSnapped(GetLocalMousePos());
 			}
 		}
 	}
@@ -422,17 +403,6 @@ void EditorUpdate()
 				selectionType = SELTYPE_ACTOR;
 				selectionIndex = l->actors->size - 1;
 				SelectionTypeChanged();
-			} else if (addRequest == ADDREQ_TRIGGER)
-			{
-				Trigger *t = malloc(sizeof(Trigger));
-				memset(t, 0, sizeof(Trigger));
-				t->position = ScreenToWorldSnapped(GetLocalMousePos());
-				t->extents = v2(5, 5);
-				t->rotation = 0.0;
-				ListAdd(l->triggers, t);
-				selectionType = SELTYPE_TRIGGER;
-				selectionIndex = l->triggers->size - 1;
-				SelectionTypeChanged();
 			}
 			isDragging = true;
 			if (addRequest != ADDREQ_WALL)
@@ -477,7 +447,7 @@ void RenderWall(const Wall *wall, const int w)
 	}
 }
 
-void RenderActor(const Actor *actor, const int a)
+void RenderActorNormal(const Actor *actor, const int a)
 {
 	const Vector2 scaledActorPos = WorldToScreen(actor->position);
 
@@ -497,26 +467,34 @@ void RenderActor(const Actor *actor, const int a)
 	}
 }
 
-void RenderTrigger(const Trigger *trigger, const int t)
+void RenderActorTrigger(const Actor *actor, const int a)
 {
-	const Vector2 scaledTriggerPos = WorldToScreen(trigger->position);
+	const Vector2 scaledTriggerPos = WorldToScreen(actor->position);
 
-	DrawArea(scaledTriggerPos, WorldToScreenSize(trigger->extents), trigger->rotation, triggerArea);
+	DrawArea(scaledTriggerPos, WorldToScreenSize(v2(actor->paramA, actor->paramB)), actor->rotation, triggerArea);
 
 	DrawRect(v2(scaledTriggerPos.x - 6, scaledTriggerPos.y - 6), v2(12, 12), triggerNode);
 
-	if (hoverType == SELTYPE_TRIGGER && hoverIndex == t)
+	if (hoverType == SELTYPE_ACTOR && hoverIndex == a)
 	{
 		DrawRect(v2(scaledTriggerPos.x - 6, scaledTriggerPos.y - 6), v2(12, 12), triggerNodeHover);
 	}
-	if (selectionType == SELTYPE_TRIGGER && selectionIndex == t)
+	if (selectionType == SELTYPE_ACTOR && selectionIndex == a)
 	{
 		DrawRectOutline(v2(scaledTriggerPos.x - 6, scaledTriggerPos.y - 6), v2(12, 12), selectionOutline, 2.0);
 	}
-	Vector2 textPos = scaledTriggerPos;
-	textPos = Vector2Add(textPos, v2(0, 16));
-	textPos = Vector2Sub(textPos, Vector2Scale(WorldToScreenSize(trigger->extents), 0.5));
-	RenderText(trigger->command, textPos, 16, triggerCommand);
+}
+
+void RenderActor(const Actor *actor, const int a)
+{
+	const ActorDefinition *def = GetActorDef(actor->actorType);
+	if (def->renderType == NORMAL)
+	{
+		RenderActorNormal(actor, a);
+	} else if (def->renderType == TRIGGER)
+	{
+		RenderActorTrigger(actor, a);
+	}
 }
 
 void RenderPlayer(const Player *plr)
@@ -552,12 +530,6 @@ void EditorRenderLevel()
 	scrollPosCentered = v2(scrollPos.x + (GetWindowSize().x / 2), scrollPos.y + (GetWindowSize().y / 2));
 
 	RenderGrid();
-
-	for (int t = 0; t < l->triggers->size; t++)
-	{
-		const Trigger *trigger = ListGet(l->triggers, t);
-		RenderTrigger(trigger, t);
-	}
 
 	for (int w = 0; w < l->walls->size; w++)
 	{

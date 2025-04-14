@@ -14,16 +14,14 @@ typedef enum SelectionType
 	SELTYPE_WALL_B,
 	SELTYPE_WALL_LINE,
 	SELTYPE_ACTOR,
-	SELTYPE_PLAYER,
-	SELTYPE_TRIGGER,
+	SELTYPE_PLAYER
 } SelectionType;
 
 typedef enum AddRequestType
 {
 	ADDREQ_NONE,
 	ADDREQ_WALL,
-	ADDREQ_ACTOR,
-	ADDREQ_TRIGGER,
+	ADDREQ_ACTOR
 } AddRequestType;
 
 extern AddRequestType addRequest;

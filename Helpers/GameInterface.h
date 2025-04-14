@@ -10,6 +10,7 @@
 #define DEF_FILE_VERSION 2
 
 typedef enum ActorDefSignalParamType ActorDefSignalParamType;
+typedef enum ActorDefRenderType ActorDefRenderType;
 
 typedef struct ActorDefinition ActorDefinition;
 typedef struct ActorDefParam ActorDefParam;
@@ -24,10 +25,17 @@ enum ActorDefSignalParamType
 	ACTOR
 };
 
+enum ActorDefRenderType
+{
+	NORMAL,
+	TRIGGER
+};
+
 struct ActorDefinition
 {
 	uint actorType;
 	char actorName[64];
+	ActorDefRenderType renderType;
 	uint numParams;
 	ActorDefParam *params;
 	uint numInputs;

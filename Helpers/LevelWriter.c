@@ -81,24 +81,6 @@ void WriteLevel(const Level *level, const char *path)
 		fwrite(&wall->uvOffset, sizeof(float), 1, file);
 	}
 
-	const uint triggerCount = level->triggers->size;
-	fwrite(&triggerCount, sizeof(uint), 1, file);
-
-	for (int i = 0; i < triggerCount; i++)
-	{
-		const Trigger *trigger = ListGet(level->triggers, i);
-		fwrite(&trigger->position.x, sizeof(double), 1, file);
-		fwrite(&trigger->position.y, sizeof(double), 1, file);
-		fwrite(&trigger->rotation, sizeof(double), 1, file);
-		fwrite(&trigger->extents.x, sizeof(double), 1, file);
-		fwrite(&trigger->extents.y, sizeof(double), 1, file);
-		fwrite(&trigger->command, sizeof(char) * 64, 1, file);
-		fwrite(&trigger->flags, sizeof(uint), 1, file);
-	}
-
-	const uint future = 0;
-	fwrite(&future, sizeof(uint), 1, file);
-
 	fclose(file);
 }
 
@@ -114,7 +96,6 @@ Level *ReadLevel(const char *path)
 	Level *level = malloc(sizeof(Level));
 	level->walls = CreateList();
 	level->actors = CreateList();
-	level->triggers = CreateList();
 
 	fread(&level->name, sizeof(char), 32, file);
 	fread(&level->courseNum, sizeof(short), 1, file);
@@ -135,6 +116,7 @@ Level *ReadLevel(const char *path)
 	for (int i = 0; i < actorCount; i++)
 	{
 		Actor *actor = malloc(sizeof(Actor));
+		actor->ioConnections = CreateList();
 		fread(&actor->position.x, sizeof(double), 1, file);
 		fread(&actor->position.y, sizeof(double), 1, file);
 		fread(&actor->rotation, sizeof(double), 1, file);
@@ -155,7 +137,6 @@ Level *ReadLevel(const char *path)
 			fread(&connection->outParamOverride, sizeof(char) * 64, 1, file);
 			ListAdd(actor->ioConnections, connection);
 		}
-		actor->ioConnections = CreateList();
 
 		ListAdd(level->actors, actor);
 	}
@@ -175,23 +156,6 @@ Level *ReadLevel(const char *path)
 		fread(&wall->uvOffset, sizeof(float), 1, file);
 
 		ListAdd(level->walls, wall);
-	}
-
-	uint triggerCount = 0;
-	fread(&triggerCount, sizeof(uint), 1, file);
-
-	for (int i = 0; i < triggerCount; i++)
-	{
-		Trigger *trigger = malloc(sizeof(Trigger));
-		fread(&trigger->position.x, sizeof(double), 1, file);
-		fread(&trigger->position.y, sizeof(double), 1, file);
-		fread(&trigger->rotation, sizeof(double), 1, file);
-		fread(&trigger->extents.x, sizeof(double), 1, file);
-		fread(&trigger->extents.y, sizeof(double), 1, file);
-		fread(&trigger->command, sizeof(char) * 64, 1, file);
-		fread(&trigger->flags, sizeof(uint), 1, file);
-
-		ListAdd(level->triggers, trigger);
 	}
 
 	return level;
