@@ -54,14 +54,14 @@ typedef struct ActorConnection ActorConnection;
 // Utility functions are in Structs/Vector2.h
 struct Vector2
 {
-	double x;
-	double y;
+	float x;
+	float y;
 };
 
 struct Player
 {
 	Vector2 pos;
-	double rotation;
+	float rotation;
 };
 
 // Utility functions are in Structs/wall.h
@@ -100,7 +100,7 @@ struct Level
 struct Actor
 {
 	Vector2 position; // The position of the actor
-	double rotation; // The rotation of the actor
+	float rotation; // The rotation of the actor
 	int actorType; // type of actor. do not change this after creation.
 	byte paramA; // extra parameters for the actor. saved in level data, so can be used during Init
 	byte paramB;

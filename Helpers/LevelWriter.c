@@ -31,9 +31,9 @@ void WriteLevel(const Level *level, const char *path)
 	fwrite(&level->fogStart, sizeof(double), 1, file);
 	fwrite(&level->fogEnd, sizeof(double), 1, file);
 	// Write the player position and rotation
-	fwrite(&level->player.pos.x, sizeof(double), 1, file);
-	fwrite(&level->player.pos.y, sizeof(double), 1, file);
-	fwrite(&level->player.rotation, sizeof(double), 1, file);
+	fwrite(&level->player.pos.x, sizeof(float), 1, file);
+	fwrite(&level->player.pos.y, sizeof(float), 1, file);
+	fwrite(&level->player.rotation, sizeof(float), 1, file);
 
 	// Write the number of actors
 	const uint actorCount = level->actors->size;
@@ -43,9 +43,9 @@ void WriteLevel(const Level *level, const char *path)
 	for (int i = 0; i < actorCount; i++)
 	{
 		const Actor *actor = ListGet(level->actors, i);
-		fwrite(&actor->position.x, sizeof(double), 1, file);
-		fwrite(&actor->position.y, sizeof(double), 1, file);
-		fwrite(&actor->rotation, sizeof(double), 1, file);
+		fwrite(&actor->position.x, sizeof(float), 1, file);
+		fwrite(&actor->position.y, sizeof(float), 1, file);
+		fwrite(&actor->rotation, sizeof(float), 1, file);
 		fwrite(&actor->actorType, sizeof(int), 1, file);
 		fwrite(&actor->paramA, sizeof(byte), 1, file);
 		fwrite(&actor->paramB, sizeof(byte), 1, file);
@@ -72,10 +72,10 @@ void WriteLevel(const Level *level, const char *path)
 	for (int i = 0; i < wallCount; i++)
 	{
 		const Wall *wall = ListGet(level->walls, i);
-		fwrite(&wall->a.x, sizeof(double), 1, file);
-		fwrite(&wall->a.y, sizeof(double), 1, file);
-		fwrite(&wall->b.x, sizeof(double), 1, file);
-		fwrite(&wall->b.y, sizeof(double), 1, file);
+		fwrite(&wall->a.x, sizeof(float), 1, file);
+		fwrite(&wall->a.y, sizeof(float), 1, file);
+		fwrite(&wall->b.x, sizeof(float), 1, file);
+		fwrite(&wall->b.y, sizeof(float), 1, file);
 		fwrite(wall->tex, sizeof(char), 32, file);
 		fwrite(&wall->uvScale, sizeof(float), 1, file);
 		fwrite(&wall->uvOffset, sizeof(float), 1, file);
@@ -106,9 +106,9 @@ Level *ReadLevel(const char *path)
 	fread(&level->fogColor, sizeof(uint), 1, file);
 	fread(&level->fogStart, sizeof(double), 1, file);
 	fread(&level->fogEnd, sizeof(double), 1, file);
-	fread(&level->player.pos.x, sizeof(double), 1, file);
-	fread(&level->player.pos.y, sizeof(double), 1, file);
-	fread(&level->player.rotation, sizeof(double), 1, file);
+	fread(&level->player.pos.x, sizeof(float), 1, file);
+	fread(&level->player.pos.y, sizeof(float), 1, file);
+	fread(&level->player.rotation, sizeof(float), 1, file);
 
 	uint actorCount = 0;
 	fread(&actorCount, sizeof(uint), 1, file);
@@ -117,9 +117,9 @@ Level *ReadLevel(const char *path)
 	{
 		Actor *actor = malloc(sizeof(Actor));
 		actor->ioConnections = CreateList();
-		fread(&actor->position.x, sizeof(double), 1, file);
-		fread(&actor->position.y, sizeof(double), 1, file);
-		fread(&actor->rotation, sizeof(double), 1, file);
+		fread(&actor->position.x, sizeof(float), 1, file);
+		fread(&actor->position.y, sizeof(float), 1, file);
+		fread(&actor->rotation, sizeof(float), 1, file);
 		fread(&actor->actorType, sizeof(int), 1, file);
 		fread(&actor->paramA, sizeof(byte), 1, file);
 		fread(&actor->paramB, sizeof(byte), 1, file);
@@ -147,10 +147,10 @@ Level *ReadLevel(const char *path)
 	for (int i = 0; i < wallCount; i++)
 	{
 		Wall *wall = malloc(sizeof(Wall));
-		fread(&wall->a.x, sizeof(double), 1, file);
-		fread(&wall->a.y, sizeof(double), 1, file);
-		fread(&wall->b.x, sizeof(double), 1, file);
-		fread(&wall->b.y, sizeof(double), 1, file);
+		fread(&wall->a.x, sizeof(float), 1, file);
+		fread(&wall->a.y, sizeof(float), 1, file);
+		fread(&wall->b.x, sizeof(float), 1, file);
+		fread(&wall->b.y, sizeof(float), 1, file);
 		fread(&wall->tex, sizeof(char), 32, file);
 		fread(&wall->uvScale, sizeof(float), 1, file);
 		fread(&wall->uvOffset, sizeof(float), 1, file);
