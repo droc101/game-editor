@@ -28,8 +28,8 @@ void WriteLevel(const Level *level, const char *path)
 	fwrite(level->music, sizeof(char), 32, file);
 	// Write the fog color and start/end
 	fwrite(&level->fogColor, sizeof(uint), 1, file);
-	fwrite(&level->fogStart, sizeof(double), 1, file);
-	fwrite(&level->fogEnd, sizeof(double), 1, file);
+	fwrite(&level->fogStart, sizeof(float), 1, file);
+	fwrite(&level->fogEnd, sizeof(float), 1, file);
 	// Write the player position and rotation
 	fwrite(&level->player.pos.x, sizeof(float), 1, file);
 	fwrite(&level->player.pos.y, sizeof(float), 1, file);
@@ -104,8 +104,8 @@ Level *ReadLevel(const char *path)
 	fread(&level->floorTex, sizeof(char), 32, file);
 	fread(&level->music, sizeof(char), 32, file);
 	fread(&level->fogColor, sizeof(uint), 1, file);
-	fread(&level->fogStart, sizeof(double), 1, file);
-	fread(&level->fogEnd, sizeof(double), 1, file);
+	fread(&level->fogStart, sizeof(float), 1, file);
+	fread(&level->fogEnd, sizeof(float), 1, file);
 	fread(&level->player.pos.x, sizeof(float), 1, file);
 	fread(&level->player.pos.y, sizeof(float), 1, file);
 	fread(&level->player.rotation, sizeof(float), 1, file);

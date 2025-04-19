@@ -90,8 +90,8 @@ struct Level
 	char music[32];
 
 	uint fogColor;
-	double fogStart;
-	double fogEnd;
+	float fogStart;
+	float fogEnd;
 
 	Player player;
 };
