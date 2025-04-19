@@ -5,6 +5,7 @@
 #include "LevelWriter.h"
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 void WriteLevel(const Level *level, const char *path)
 {
@@ -60,7 +61,7 @@ void WriteLevel(const Level *level, const char *path)
 			fwrite(&connection->myOutput, sizeof(byte), 1, file);
 			fwrite(&connection->outActorName, sizeof(char) * 64, 1, file);
 			fwrite(&connection->targetInput, sizeof(byte), 1, file);
-			fwrite(&connection->outParamOverride, sizeof(char) * 64, 1, file);
+			fwrite(&connection->outParamOverride, sizeof(Param), 1, file);
 		}
 	}
 
@@ -134,7 +135,7 @@ Level *ReadLevel(const char *path)
 			fread(&connection->myOutput, sizeof(byte), 1, file);
 			fread(&connection->outActorName, sizeof(char) * 64, 1, file);
 			fread(&connection->targetInput, sizeof(byte), 1, file);
-			fread(&connection->outParamOverride, sizeof(char) * 64, 1, file);
+			fread(&connection->outParamOverride, sizeof(Param), 1, file);
 			ListAdd(actor->ioConnections, connection);
 		}
 

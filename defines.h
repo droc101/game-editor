@@ -17,6 +17,8 @@ typedef uint16_t ushort;
 typedef uint32_t uint;
 typedef uint64_t ulong;
 
+typedef enum ParamType ParamType;
+
 // Struct forward declarations
 typedef struct Vector2 Vector2;
 typedef struct Player Player;
@@ -25,6 +27,7 @@ typedef struct Level Level;
 typedef struct Actor Actor;
 typedef struct Options Options;
 typedef struct ActorConnection ActorConnection;
+typedef struct Param Param;
 
 #pragma endregion
 
@@ -48,8 +51,36 @@ typedef struct ActorConnection ActorConnection;
 
 #pragma endregion
 
+#pragma region Enum definitions
+
+enum ParamType
+{
+	PARAM_TYPE_BYTE,
+	PARAM_TYPE_INTEGER,
+	PARAM_TYPE_FLOAT,
+	PARAM_TYPE_BOOL,
+	PARAM_TYPE_STRING,
+	PARAM_TYPE_NONE
+};
+
+#pragma endregion
 
 #pragma region Struct definitions
+
+union _ParamInternal
+{
+	byte byteValue;
+	int intValue;
+	float floatValue;
+	bool boolValue;
+	char stringValue[64];
+};
+
+struct Param
+{
+	ParamType type;
+	union _ParamInternal value;
+};
 
 // Utility functions are in Structs/Vector2.h
 struct Vector2
@@ -121,7 +152,7 @@ struct ActorConnection
 	byte targetInput;
 	byte myOutput;
 	char outActorName[64];
-	char outParamOverride[64];
+	Param outParamOverride;
 };
 
 #pragma endregion
