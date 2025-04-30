@@ -222,6 +222,29 @@ static void center_origin_activated(GSimpleAction *, GVariant *, gpointer)
 	scrollPos = v2s(0);
 }
 
+static void snap_lower_activated(GSimpleAction *, GVariant *, gpointer)
+{
+	snapIndex--;
+	if (snapIndex < 0)
+	{
+		snapIndex = 0;
+	}
+}
+
+static void snap_higher_activated(GSimpleAction *, GVariant *, gpointer)
+{
+	snapIndex++;
+	if (snapIndex >= snapCount)
+	{
+		snapIndex = snapCount - 1;
+	}
+}
+
+static void snap_reset_activated(GSimpleAction *, GVariant *, gpointer)
+{
+	snapIndex = 4;
+}
+
 #pragma endregion
 
 #pragma region Tools Menu
@@ -506,6 +529,9 @@ static GActionEntry menu_entries[] = {
 	{"zoom_out", zoom_out_activated, NULL, NULL, NULL},
 	{"reset_zoom", reset_zoom_activated, NULL, NULL, NULL},
 	{"center_origin", center_origin_activated, NULL, NULL, NULL},
+	{"snap_lower", snap_lower_activated, NULL, NULL, NULL},
+	{"snap_reset", snap_reset_activated, NULL, NULL, NULL},
+	{"snap_higher", snap_higher_activated, NULL, NULL, NULL},
 	{"setup", setup_activated, NULL, NULL, NULL},
 	{"about", about_activated, NULL, NULL, NULL},
 };
@@ -615,6 +641,9 @@ GtkWidget *SetupMenuBar(GtkApplication *app)
 	g_menu_append(view_menu, "Zoom Out", "app.zoom_out");
 	g_menu_append(view_menu, "Reset Zoom", "app.reset_zoom");
 	g_menu_append(view_menu, "Center Origin", "app.center_origin");
+	g_menu_append(view_menu, "Snap On Grid: Lower", "app.snap_lower");
+	g_menu_append(view_menu, "Snap On Grid: Higher", "app.snap_higher");
+	g_menu_append(view_menu, "Snap On Grid: Reset", "app.snap_reset");
 	g_menu_append_submenu(menu, "View", G_MENU_MODEL(view_menu));
 
 	GMenu *tools_menu = g_menu_new();
@@ -660,6 +689,11 @@ GtkWidget *SetupMenuBar(GtkApplication *app)
 
 	const gchar *delete_selected_accels[] = {"Delete", NULL};
 	gtk_application_set_accels_for_action(app, "app.delete_selected", delete_selected_accels);
+
+	const gchar *snap_lower_accels[] = {"bracketleft", NULL};
+	gtk_application_set_accels_for_action(app, "app.snap_lower", snap_lower_accels);
+	const gchar *snap_higher_accels[] = {"bracketright", NULL};
+	gtk_application_set_accels_for_action(app, "app.snap_higher", snap_higher_accels);
 
 	return menuBar;
 }

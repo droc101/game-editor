@@ -38,6 +38,9 @@ extern double zoom;
 extern List *textureList;
 extern List *musicList;
 
+extern int snapIndex;
+extern const int snapCount;
+
 void Zoom(double by);
 
 void EditorDestroyLevel();

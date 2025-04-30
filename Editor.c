@@ -54,6 +54,11 @@ const GdkRGBA triggerNodeHover = Color(0x00000040);
 const GdkRGBA triggerArea = Color(0xFF00FF40);
 const GdkRGBA triggerCommand = Color(0xFFFFFF80);
 
+const float snaps[] = {0.0625, 0.125, 0.25, 0.5, 1.0, 2.0, 4.0, 8.0};
+const float snapsInv[] = {16.0, 8.0, 4.0, 2.0, 1.0, 0.5, 0.25, 0.125}; // 1.0 / snaps[i]
+int snapIndex = 4; // 4 = 1.0
+const int snapCount = sizeof(snaps) / sizeof(snaps[0]);
+
 void EditorInit()
 {
 	LoadOptions(&options);
@@ -178,14 +183,34 @@ Vector2 ScreenToWorld(const Vector2 sp)
 
 Vector2 ScreenToWorldSnapped(const Vector2 sp)
 {
+	const float snapInvValue = snapsInv[snapIndex];
 	Vector2 realPos = ScreenToWorld(sp);
-	realPos.x = round(realPos.x);
-	realPos.y = round(realPos.y);
+	realPos.x = round(realPos.x * snapInvValue) / snapInvValue;
+	realPos.y = round(realPos.y * snapInvValue) / snapInvValue;
 	return realPos;
+}
+
+float roundToGrid(const float x)
+{
+	const float snapInvValue = snapsInv[snapIndex];
+	return round(x * snapInvValue) / snapInvValue;
+}
+
+float floorToGrid(const float x)
+{
+	const float snapInvValue = snapsInv[snapIndex];
+	return floorf(x * snapInvValue) / snapInvValue;
+}
+
+float ceilToGrid(const float x)
+{
+	const float snapInvValue = snapsInv[snapIndex];
+	return ceilf(x * snapInvValue) / snapInvValue;
 }
 
 void RenderGrid()
 {
+	// TODO: Draw grid using snap size instead of only on integers
 	const int gridSpacing = zoom;
 	const int gridOffsetX = (int)scrollPosCentered.x % gridSpacing;
 	const int gridOffsetY = (int)scrollPosCentered.y % gridSpacing;
