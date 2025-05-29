@@ -501,7 +501,9 @@ void RenderActorTrigger(const Actor *actor, const int a)
 {
 	const Vector2 scaledTriggerPos = WorldToScreen(actor->position);
 
-	// DrawArea(scaledTriggerPos, WorldToScreenSize(v2(actor->paramA, actor->paramB)), actor->rotation, triggerArea);
+	float triggerWidth = KvGetFloat(&actor->params, "width", 1.0f);
+	float triggerHeight = KvGetFloat(&actor->params, "depth", 1.0f);
+	DrawArea(scaledTriggerPos, WorldToScreenSize(v2(triggerWidth, triggerHeight)), actor->rotation, triggerArea);
 
 	DrawRect(v2(scaledTriggerPos.x - 6, scaledTriggerPos.y - 6), v2(12, 12), triggerNode);
 
