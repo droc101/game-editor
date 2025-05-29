@@ -7,7 +7,7 @@
     opacity: 50%;
 }
 
-switch:checked {
+.skySwitch:checked {
     background: none;
     box-shadow: none;
 }

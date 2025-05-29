@@ -1,25 +1,28 @@
 //
-// Created by droc101 on 1/13/25.
+// Created by droc101 on 4/21/2024.
 //
 
-#ifndef LIST_H
-#define LIST_H
+#ifndef GAME_LIST_H
+#define GAME_LIST_H
 
+#include <stdbool.h>
 #include <stddef.h>
 
 typedef struct List List;
 
 struct List
 {
-	int size;
+	/// The number of slots that are actually in use
+	size_t length;
+	/// The data that the list is storing
 	void **data;
 };
 
 /**
- * Create a new list
- * @return brand-new list just for you
+ * Create a new list of a given size, with zeroed data
+ * @param list A pointer to the list object to initialize
  */
-List *CreateList();
+void ListCreate(List *list);
 
 /**
  * Append an item to the list
@@ -29,11 +32,27 @@ List *CreateList();
 void ListAdd(List *list, void *data);
 
 /**
+ * Append a group of items to a list
+ * @param list The list to append the values to
+ * @param count The number of items to append to the list
+ * @param ... The items to append to the list
+ */
+void ListAddBatched(List *list, size_t count, ...);
+
+/**
+ * Set an item in the list by index
+ * @param list List to set the item in
+ * @param index Index to set
+ * @param data Data to set at the index
+ */
+void ListSet(List *list, size_t index, void *data);
+
+/**
  * Remove an item from the list by index
  * @param list List to remove from
  * @param index Index to remove
  */
-void ListRemoveAt(List *list, int index);
+void ListRemoveAt(List *list, size_t index);
 
 /**
  * Insert an item after a node
@@ -41,28 +60,7 @@ void ListRemoveAt(List *list, int index);
  * @param index Index to insert after
  * @param data Data to insert
  */
-void ListInsertAfter(List *list, int index, void *data);
-
-/**
- * Free the list structure
- * @param list List to free
- * @warning This does not free the data in the list
- */
-void ListFree(List *list);
-
-/**
- * Free the list structure and the data in the list
- * @param list List to free
- * @warning If the data is a struct, any pointers in the struct will not be freed, just the struct itself
- */
-void ListFreeWithData(List *list);
-
-/**
- * Get the size of the list
- * @param list List to get size of
- * @return Number of items in the list
- */
-int ListGetSize(const List *list);
+void ListInsertAfter(List *list, size_t index, void *data);
 
 /**
  * Find an item in the list
@@ -70,7 +68,7 @@ int ListGetSize(const List *list);
  * @param data Data to search for
  * @return Index of the item in the list, -1 if not found
  */
-int ListFind(const List *list, const void *data);
+size_t ListFind(List list, const void *data);
 
 /**
  * Clear all items from the list
@@ -80,11 +78,33 @@ int ListFind(const List *list, const void *data);
 void ListClear(List *list);
 
 /**
+ * Free the list structure
+ * @param list List to free
+ * @param freeListPointer A boolean indicating if the pointer passed to the first argument should be freed.
+ * @warning This does not free the data in the list, but does free the data pointer
+ */
+void ListFree(List *list, bool freeListPointer);
+
+/**
+ * Free the data stored in the list
+ * @param list List to free
+ */
+void ListFreeOnlyContents(List list);
+
+/**
+ * Free the list structure and the data in the list
+ * @param list List to free
+ * @param freeListPointer A boolean indicating if the pointer passed to the first argument should be freed.
+ * @warning If the data is a struct, any pointers in the struct will not be freed, just the struct itself
+ */
+void ListAndContentsFree(List *list, bool freeListPointer);
+
+/**
  * Get an item from the list by index
  * @param list The list to get from
  * @param index The index to get
  */
-#define ListGet(list, index) (list)->data[(index)]
+#define ListGet(list, index) (list).data[(index)]
 
 /**
  * Reallocates memory for an array of arrayLength elements of size bytes each.
@@ -95,5 +115,4 @@ void ListClear(List *list);
  */
 void *GameReallocArray(void *ptr, size_t arrayLength, size_t elementSize);
 
-
-#endif //LIST_H
+#endif //GAME_LIST_H

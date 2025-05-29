@@ -1,92 +1,81 @@
 //
-// Created by droc101 on 1/13/25.
+// Created by droc101 on 4/21/2024.
 //
 
 #include "List.h"
 #include <errno.h>
+#include <signal.h>
+#include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include "../defines.h"
+#include <string.h>
+#include <stdarg.h>
 
-List *CreateList()
+void ListCreate(List *list)
 {
-	List *list = malloc(sizeof(List));
-	list->size = 0;
-	list->data = calloc(0, sizeof(void *));
-	if (list->data == NULL)
-	{
-		exit(1);
-	}
-	return list;
+	list->length = 0;
+	list->data = NULL;
 }
 
 void ListAdd(List *list, void *data)
 {
-	list->size++;
-	void **temp = GameReallocArray(
-			list->data,
-			list->size,
-			sizeof(void *)); // The size should never be 0 here, so we don't need to check for that
-	list->data = temp;
-	list->data[list->size - 1] = data;
+	list->data = GameReallocArray(list->data, list->length + 1, sizeof(void *));
+	list->data[list->length] = data;
+	list->length++;
 }
 
-void ListRemoveAt(List *list, const int index)
+void ListSet(List *list, const size_t index, void *data)
 {
-	for (int i = index; i < list->size - 1; i++)
+	list->data[index] = data;
+}
+
+void ListAddBatched(List *list, const size_t count, ...)
+{
+	list->data = GameReallocArray(list->data, list->length + count, sizeof(void *));
+
+	va_list args;
+	va_start(args, count);
+	for (size_t i = 0; i < count; i++)
 	{
-		list->data[i] = list->data[i + 1];
+		list->data[list->length] = va_arg(args, void *);
+		list->length++;
 	}
-	list->size--;
-	void **temp = GameReallocArray(list->data, list->size, sizeof(void *));
-	if (list->size == 0 && temp == NULL) // reallocarray with size 0 frees the memory
+	va_end(args);
+}
+
+void ListRemoveAt(List *list, const size_t index)
+{
+	list->length--;
+	if (list->length == 0)
 	{
-		temp = malloc(0);
+		free(list->data);
+		list->data = NULL;
+		return;
 	}
-	list->data = temp;
+	memmove(&list->data[index], &list->data[index + 1], sizeof(void *) * (list->length - index));
+	list->data = GameReallocArray(list->data, list->length, sizeof(void *));
 }
 
-void ListInsertAfter(List *list, const int index, void *data)
+void ListInsertAfter(List *list, size_t index, void *data)
 {
-	list->size++;
-	void **temp = GameReallocArray(
-			list->data,
-			list->size,
-			sizeof(void *)); // The size should never be 0 here, so we don't need to check for that
+	index++;
+	list->length++;
+	list->data = GameReallocArray(list->data, list->length, sizeof(void *));
 
-	for (int i = list->size - 1; i > index; i--)
+	memmove(&list->data[index + 1], &list->data[index], sizeof(void *) * (list->length - index - 1));
+	list->data[index] = data;
+}
+
+size_t ListFind(const List list, const void *data)
+{
+	if (!list.length || !list.data)
 	{
-		temp[i] = temp[i - 1];
+		return -1;
 	}
-	temp[index + 1] = data;
-	list->data = temp;
-}
 
-void ListFree(List *list)
-{
-	free(list->data);
-	free(list);
-}
-
-void ListFreeWithData(List *list)
-{
-	for (int i = 0; i < list->size; i++)
+	for (size_t i = 0; i < list.length; i++)
 	{
-		free(list->data[i]);
-	}
-	ListFree(list);
-}
-
-inline int ListGetSize(const List *list)
-{
-	return list->size;
-}
-
-int ListFind(const List *list, const void *data)
-{
-	for (int i = 0; i < list->size; i++)
-	{
-		if (list->data[i] == data)
+		if (list.data[i] == data)
 		{
 			return i;
 		}
@@ -96,21 +85,39 @@ int ListFind(const List *list, const void *data)
 
 void ListClear(List *list)
 {
-	list->size = 0;
+	list->length = 0;
 	free(list->data);
-	list->data = calloc(0, sizeof(void *));
+	list->data = NULL;
+}
+
+void ListFree(List *list, const bool freeListPointer)
+{
+	free(list->data);
+	if (freeListPointer)
+	{
+		free(list);
+	}
+}
+
+void ListFreeOnlyContents(const List list)
+{
+	if (list.length && list.data)
+	{
+		for (size_t i = 0; i < list.length; i++)
+		{
+			free(list.data[i]);
+		}
+	}
+}
+
+void ListAndContentsFree(List *list, const bool freeListPointer)
+{
+	ListFreeOnlyContents(*list);
+
+	ListFree(list, freeListPointer);
 }
 
 void *GameReallocArray(void *ptr, const size_t arrayLength, const size_t elementSize)
 {
-	if (elementSize == 0)
-	{
-		return NULL;
-	}
-	if (arrayLength > SIZE_MAX / elementSize)
-	{
-		errno = ENOMEM;
-		return NULL;
-	}
 	return realloc(ptr, arrayLength * elementSize);
 }

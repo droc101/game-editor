@@ -11,10 +11,11 @@
 
 typedef enum ActorDefSignalParamType ActorDefSignalParamType;
 typedef enum ActorDefRenderType ActorDefRenderType;
+typedef enum StringParamHint StringParamHint;
 
 typedef struct ActorDefinition ActorDefinition;
-typedef struct ActorDefParam ActorDefParam;
 typedef struct ActorDefSignal ActorDefSignal;
+typedef struct ActorDefParam ActorDefParam;
 
 enum ActorDefSignalParamType
 {
@@ -31,6 +32,17 @@ enum ActorDefRenderType
 	TRIGGER
 };
 
+enum StringParamHint
+{
+	HINT_NONE,
+	HINT_MODEL,
+	HINT_TEXTURE,
+	HINT_SOUND,
+	HINT_LEVEL,
+	HINT_ACTOR,
+	HINT_MUSIC
+};
+
 struct ActorDefinition
 {
 	uint actorType;
@@ -44,17 +56,52 @@ struct ActorDefinition
 	ActorDefSignal *outputs;
 };
 
-struct ActorDefParam
-{
-	char name[64];
-	byte min;
-	byte max;
-};
-
 struct ActorDefSignal
 {
 	char name[64];
 	ActorDefSignalParamType paramType;
+};
+
+struct ActorDefParam
+{
+	ParamType type;
+	char name[64];
+	union
+	{
+		struct
+		{
+			byte defaultValue;
+			byte minValue;
+			byte maxValue;
+		} byteDef;
+		struct
+		{
+			int defaultValue;
+			int minValue;
+			int maxValue;
+		} intDef;
+		struct
+		{
+			float defaultValue;
+			float minValue;
+			float maxValue;
+			float step;
+		} floatDef;
+		struct
+		{
+			bool defaultValue;
+		} boolDef;
+		struct
+		{
+			char defaultValue[64];
+			StringParamHint hint;
+		} stringDef;
+		struct
+		{
+			Color defaultValue;
+			bool hasAlpha;
+		} colorDef;
+	};
 };
 
 bool LoadDefFiles();
@@ -72,5 +119,7 @@ ActorDefinition *GetActorDefByLoadIndex(int actor);
 ActorDefSignal *GetActorDefOutput(int actor, byte output);
 
 ActorDefSignal *GetActorDefInput(int actor, byte input);
+
+ActorDefParam *GetActorDefParam(const int actor, const char *paramName);
 
 #endif //GAMEINTERFACE_H

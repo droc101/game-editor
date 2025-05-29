@@ -28,6 +28,8 @@ typedef struct Actor Actor;
 typedef struct Options Options;
 typedef struct ActorConnection ActorConnection;
 typedef struct Param Param;
+typedef struct Color Color;
+typedef struct KvList KvList;
 
 #pragma endregion
 
@@ -60,12 +62,27 @@ enum ParamType
 	PARAM_TYPE_FLOAT,
 	PARAM_TYPE_BOOL,
 	PARAM_TYPE_STRING,
-	PARAM_TYPE_NONE
+	PARAM_TYPE_NONE,
+	PARAM_TYPE_COLOR
 };
 
 #pragma endregion
 
 #pragma region Struct definitions
+
+struct KvList
+{
+	List keys;
+	List values;
+};
+
+struct Color
+{
+	float r;
+	float g;
+	float b;
+	float a;
+};
 
 union _ParamInternal
 {
@@ -74,12 +91,21 @@ union _ParamInternal
 	float floatValue;
 	bool boolValue;
 	char stringValue[64];
+	Color colorValue;
 };
 
 struct Param
 {
 	ParamType type;
-	union _ParamInternal value;
+	union
+	{
+		byte byteValue;
+		int intValue;
+		float floatValue;
+		bool boolValue;
+		char stringValue[64];
+		Color colorValue;
+	};
 };
 
 // Utility functions are in Structs/Vector2.h
@@ -111,8 +137,8 @@ struct Level
 	char name[32];
 	short courseNum;
 
-	List *actors; // The list of actors in the level. You must bake this into staticActors before it is used.
-	List *walls; // The list of walls in the level. You must bake this into staticWalls before it is used.
+	List actors; // The list of actors in the level. You must bake this into staticActors before it is used.
+	List walls; // The list of walls in the level. You must bake this into staticWalls before it is used.
 
 	bool hasCeiling;
 	char ceilOrSkyTex[32];
@@ -133,12 +159,9 @@ struct Actor
 	Vector2 position; // The position of the actor
 	float rotation; // The rotation of the actor
 	int actorType; // type of actor. do not change this after creation.
-	byte paramA; // extra parameters for the actor. saved in level data, so can be used during Init
-	byte paramB;
-	byte paramC;
-	byte paramD;
+	KvList params;
 	char name[64]; // Non-unique name of the actor
-	List *ioConnections; // List of I/O connections
+	List ioConnections; // List of I/O connections
 };
 
 struct Options

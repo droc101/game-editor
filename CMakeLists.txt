@@ -47,6 +47,12 @@ add_executable(
         Helpers/GameInterface.h
         UI/IOWindow.c
         UI/IOWindow.h
+        UI/KvWindow.c
+        UI/KvWindow.h
+        Helpers/KVList.c
+        Helpers/KVList.h
+        UI/UiHelpers.c
+        UI/UiHelpers.h
 )
 
 target_link_libraries(geditor ${GTK4_LIBRARIES} m z json-c)

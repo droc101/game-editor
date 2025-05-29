@@ -7,6 +7,8 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "KVList.h"
+
 void WriteLevel(const Level *level, const char *path)
 {
 	FILE *file = fopen(path, "wb");
@@ -37,7 +39,7 @@ void WriteLevel(const Level *level, const char *path)
 	fwrite(&level->player.rotation, sizeof(float), 1, file);
 
 	// Write the number of actors
-	const uint actorCount = level->actors->size;
+	const uint actorCount = level->actors.length;
 	fwrite(&actorCount, sizeof(uint), 1, file);
 
 	// Write the actors
@@ -48,12 +50,19 @@ void WriteLevel(const Level *level, const char *path)
 		fwrite(&actor->position.y, sizeof(float), 1, file);
 		fwrite(&actor->rotation, sizeof(float), 1, file);
 		fwrite(&actor->actorType, sizeof(int), 1, file);
-		fwrite(&actor->paramA, sizeof(byte), 1, file);
-		fwrite(&actor->paramB, sizeof(byte), 1, file);
-		fwrite(&actor->paramC, sizeof(byte), 1, file);
-		fwrite(&actor->paramD, sizeof(byte), 1, file);
 		fwrite(&actor->name, sizeof(char), 64, file);
-		uint connectionCount = actor->ioConnections->size;
+
+		uint paramCount = KvListLength(&actor->params);
+		fwrite(&paramCount, sizeof(uint), 1, file);
+		for (size_t j = 0; j < paramCount; j++)
+		{
+			const char *key = KvListGetKeyName(&actor->params, j);
+			const Param *param = KvGet(&actor->params, key);
+			fwrite(key, sizeof(char), 64, file);
+			fwrite(param, sizeof(Param), 1, file);
+		}
+
+		uint connectionCount = actor->ioConnections.length;
 		fwrite(&connectionCount, sizeof(uint), 1, file);
 		for (int j = 0; j < connectionCount; j++)
 		{
@@ -66,7 +75,7 @@ void WriteLevel(const Level *level, const char *path)
 	}
 
 	// Write the number of walls
-	const uint wallCount = level->walls->size;
+	const uint wallCount = level->walls.length;
 	fwrite(&wallCount, sizeof(uint), 1, file);
 
 	// Write the walls
@@ -95,8 +104,8 @@ Level *ReadLevel(const char *path)
 	}
 
 	Level *level = malloc(sizeof(Level));
-	level->walls = CreateList();
-	level->actors = CreateList();
+	ListCreate(&level->walls);
+	ListCreate(&level->actors);
 
 	fread(&level->name, sizeof(char), 32, file);
 	fread(&level->courseNum, sizeof(short), 1, file);
@@ -117,16 +126,25 @@ Level *ReadLevel(const char *path)
 	for (int i = 0; i < actorCount; i++)
 	{
 		Actor *actor = malloc(sizeof(Actor));
-		actor->ioConnections = CreateList();
+		ListCreate(&actor->ioConnections);
+		KvListCreate(&actor->params);
 		fread(&actor->position.x, sizeof(float), 1, file);
 		fread(&actor->position.y, sizeof(float), 1, file);
 		fread(&actor->rotation, sizeof(float), 1, file);
 		fread(&actor->actorType, sizeof(int), 1, file);
-		fread(&actor->paramA, sizeof(byte), 1, file);
-		fread(&actor->paramB, sizeof(byte), 1, file);
-		fread(&actor->paramC, sizeof(byte), 1, file);
-		fread(&actor->paramD, sizeof(byte), 1, file);
 		fread(&actor->name, sizeof(char) * 64, 1, file);
+
+		uint paramCount = 0;
+		fread(&paramCount, sizeof(uint), 1, file);
+		for (size_t j = 0; j < paramCount; j++)
+		{
+			char key[64];
+			Param param;
+			fread(&key, sizeof(char) * 64, 1, file);
+			fread(&param, sizeof(Param), 1, file);
+			KvSet(&actor->params, key, param);
+		}
+
 		uint connectionCount = 0;
 		fread(&connectionCount, sizeof(uint), 1, file);
 		for (int j = 0; j < connectionCount; j++)
@@ -136,10 +154,10 @@ Level *ReadLevel(const char *path)
 			fread(&connection->outActorName, sizeof(char) * 64, 1, file);
 			fread(&connection->targetInput, sizeof(byte), 1, file);
 			fread(&connection->outParamOverride, sizeof(Param), 1, file);
-			ListAdd(actor->ioConnections, connection);
+			ListAdd(&actor->ioConnections, connection);
 		}
 
-		ListAdd(level->actors, actor);
+		ListAdd(&level->actors, actor);
 	}
 
 	uint wallCount = 0;
@@ -156,7 +174,7 @@ Level *ReadLevel(const char *path)
 		fread(&wall->uvScale, sizeof(float), 1, file);
 		fread(&wall->uvOffset, sizeof(float), 1, file);
 
-		ListAdd(level->walls, wall);
+		ListAdd(&level->walls, wall);
 	}
 
 	return level;

@@ -9,6 +9,7 @@
 #include "Helpers/Drawing.h"
 #include "Helpers/GameInterface.h"
 #include "Helpers/Input.h"
+#include "Helpers/KVList.h"
 #include "Helpers/Options.h"
 #include "UI/MainWindow.h"
 
@@ -33,6 +34,9 @@ Vector2 wallDragBOffset = {0};
 
 List *textureList = NULL;
 List *musicList = NULL;
+List *modelList = NULL;
+List *soundList = NULL;
+List *levelList = NULL;
 
 const GdkRGBA bg = Color(0x123456FF);
 const GdkRGBA grid = Color(0x808080FF);
@@ -81,19 +85,23 @@ bool RescanAssets()
 	}
 	if (textureList != NULL)
 	{
-		ListFreeWithData(textureList);
-		ListFreeWithData(musicList);
+		ListAndContentsFree(textureList, true);
+		ListAndContentsFree(musicList, true);
 	}
 
 	textureList = ScanAssetFolder("texture", ".gtex");
 	musicList = ScanAssetFolder("audio", ".gmus");
+	modelList = ScanAssetFolder("model", ".gmdl");
+	soundList = ScanAssetFolder("audio", ".gsnd");
+	levelList = ScanAssetFolder("level", ".gmap");
 
 	return true;
 }
 
 List *ScanAssetFolder(const char *folderName, const char *extension)
 {
-	List *fileList = CreateList();
+	List *fileList = malloc(sizeof(List));
+	ListCreate(fileList);
 	char *levelDataPath = malloc(strlen(options.gameDirectory) + strlen(folderName) + 10);
 	strcpy(levelDataPath, options.gameDirectory);
 	strcat(levelDataPath, "/assets/");
@@ -131,13 +139,14 @@ void EditorDestroyLevel()
 	{
 		return;
 	}
-	for (int i = 0; i < l->actors->size; i++)
+	for (int i = 0; i < l->actors.length; i++)
 	{
-		const Actor *actor = l->actors->data[i];
-		ListFree(actor->ioConnections);
+		const Actor *actor = ListGet(l->actors, i);
+		ListFree(&actor->ioConnections, false);
+		KvListDestroy(&actor->params);
 	}
-	ListFreeWithData(l->actors);
-	ListFreeWithData(l->walls);
+	ListAndContentsFree(&l->actors, false);
+	ListAndContentsFree(&l->walls, false);
 	free(l);
 	l = NULL;
 }
@@ -152,8 +161,8 @@ void EditorNewLevel()
 	l = malloc(sizeof(Level));
 	memset(l, 0, sizeof(Level));
 
-	l->walls = CreateList();
-	l->actors = CreateList();
+	ListCreate(&l->walls);
+	ListCreate(&l->actors);
 	strcpy(l->name, "Unnamed Level");
 	l->courseNum = -1;
 	l->hasCeiling = false;
@@ -232,7 +241,7 @@ void ProcessHover()
 {
 	hoverType = SELTYPE_NONE;
 
-	for (int w = 0; w < l->walls->size; w++)
+	for (int w = 0; w < l->walls.length; w++)
 	{
 		const Wall *wall = ListGet(l->walls, w);
 
@@ -259,7 +268,7 @@ void ProcessHover()
 		}
 	}
 
-	for (int a = 0; a < l->actors->size; a++)
+	for (int a = 0; a < l->actors.length; a++)
 	{
 		const Actor *act = ListGet(l->actors, a);
 		const Vector2 scaledActorPos = WorldToScreen(act->position);
@@ -411,9 +420,9 @@ void EditorUpdate()
 				w->b = ScreenToWorldSnapped(GetLocalMousePos());
 				strcpy(w->tex, "level_wall_test");
 				w->uvScale = 1.0;
-				ListAdd(l->walls, w);
+				ListAdd(&l->walls, w);
 				selectionType = SELTYPE_WALL_B;
-				selectionIndex = l->walls->size - 1;
+				selectionIndex = l->walls.length - 1;
 				SelectionTypeChanged();
 			} else if (addRequest == ADDREQ_ACTOR)
 			{
@@ -423,10 +432,12 @@ void EditorUpdate()
 				a->rotation = 0.0;
 				a->actorType = 1;
 				a->name[0] = '\0';
-				a->ioConnections = CreateList();
-				ListAdd(l->actors, a);
+				ListCreate(&a->ioConnections);
+				ListAdd(&l->actors, a);
+				KvListCreate(&a->params);
+				UpdateActorKvs(a);
 				selectionType = SELTYPE_ACTOR;
-				selectionIndex = l->actors->size - 1;
+				selectionIndex = l->actors.length - 1;
 				SelectionTypeChanged();
 			}
 			isDragging = true;
@@ -490,7 +501,7 @@ void RenderActorTrigger(const Actor *actor, const int a)
 {
 	const Vector2 scaledTriggerPos = WorldToScreen(actor->position);
 
-	DrawArea(scaledTriggerPos, WorldToScreenSize(v2(actor->paramA, actor->paramB)), actor->rotation, triggerArea);
+	// DrawArea(scaledTriggerPos, WorldToScreenSize(v2(actor->paramA, actor->paramB)), actor->rotation, triggerArea);
 
 	DrawRect(v2(scaledTriggerPos.x - 6, scaledTriggerPos.y - 6), v2(12, 12), triggerNode);
 
@@ -550,17 +561,86 @@ void EditorRenderLevel()
 
 	RenderGrid();
 
-	for (int w = 0; w < l->walls->size; w++)
+	for (int w = 0; w < l->walls.length; w++)
 	{
 		const Wall *wall = ListGet(l->walls, w);
 		RenderWall(wall, w);
 	}
 
-	for (int a = 0; a < l->actors->size; a++)
+	for (int a = 0; a < l->actors.length; a++)
 	{
 		const Actor *actor = ListGet(l->actors, a);
 		RenderActor(actor, a);
 	}
 
 	RenderPlayer(&l->player);
+}
+
+void UpdateActorKvs(Actor *actor)
+{
+	const ActorDefinition *def = GetActorDef(actor->actorType);
+	List toDelete;
+	ListCreate(&toDelete);
+	for (int i = 0; i < KvListLength(&actor->params); i++)
+	{
+		if (def->numParams == 0)
+		{
+			// No parameters defined, so we can delete all keys
+			ListAdd(&toDelete, (void *)KvListGetKeyName(&actor->params, i));
+			continue;
+		}
+		// Check if the key is in the definition
+		const char *key = KvListGetKeyName(&actor->params, i);
+		for (int j = 0; j < def->numParams; j++)
+		{
+			const ActorDefParam paramDef = def->params[j];
+			if (strcmp(paramDef.name, key) == 0 && paramDef.type == KvGetType(&actor->params, key))
+			{
+				// Key is in the definition, so we don't need to delete it
+				break;
+			}
+			if (j == def->numParams - 1)
+			{
+				// Key is not in the definition, so we need to delete it
+				ListAdd(&toDelete, (void *)key);
+			}
+		}
+	}
+	for (int i = 0; i < toDelete.length; i++)
+	{
+		const char *key = ListGet(toDelete, i);
+		KvDelete(&actor->params, key);
+	}
+
+	for (int i = 0; i < def->numParams; i++)
+	{
+		const ActorDefParam paramDef = def->params[i];
+		if (!KvListHas(&actor->params, paramDef.name))
+		{
+			// Key is not in the definition, so we need to add it
+			switch (paramDef.type)
+			{
+				case PARAM_TYPE_BYTE:
+					KvSetByte(&actor->params, paramDef.name, paramDef.byteDef.defaultValue);
+					break;
+				case PARAM_TYPE_INTEGER:
+					KvSetInt(&actor->params, paramDef.name, paramDef.intDef.defaultValue);
+					break;
+				case PARAM_TYPE_FLOAT:
+					KvSetFloat(&actor->params, paramDef.name, paramDef.floatDef.defaultValue);
+					break;
+				case PARAM_TYPE_BOOL:
+					KvSetBool(&actor->params, paramDef.name, paramDef.boolDef.defaultValue);
+					break;
+				case PARAM_TYPE_STRING:
+					KvSetString(&actor->params, paramDef.name, paramDef.stringDef.defaultValue);
+					break;
+				case PARAM_TYPE_COLOR:
+					KvSetColor(&actor->params, paramDef.name, paramDef.colorDef.defaultValue);
+					break;
+				default:
+					printf("Unknown parameter type %d for actor %s\n", paramDef.type, actor->name);
+			}
+		}
+	}
 }

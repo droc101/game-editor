@@ -5,6 +5,7 @@
 #include "IOWindow.h"
 #include "../Editor.h"
 #include "../Helpers/GameInterface.h"
+#include "UiHelpers.h"
 
 GtkWindow *ioWindow;
 GtkApplication *ioApplication;
@@ -45,7 +46,7 @@ void IOWindowReloadList()
 
 	gtk_list_box_remove_all(GTK_LIST_BOX(listBox));
 
-	for (int i = 0; i < ioActor->ioConnections->size; i++)
+	for (int i = 0; i < ioActor->ioConnections.length; i++)
 	{
 		const ActorConnection *conn = ListGet(ioActor->ioConnections, i);
 		GtkWidget *row = gtk_list_box_row_new();
@@ -68,7 +69,7 @@ void IOWindowReloadList()
 		gtk_box_append(GTK_BOX(hbox), targetLabel);
 
 		const Actor *target = NULL;
-		for (int j = 0; j < l->actors->size; j++)
+		for (int j = 0; j < l->actors.length; j++)
 		{
 			const Actor *a = ListGet(l->actors, j);
 			if (a->name[0] != '\0' && strncmp(a->name, conn->outActorName, 64) == 0)
@@ -111,19 +112,19 @@ void IOWindowReloadList()
 				strncpy(paramText, "None", 128);
 				break;
 			case PARAM_TYPE_BYTE:
-				snprintf(paramText, 128, "%d (byte)", conn->outParamOverride.value.byteValue);
+				snprintf(paramText, 128, "%d (byte)", conn->outParamOverride.byteValue);
 				break;
 			case PARAM_TYPE_INTEGER:
-				snprintf(paramText, 128, "%d (int)", conn->outParamOverride.value.intValue);
+				snprintf(paramText, 128, "%d (int)", conn->outParamOverride.intValue);
 				break;
 			case PARAM_TYPE_FLOAT:
-				snprintf(paramText, 128, "%.2f", conn->outParamOverride.value.floatValue);
+				snprintf(paramText, 128, "%.2f", conn->outParamOverride.floatValue);
 				break;
 			case PARAM_TYPE_BOOL:
-				snprintf(paramText, 128, "%d (bool)", conn->outParamOverride.value.boolValue);
+				snprintf(paramText, 128, "%d (bool)", conn->outParamOverride.boolValue);
 				break;
 			case PARAM_TYPE_STRING:
-				snprintf(paramText, 128, "\"%s\"", conn->outParamOverride.value.stringValue);
+				snprintf(paramText, 128, "\"%s\"", conn->outParamOverride.stringValue);
 				break;
 		}
 		gtk_label_set_text(GTK_LABEL(paramLabel), paramText);
@@ -135,7 +136,7 @@ void IOWindowReloadList()
 		gtk_list_box_append(GTK_LIST_BOX(listBox), row);
 	}
 
-	const size_t rows = ioActor->ioConnections->size;
+	const size_t rows = ioActor->ioConnections.length;
 	if (selection <= rows)
 	{
 		gtk_list_box_select_row(GTK_LIST_BOX(listBox), gtk_list_box_get_row_at_index(GTK_LIST_BOX(listBox), selection));
@@ -145,51 +146,20 @@ void IOWindowReloadList()
 	updateCount--;
 }
 
-void PopulateComboBoxWithSignals(GtkWidget *box, const size_t count, const ActorDefSignal *signals)
-{
-	gtk_combo_box_text_remove_all(GTK_COMBO_BOX_TEXT(box));
-	for (int i = 0; i < count; i++)
-	{
-		const ActorDefSignal *signal = &signals[i];
-		gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(box), signal->name);
-	}
-}
-
-void PopulateComboBoxWithActors(GtkWidget *box, const char *selected)
-{
-	int selectedIndex = -1;
-	int location = 0;
-	gtk_combo_box_text_remove_all(GTK_COMBO_BOX_TEXT(box));
-	for (int i = 0; i < l->actors->size; i++)
-	{
-		const Actor *actor = ListGet(l->actors, i);
-		if (actor->name[0] == '\0')
-		{
-			continue;
-		}
-
-		gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(box), actor->name);
-		if (strncmp(actor->name, selected, 64) == 0)
-		{
-			selectedIndex = location;
-		}
-		location++;
-	}
-	gtk_combo_box_set_active(GTK_COMBO_BOX(box), selectedIndex);
-}
-
-
 void RemoveExistingParamValueWidget()
 {
-	if (!paramOverrideValue) return;
+	if (!paramOverrideValue)
+	{
+		return;
+	}
 	gtk_box_remove(GTK_BOX(paramOverrideBox), paramOverrideValue);
 	paramOverrideValue = NULL;
 }
 
-void param_byte_value_changed(GtkSpinButton* self, gpointer)
+void param_byte_value_changed(GtkSpinButton *self, gpointer)
 {
 	GetCurrentConnection()->outParamOverride.type = PARAM_TYPE_BYTE;
-	GetCurrentConnection()->outParamOverride.value.byteValue = gtk_spin_button_get_value_as_int(self);
+	GetCurrentConnection()->outParamOverride.byteValue = gtk_spin_button_get_value_as_int(self);
 	IOWindowReloadList();
 }
 
@@ -197,15 +167,16 @@ void CreateParamValueByte()
 {
 	RemoveExistingParamValueWidget();
 	paramOverrideValue = gtk_spin_button_new_with_range(0, 255, 1);
-	gtk_spin_button_set_value(GTK_SPIN_BUTTON(paramOverrideValue), GetCurrentConnection()->outParamOverride.value.byteValue);
+	gtk_spin_button_set_value(GTK_SPIN_BUTTON(paramOverrideValue),
+							  GetCurrentConnection()->outParamOverride.byteValue);
 	g_signal_connect(paramOverrideValue, "value-changed", G_CALLBACK(param_byte_value_changed), NULL);
 	gtk_box_append(GTK_BOX(paramOverrideBox), paramOverrideValue);
 }
 
-void param_int_value_changed(GtkSpinButton* self, gpointer)
+void param_int_value_changed(GtkSpinButton *self, gpointer)
 {
 	GetCurrentConnection()->outParamOverride.type = PARAM_TYPE_INTEGER;
-	GetCurrentConnection()->outParamOverride.value.intValue = gtk_spin_button_get_value_as_int(self);
+	GetCurrentConnection()->outParamOverride.intValue = gtk_spin_button_get_value_as_int(self);
 	IOWindowReloadList();
 }
 
@@ -213,15 +184,16 @@ void CreateParamValueInteger()
 {
 	RemoveExistingParamValueWidget();
 	paramOverrideValue = gtk_spin_button_new_with_range(-2147483648, 2147483647, 1);
-	gtk_spin_button_set_value(GTK_SPIN_BUTTON(paramOverrideValue), GetCurrentConnection()->outParamOverride.value.intValue);
+	gtk_spin_button_set_value(GTK_SPIN_BUTTON(paramOverrideValue),
+							  GetCurrentConnection()->outParamOverride.intValue);
 	g_signal_connect(paramOverrideValue, "value-changed", G_CALLBACK(param_int_value_changed), NULL);
 	gtk_box_append(GTK_BOX(paramOverrideBox), paramOverrideValue);
 }
 
-void param_float_value_changed(GtkSpinButton* self, gpointer)
+void param_float_value_changed(GtkSpinButton *self, gpointer)
 {
 	GetCurrentConnection()->outParamOverride.type = PARAM_TYPE_FLOAT;
-	GetCurrentConnection()->outParamOverride.value.floatValue = gtk_spin_button_get_value(self);
+	GetCurrentConnection()->outParamOverride.floatValue = gtk_spin_button_get_value(self);
 	IOWindowReloadList();
 }
 
@@ -229,15 +201,16 @@ void CreateParamValueFloat()
 {
 	RemoveExistingParamValueWidget();
 	paramOverrideValue = gtk_spin_button_new_with_range(-2147483648, 2147483647, 0.01);
-	gtk_spin_button_set_value(GTK_SPIN_BUTTON(paramOverrideValue), GetCurrentConnection()->outParamOverride.value.floatValue);
+	gtk_spin_button_set_value(GTK_SPIN_BUTTON(paramOverrideValue),
+							  GetCurrentConnection()->outParamOverride.floatValue);
 	g_signal_connect(paramOverrideValue, "value-changed", G_CALLBACK(param_float_value_changed), NULL);
 	gtk_box_append(GTK_BOX(paramOverrideBox), paramOverrideValue);
 }
 
-void param_bool_toggled(GtkCheckButton* self, gpointer)
+void param_bool_toggled(GtkCheckButton *self, gpointer)
 {
 	GetCurrentConnection()->outParamOverride.type = PARAM_TYPE_BOOL;
-	GetCurrentConnection()->outParamOverride.value.boolValue = gtk_check_button_get_active(self);
+	GetCurrentConnection()->outParamOverride.boolValue = gtk_check_button_get_active(self);
 	IOWindowReloadList();
 }
 
@@ -245,16 +218,17 @@ void CreateParamValueBool()
 {
 	RemoveExistingParamValueWidget();
 	paramOverrideValue = gtk_check_button_new();
-	gtk_check_button_set_active(GTK_CHECK_BUTTON(paramOverrideValue), GetCurrentConnection()->outParamOverride.value.boolValue);
+	gtk_check_button_set_active(GTK_CHECK_BUTTON(paramOverrideValue),
+								GetCurrentConnection()->outParamOverride.boolValue);
 	g_signal_connect(paramOverrideValue, "toggled", G_CALLBACK(param_bool_toggled), NULL);
 	gtk_box_append(GTK_BOX(paramOverrideBox), paramOverrideValue);
 }
 
-void param_string_changed(GtkEditable* self, gpointer)
+void param_string_changed(GtkEditable *self, gpointer)
 {
 	GetCurrentConnection()->outParamOverride.type = PARAM_TYPE_STRING;
 	const char *text = gtk_entry_buffer_get_text(gtk_entry_get_buffer(GTK_ENTRY(self)));
-	strncpy(GetCurrentConnection()->outParamOverride.value.stringValue, text, 64);
+	strncpy(GetCurrentConnection()->outParamOverride.stringValue, text, 64);
 	IOWindowReloadList();
 }
 
@@ -263,7 +237,9 @@ void CreateParamValueString()
 	RemoveExistingParamValueWidget();
 	paramOverrideValue = gtk_entry_new();
 	gtk_entry_set_max_length(GTK_ENTRY(paramOverrideValue), 64);
-	gtk_entry_buffer_set_text(gtk_entry_get_buffer(GTK_ENTRY(paramOverrideValue)), GetCurrentConnection()->outParamOverride.value.stringValue, -1);
+	gtk_entry_buffer_set_text(gtk_entry_get_buffer(GTK_ENTRY(paramOverrideValue)),
+							  GetCurrentConnection()->outParamOverride.stringValue,
+							  -1);
 	g_signal_connect(paramOverrideValue, "changed", G_CALLBACK(param_string_changed), NULL);
 	gtk_box_append(GTK_BOX(paramOverrideBox), paramOverrideValue);
 }
@@ -300,7 +276,7 @@ void IOWindowReloadBoxes()
 
 		const ActorConnection *conn = g_object_get_data(G_OBJECT(row), "connection");
 		const Actor *target = NULL;
-		for (int j = 0; j < l->actors->size; j++)
+		for (int j = 0; j < l->actors.length; j++)
 		{
 			const Actor *a = ListGet(l->actors, j);
 			if (a->name[0] != '\0' && strncmp(a->name, conn->outActorName, 64) == 0)
@@ -370,7 +346,7 @@ void io_add_clicked(GtkButton *, gpointer)
 	conn->outActorName[0] = '\0';
 	conn->targetInput = 0;
 	conn->outParamOverride.type = PARAM_TYPE_NONE;
-	ListAdd(ioActor->ioConnections, conn);
+	ListAdd(&ioActor->ioConnections, conn);
 	IOWindowReloadList();
 }
 
@@ -381,7 +357,7 @@ void io_delete_clicked(GtkButton *, gpointer)
 	{
 		return;
 	}
-	ListRemoveAt(ioActor->ioConnections, ListFind(ioActor->ioConnections, conn));
+	ListRemoveAt(&ioActor->ioConnections, ListFind(ioActor->ioConnections, conn));
 	free(conn);
 	IOWindowReloadList();
 	IOWindowReloadBoxes();
@@ -439,7 +415,7 @@ void param_type_changed(GtkComboBox *self, gpointer)
 
 	GetCurrentConnection()->outParamOverride.type = gtk_combo_box_get_active(GTK_COMBO_BOX(self));
 	// zero out the value to avoid reading data of previous type as if it were the new type
-	memset(&GetCurrentConnection()->outParamOverride.value, 0, sizeof(GetCurrentConnection()->outParamOverride.value));
+	memset(&GetCurrentConnection()->outParamOverride, 0, sizeof(GetCurrentConnection()->outParamOverride));
 
 	IOWindowReloadBoxes();
 	IOWindowReloadList();

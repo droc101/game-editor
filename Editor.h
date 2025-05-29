@@ -37,6 +37,9 @@ extern double zoom;
 
 extern List *textureList;
 extern List *musicList;
+extern List *modelList;
+extern List *soundList;
+extern List *levelList;
 
 extern int snapIndex;
 extern const int snapCount;
@@ -58,5 +61,7 @@ void EditorDestroy();
 bool RescanAssets();
 
 List *ScanAssetFolder(const char *folderName, const char *extension);
+
+void UpdateActorKvs(Actor *actor);
 
 #endif //EDITOR_H
