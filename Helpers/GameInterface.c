@@ -43,7 +43,7 @@ bool LoadDefFiles()
 	}
 	ListAndContentsFree(defs, true);
 
-	printf("Loaded %d actor definitions\n", actorDefs->length);
+	printf("Loaded %ld actor definitions\n", actorDefs->length);
 
 	return true;
 }
@@ -153,7 +153,8 @@ bool LoadActorParams(const json_object *actor, ActorDefinition *def, const char 
 			}
 			defParam->type = PARAM_TYPE_STRING;
 			strncpy(defParam->stringDef.defaultValue,
-					json_object_get_string(json_object_object_get(param, "default")), 63);
+					json_object_get_string(json_object_object_get(param, "default")),
+					63);
 			if (strcmp(json_object_get_string(json_object_object_get(param, "hint")), "model") == 0)
 			{
 				defParam->stringDef.hint = HINT_MODEL;
@@ -177,7 +178,6 @@ bool LoadActorParams(const json_object *actor, ActorDefinition *def, const char 
 				defParam->stringDef.hint = HINT_NONE;
 			}
 		}
-
 	}
 	return true;
 }
@@ -284,12 +284,12 @@ bool LoadDefFile(char *path)
 	char *fileData = malloc(fileSize + 1);
 	fread(fileData, 1, fileSize, f);
 	json_object *root = json_tokener_parse(fileData);
+	free(fileData);
+	fclose(f);
 
 	if (root == NULL)
 	{
 		printf("Failed to parse def file: %s\n", path);
-		free(fileData);
-		fclose(f);
 		return false;
 	}
 
@@ -336,6 +336,7 @@ bool LoadDefFile(char *path)
 		{
 			printf("Invalid def file format: %s (invalid actor definition - missing or incorrect keys)\n", path);
 			json_object_put(root);
+			free(def);
 			return false;
 		}
 		def->actorType = json_object_get_int(json_object_object_get(actor, "id"));
@@ -365,17 +366,27 @@ bool LoadDefFile(char *path)
 			def->renderType = NORMAL;
 		}
 
-		if (!LoadActorParams(actor, def, path, root)) return false;
+		if (!LoadActorParams(actor, def, path, root))
+		{
+			free(def);
+			return false;
+		}
 
-		if (!LoadActorInputs(actor, def, path, root)) return false;
+		if (!LoadActorInputs(actor, def, path, root))
+		{
+			free(def);
+			return false;
+		}
 
-		if (!LoadActorOutputs(actor, def, path, root)) return false;
+		if (!LoadActorOutputs(actor, def, path, root))
+		{
+			free(def);
+			return false;
+		}
 
 		ListAdd(actorDefs, def);
 	}
 	json_object_put(root);
-	free(fileData);
-	fclose(f);
 
 	return true;
 }
@@ -424,7 +435,10 @@ ActorDefSignal *GetActorDefInput(const int actor, const byte input)
 ActorDefParam *GetActorDefParam(const int actor, const char *paramName)
 {
 	ActorDefinition *def = GetActorDef(actor);
-	if (!def) return NULL;
+	if (!def)
+	{
+		return NULL;
+	}
 
 	for (int i = 0; i < def->numParams; i++)
 	{

@@ -501,8 +501,8 @@ void RenderActorTrigger(const Actor *actor, const int a)
 {
 	const Vector2 scaledTriggerPos = WorldToScreen(actor->position);
 
-	float triggerWidth = KvGetFloat(&actor->params, "width", 1.0f);
-	float triggerHeight = KvGetFloat(&actor->params, "depth", 1.0f);
+	const float triggerWidth = KvGetFloat(&actor->params, "width", 1.0f);
+	const float triggerHeight = KvGetFloat(&actor->params, "depth", 1.0f);
 	DrawArea(scaledTriggerPos, WorldToScreenSize(v2(triggerWidth, triggerHeight)), actor->rotation, triggerArea);
 
 	DrawRect(v2(scaledTriggerPos.x - 6, scaledTriggerPos.y - 6), v2(12, 12), triggerNode);
@@ -588,7 +588,7 @@ void UpdateActorKvs(Actor *actor)
 		if (def->numParams == 0)
 		{
 			// No parameters defined, so we can delete all keys
-			ListAdd(&toDelete, (void *)KvListGetKeyName(&actor->params, i));
+			ListAdd(&toDelete, KvListGetKeyName(&actor->params, i));
 			continue;
 		}
 		// Check if the key is in the definition

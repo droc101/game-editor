@@ -87,10 +87,10 @@ bool IsValidGameDirectory(Options *options)
 	 */
 
 	char *gameDirectory = options->gameDirectory;
-	char *gamePath = malloc(strlen(gameDirectory) + 5);
+	char *gamePath = malloc(strlen(gameDirectory) + 7);
 	strcpy(gamePath, gameDirectory);
 	strcat(gamePath, "/game");
-	char *gameExePath = malloc(strlen(gameDirectory) + 9);
+	char *gameExePath = malloc(strlen(gameDirectory) + 11);
 	strcpy(gameExePath, gameDirectory);
 	strcat(gameExePath, "/game.exe");
 

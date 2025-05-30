@@ -120,6 +120,6 @@ ActorDefSignal *GetActorDefOutput(int actor, byte output);
 
 ActorDefSignal *GetActorDefInput(int actor, byte input);
 
-ActorDefParam *GetActorDefParam(const int actor, const char *paramName);
+ActorDefParam *GetActorDefParam(int actor, const char *paramName);
 
 #endif //GAMEINTERFACE_H

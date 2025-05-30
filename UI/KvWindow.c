@@ -72,9 +72,13 @@ void KvWindowReloadList()
 				snprintf(paramText, 128, "\"%s\"", value->stringValue);
 				break;
 			case PARAM_TYPE_COLOR:
-				snprintf(paramText, 128, "Color (%.2f, %.2f, %.2f, %.2f)",
-						 value->colorValue.r, value->colorValue.g,
-						 value->colorValue.b, value->colorValue.a);
+				snprintf(paramText,
+						 128,
+						 "Color (%.2f, %.2f, %.2f, %.2f)",
+						 value->colorValue.r,
+						 value->colorValue.g,
+						 value->colorValue.b,
+						 value->colorValue.a);
 				break;
 		}
 		gtk_label_set_text(GTK_LABEL(valueLabel), paramText);
@@ -89,7 +93,8 @@ void KvWindowReloadList()
 	const size_t rows = KvListLength(&kvActor->params);
 	if (selection <= rows)
 	{
-		gtk_list_box_select_row(GTK_LIST_BOX(kvListBox), gtk_list_box_get_row_at_index(GTK_LIST_BOX(kvListBox), selection));
+		gtk_list_box_select_row(GTK_LIST_BOX(kvListBox),
+								gtk_list_box_get_row_at_index(GTK_LIST_BOX(kvListBox), selection));
 	}
 
 
@@ -98,8 +103,9 @@ void KvWindowReloadList()
 
 char *GetCurrentKey()
 {
-	return gtk_list_box_get_selected_row(GTK_LIST_BOX(kvListBox)) ?
-		   g_object_get_data(G_OBJECT(gtk_list_box_get_selected_row(GTK_LIST_BOX(kvListBox))), "key") : NULL;
+	return gtk_list_box_get_selected_row(GTK_LIST_BOX(kvListBox))
+				   ? g_object_get_data(G_OBJECT(gtk_list_box_get_selected_row(GTK_LIST_BOX(kvListBox))), "key")
+				   : NULL;
 }
 
 ActorDefParam *GetCurrentParamDef()
@@ -123,18 +129,16 @@ void RemoveExistingKVWidget()
 
 void kv_byte_value_changed(GtkSpinButton *self, gpointer)
 {
-	KvSetByte(&kvActor->params, GetCurrentKey(),
-			  gtk_spin_button_get_value_as_int(self));
+	KvSetByte(&kvActor->params, GetCurrentKey(), gtk_spin_button_get_value_as_int(self));
 	KvWindowReloadList();
 }
 
 void CreateKVByte()
 {
 	RemoveExistingKVWidget();
-	ActorDefParam *def = GetActorDefParam(kvActor->actorType, GetCurrentKey());
+	const ActorDefParam *def = GetActorDefParam(kvActor->actorType, GetCurrentKey());
 	valueWidget = gtk_spin_button_new_with_range(def->byteDef.minValue, def->byteDef.maxValue, 1);
-	gtk_spin_button_set_value(GTK_SPIN_BUTTON(valueWidget),
-							  KvGetByte(&kvActor->params, GetCurrentKey(), 0));
+	gtk_spin_button_set_value(GTK_SPIN_BUTTON(valueWidget), KvGetByte(&kvActor->params, GetCurrentKey(), 0));
 	g_signal_connect(valueWidget, "value-changed", G_CALLBACK(kv_byte_value_changed), NULL);
 	gtk_widget_set_hexpand(valueWidget, true);
 	gtk_box_append(GTK_BOX(valueBox), valueWidget);
@@ -142,18 +146,16 @@ void CreateKVByte()
 
 void kv_int_value_changed(GtkSpinButton *self, gpointer)
 {
-	KvSetInt(&kvActor->params, GetCurrentKey(),
-				 gtk_spin_button_get_value_as_int(self));
+	KvSetInt(&kvActor->params, GetCurrentKey(), gtk_spin_button_get_value_as_int(self));
 	KvWindowReloadList();
 }
 
 void CreateKVInteger()
 {
 	RemoveExistingKVWidget();
-	ActorDefParam *def = GetActorDefParam(kvActor->actorType, GetCurrentKey());
+	const ActorDefParam *def = GetActorDefParam(kvActor->actorType, GetCurrentKey());
 	valueWidget = gtk_spin_button_new_with_range(def->intDef.minValue, def->intDef.maxValue, 1);
-	gtk_spin_button_set_value(GTK_SPIN_BUTTON(valueWidget),
-							  KvGetInt(&kvActor->params, GetCurrentKey(), 0));
+	gtk_spin_button_set_value(GTK_SPIN_BUTTON(valueWidget), KvGetInt(&kvActor->params, GetCurrentKey(), 0));
 	g_signal_connect(valueWidget, "value-changed", G_CALLBACK(kv_int_value_changed), NULL);
 	gtk_widget_set_hexpand(valueWidget, true);
 	gtk_box_append(GTK_BOX(valueBox), valueWidget);
@@ -161,18 +163,16 @@ void CreateKVInteger()
 
 void kv_float_value_changed(GtkSpinButton *self, gpointer)
 {
-	KvSetFloat(&kvActor->params, GetCurrentKey(),
-			   gtk_spin_button_get_value(self));
+	KvSetFloat(&kvActor->params, GetCurrentKey(), gtk_spin_button_get_value(self));
 	KvWindowReloadList();
 }
 
 void CreateKVFloat()
 {
 	RemoveExistingKVWidget();
-	ActorDefParam *def = GetActorDefParam(kvActor->actorType, GetCurrentKey());
+	const ActorDefParam *def = GetActorDefParam(kvActor->actorType, GetCurrentKey());
 	valueWidget = gtk_spin_button_new_with_range(def->floatDef.minValue, def->floatDef.maxValue, def->floatDef.step);
-	gtk_spin_button_set_value(GTK_SPIN_BUTTON(valueWidget),
-							  KvGetFloat(&kvActor->params, GetCurrentKey(), 0.0f));
+	gtk_spin_button_set_value(GTK_SPIN_BUTTON(valueWidget), KvGetFloat(&kvActor->params, GetCurrentKey(), 0.0f));
 	g_signal_connect(valueWidget, "value-changed", G_CALLBACK(kv_float_value_changed), NULL);
 	gtk_widget_set_hexpand(valueWidget, true);
 	gtk_box_append(GTK_BOX(valueBox), valueWidget);
@@ -187,7 +187,7 @@ void kv_bool_toggled(GtkSwitch *, const gboolean state, gpointer)
 void CreateKVBool()
 {
 	RemoveExistingKVWidget();
-	ActorDefParam *def = GetActorDefParam(kvActor->actorType, GetCurrentKey());
+	const ActorDefParam *def = GetActorDefParam(kvActor->actorType, GetCurrentKey());
 	valueWidget = gtk_switch_new();
 	gtk_switch_set_active(GTK_SWITCH(valueWidget),
 						  KvGetBool(&kvActor->params, GetCurrentKey(), def->boolDef.defaultValue));
@@ -197,8 +197,7 @@ void CreateKVBool()
 
 void kv_string_changed(GtkEditable *self, gpointer)
 {
-	KvSetString(&kvActor->params, GetCurrentKey(),
-							  gtk_entry_buffer_get_text(gtk_entry_get_buffer(GTK_ENTRY(self))));
+	KvSetString(&kvActor->params, GetCurrentKey(), gtk_entry_buffer_get_text(gtk_entry_get_buffer(GTK_ENTRY(self))));
 	KvWindowReloadList();
 }
 
@@ -208,7 +207,8 @@ void CreateKVString()
 	valueWidget = gtk_entry_new();
 	gtk_entry_set_max_length(GTK_ENTRY(valueWidget), 64);
 	gtk_entry_buffer_set_text(gtk_entry_get_buffer(GTK_ENTRY(valueWidget)),
-							  KvGetString(&kvActor->params, GetCurrentKey(), ""), -1);
+							  KvGetString(&kvActor->params, GetCurrentKey(), ""),
+							  -1);
 	g_signal_connect(valueWidget, "changed", G_CALLBACK(kv_string_changed), NULL);
 	gtk_widget_set_hexpand(valueWidget, true);
 	gtk_box_append(GTK_BOX(valueBox), valueWidget);

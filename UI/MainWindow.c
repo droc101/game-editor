@@ -504,8 +504,6 @@ static GActionEntry menu_entries[] = {
 void UpdateActorSidebar()
 {
 	const Actor *a = ListGet(l->actors, selectionIndex);
-	const ActorDefinition *def = GetActorDef(a->actorType);
-	// Find the actor type in the combo box
 	GtkComboBoxText *combo = GTK_COMBO_BOX_TEXT(actorTypeBox);
 	for (int i = 0; i < GetActorTypeCount(); i++)
 	{
@@ -991,6 +989,7 @@ void MainWindowActivate(GtkApplication *app, gpointer *)
 	if (!RescanAssets())
 	{
 		printf("Failed to rescan assets\n");
+		exit(1);
 	}
 
 	mainWindowApplication = app;

@@ -167,8 +167,7 @@ void CreateParamValueByte()
 {
 	RemoveExistingParamValueWidget();
 	paramOverrideValue = gtk_spin_button_new_with_range(0, 255, 1);
-	gtk_spin_button_set_value(GTK_SPIN_BUTTON(paramOverrideValue),
-							  GetCurrentConnection()->outParamOverride.byteValue);
+	gtk_spin_button_set_value(GTK_SPIN_BUTTON(paramOverrideValue), GetCurrentConnection()->outParamOverride.byteValue);
 	g_signal_connect(paramOverrideValue, "value-changed", G_CALLBACK(param_byte_value_changed), NULL);
 	gtk_box_append(GTK_BOX(paramOverrideBox), paramOverrideValue);
 }
@@ -184,8 +183,7 @@ void CreateParamValueInteger()
 {
 	RemoveExistingParamValueWidget();
 	paramOverrideValue = gtk_spin_button_new_with_range(-2147483648, 2147483647, 1);
-	gtk_spin_button_set_value(GTK_SPIN_BUTTON(paramOverrideValue),
-							  GetCurrentConnection()->outParamOverride.intValue);
+	gtk_spin_button_set_value(GTK_SPIN_BUTTON(paramOverrideValue), GetCurrentConnection()->outParamOverride.intValue);
 	g_signal_connect(paramOverrideValue, "value-changed", G_CALLBACK(param_int_value_changed), NULL);
 	gtk_box_append(GTK_BOX(paramOverrideBox), paramOverrideValue);
 }
@@ -201,8 +199,7 @@ void CreateParamValueFloat()
 {
 	RemoveExistingParamValueWidget();
 	paramOverrideValue = gtk_spin_button_new_with_range(-2147483648, 2147483647, 0.01);
-	gtk_spin_button_set_value(GTK_SPIN_BUTTON(paramOverrideValue),
-							  GetCurrentConnection()->outParamOverride.floatValue);
+	gtk_spin_button_set_value(GTK_SPIN_BUTTON(paramOverrideValue), GetCurrentConnection()->outParamOverride.floatValue);
 	g_signal_connect(paramOverrideValue, "value-changed", G_CALLBACK(param_float_value_changed), NULL);
 	gtk_box_append(GTK_BOX(paramOverrideBox), paramOverrideValue);
 }

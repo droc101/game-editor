@@ -3,8 +3,8 @@
 //
 
 #include "UiHelpers.h"
-#include "../Helpers/GameInterface.h"
 #include "../Editor.h"
+#include "../Helpers/GameInterface.h"
 
 /**
  * Populate a combo box with texture names

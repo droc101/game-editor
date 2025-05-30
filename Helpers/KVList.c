@@ -20,7 +20,7 @@ size_t KvIndexOf(const KvList *list, const char *key)
 {
 	for (size_t i = 0; i < list->keys.length; i++)
 	{
-		if (strcmp((const char *)ListGet(list->keys, i), key) == 0)
+		if (strcmp(ListGet(list->keys, i), key) == 0)
 		{
 			return i;
 		}
@@ -82,7 +82,7 @@ Param *KvGet(const KvList *list, const char *key)
 	const size_t index = KvIndexOf(list, key);
 	if (index != -1)
 	{
-		return (Param *)ListGet(list->values, index);
+		return ListGet(list->values, index);
 	}
 	return NULL; // Not found
 }
@@ -94,7 +94,7 @@ void KvSet(KvList *list, const char *key, const Param value)
 		return;
 	}
 	const size_t index = KvIndexOf(list, key);
-	Param *p = (Param *)malloc(sizeof(Param));
+	Param *p = malloc(sizeof(Param));
 	*p = value;
 	char *k = strdup(key);
 	if (index != -1)
@@ -150,13 +150,13 @@ ParamType KvGetType(const KvList *list, const char *key)
 	return p->type;
 }
 
-char* KvListGetKeyName(const KvList *list, const size_t index)
+char *KvListGetKeyName(const KvList *list, const size_t index)
 {
 	if (!list || index >= list->keys.length)
 	{
 		return NULL;
 	}
-	return (char *)ListGet(list->keys, index);
+	return ListGet(list->keys, index);
 }
 
 #pragma region Public Getters
