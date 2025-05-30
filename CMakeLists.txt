@@ -9,9 +9,6 @@ set(CMAKE_C_FLAGS_RELWITHDEBINFO "-g -O3 -DBUILDSTYLE_DEBUG")
 
 set(CMAKE_C_FLAGS "-Wno-deprecated-declarations")
 
-find_package(ZLIB REQUIRED)
-include_directories(${ZLIB_INCLUDE_DIRS})
-
 find_package(PkgConfig REQUIRED)
 pkg_check_modules(GTK4 REQUIRED gtk4)
 
@@ -55,7 +52,7 @@ add_executable(
         UI/UiHelpers.h
 )
 
-target_link_libraries(geditor ${GTK4_LIBRARIES} m z json-c)
+target_link_libraries(geditor ${GTK4_LIBRARIES} m json-c)
 
 # Copy the runtime assets to the build directory ("Assets" folder)
 add_custom_target(
