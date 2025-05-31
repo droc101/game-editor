@@ -319,6 +319,7 @@ void KvWindowReloadBoxes()
 void kv_ok_clicked(GtkButton *, gpointer)
 {
 	gtk_window_close(kvWindow);
+	valueWidget = NULL;
 }
 
 void kv_row_selected(GtkListBox *, GtkListBoxRow *, gpointer)
