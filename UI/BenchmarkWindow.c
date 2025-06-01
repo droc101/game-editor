@@ -26,29 +26,17 @@ void bm_cancel_clicked(GtkButton *, gpointer)
 	gtk_window_close(bmWindow);
 }
 
-void
-bm_walls_value_changed (
-  GtkSpinButton* self,
-  gpointer
-)
+void bm_walls_value_changed(GtkSpinButton *self, gpointer)
 {
 	bmWallCount = gtk_spin_button_get_value_as_int(self);
 }
 
-void
-bm_actors_value_changed (
-  GtkSpinButton* self,
-  gpointer
-)
+void bm_actors_value_changed(GtkSpinButton *self, gpointer)
 {
 	bmActorCount = gtk_spin_button_get_value_as_int(self);
 }
 
-void
-bm_half_size_value_changed (
-  GtkSpinButton* self,
-  gpointer
-)
+void bm_half_size_value_changed(GtkSpinButton *self, gpointer)
 {
 	bmHalfSize = gtk_spin_button_get_value(self);
 }

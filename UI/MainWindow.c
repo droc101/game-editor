@@ -842,7 +842,11 @@ void MainWindowActivate(GtkApplication *app, gpointer *)
 		gtk_window_set_decorated(GTK_WINDOW(dummyWindow), FALSE);
 		gtk_window_minimize(GTK_WINDOW(dummyWindow));
 		gtk_window_present(GTK_WINDOW(dummyWindow));
-		MessageWindowShow(GTK_WINDOW(dummyWindow), "Error", "Failed to rescan assets. Please check your game directory and definition files, then try again. More detailed errors may be available in the console log.", mb_exit_callback);
+		MessageWindowShow(GTK_WINDOW(dummyWindow),
+						  "Error",
+						  "Failed to rescan assets. Please check your game directory and definition files, then try "
+						  "again. More detailed errors may be available in the console log.",
+						  mb_exit_callback);
 		mainWindow = GTK_WINDOW(dummyWindow);
 		return;
 	}

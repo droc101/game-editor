@@ -4,8 +4,8 @@
 
 #include "MapPropertiesWindow.h"
 
-#include "UiHelpers.h"
 #include "../Editor.h"
+#include "UiHelpers.h"
 
 GtkWindow *mpWindow;
 GtkApplication *mpApplication;
@@ -288,4 +288,3 @@ void MPWindowShow(GtkWindow *parent, GtkApplication *app)
 
 	gtk_window_present(GTK_WINDOW(window));
 }
-

@@ -652,7 +652,8 @@ void UpdateActorKvs(Actor *actor)
 	}
 }
 
-float randomf(float min, float max) {
+float randomf(float min, float max)
+{
 	return min + ((float)rand() / RAND_MAX) * (max - min);
 }
 

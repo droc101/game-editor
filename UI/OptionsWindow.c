@@ -64,7 +64,8 @@ void opt_ok_clicked(GtkButton *, gpointer)
 
 	if (!IsValidGameDirectory(&options))
 	{
-		MessageWindowShow(optionsWindow, "Invalid Game Directory",
+		MessageWindowShow(optionsWindow,
+						  "Invalid Game Directory",
 						  "The selected directory does not contain a valid game executable and assets folder.",
 						  NULL);
 		strncpy(options.gameDirectory, oldPath, 260);

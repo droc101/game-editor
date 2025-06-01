@@ -50,7 +50,10 @@ bool LoadDefFiles()
 
 void UnloadDefFiles()
 {
-	if (!actorDefs) return;
+	if (!actorDefs)
+	{
+		return;
+	}
 	for (int i = 0; i < actorDefs->length; i++)
 	{
 		ActorDefinition *def = ListGet(*actorDefs, i);

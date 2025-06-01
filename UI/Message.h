@@ -7,7 +7,7 @@
 
 #include <gtk/gtk.h>
 
-void mb_exit_callback(GObject*, GAsyncResult*, gpointer);
+void mb_exit_callback(GObject *, GAsyncResult *, gpointer);
 
 void MessageWindowShow(GtkWindow *parent, const char *title, const char *message, GAsyncReadyCallback callback);
 
