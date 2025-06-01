@@ -251,6 +251,16 @@ void setup_activated(GSimpleAction *, GVariant *, const gpointer app)
 	OptionsWindowShow(mainWindow, GTK_APPLICATION(app), false);
 }
 
+void generate_wall_benchmark_activated(GSimpleAction *, GVariant *, const gpointer app)
+{
+	GenerateBenchmarkLevel(2000, 0, 0, 10);
+}
+
+void generate_actor_benchmark_activated(GSimpleAction *, GVariant *, const gpointer app)
+{
+	GenerateBenchmarkLevel(0, 2000, 1, 10);
+}
+
 #pragma endregion
 
 #pragma region Help Menu
@@ -496,6 +506,8 @@ static GActionEntry menu_entries[] = {
 	{"snap_reset", snap_reset_activated, NULL, NULL, NULL},
 	{"snap_higher", snap_higher_activated, NULL, NULL, NULL},
 	{"setup", setup_activated, NULL, NULL, NULL},
+	{"generate_wall_benchmark", generate_wall_benchmark_activated, NULL, NULL, NULL},
+	{"generate_actor_benchmark", generate_actor_benchmark_activated, NULL, NULL, NULL},
 	{"about", about_activated, NULL, NULL, NULL},
 };
 
@@ -547,6 +559,8 @@ GtkWidget *SetupMenuBar(GtkApplication *app)
 
 	GMenu *tools_menu = g_menu_new();
 	g_menu_append(tools_menu, "Setup", "app.setup");
+	g_menu_append(tools_menu, "Generate Wall Benchmark", "app.generate_wall_benchmark");
+	g_menu_append(tools_menu, "Generate Actor Benchmark", "app.generate_actor_benchmark");
 	g_menu_append_submenu(menu, "Tools", G_MENU_MODEL(tools_menu));
 	g_object_unref(tools_menu);
 

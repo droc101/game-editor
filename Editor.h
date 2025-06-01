@@ -64,4 +64,6 @@ List *ScanAssetFolder(const char *folderName, const char *extension);
 
 void UpdateActorKvs(Actor *actor);
 
+void GenerateBenchmarkLevel(size_t numWalls, size_t numActors, int actorType, float halfSize);
+
 #endif //EDITOR_H

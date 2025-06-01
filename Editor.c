@@ -5,6 +5,8 @@
 #include "Editor.h"
 #include <stdlib.h>
 #include <string.h>
+#include <tgmath.h>
+
 #include "defines.h"
 #include "Helpers/Drawing.h"
 #include "Helpers/GameInterface.h"
@@ -644,5 +646,37 @@ void UpdateActorKvs(Actor *actor)
 					printf("Unknown parameter type %d for actor %s\n", paramDef.type, actor->name);
 			}
 		}
+	}
+}
+
+float randomf(float min, float max) {
+	return min + ((float)rand() / RAND_MAX) * (max - min);
+}
+
+void GenerateBenchmarkLevel(const size_t numWalls, const size_t numActors, const int actorType, const float halfSize)
+{
+	srand(time(NULL));
+	for (size_t i = 0; i < numWalls; i++)
+	{
+		Wall *w = malloc(sizeof(Wall));
+		memset(w, 0, sizeof(Wall));
+		w->a = v2(randomf(-halfSize, halfSize), randomf(-halfSize, halfSize));
+		w->b = v2(randomf(-halfSize, halfSize), randomf(-halfSize, halfSize));
+		strcpy(w->tex, "level_wall_test");
+		w->uvScale = 1.0;
+		ListAdd(&l->walls, w);
+	}
+	for (size_t i = 0; i < numActors; i++)
+	{
+		Actor *a = malloc(sizeof(Actor));
+		memset(a, 0, sizeof(Actor));
+		a->position = v2(randomf(-halfSize, halfSize), randomf(-halfSize, halfSize));
+		a->rotation = degToRad(rand() % 360);
+		a->actorType = actorType;
+		a->name[0] = '\0';
+		ListCreate(&a->ioConnections);
+		ListAdd(&l->actors, a);
+		KvListCreate(&a->params);
+		UpdateActorKvs(a);
 	}
 }
