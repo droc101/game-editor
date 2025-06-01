@@ -334,6 +334,7 @@ void kv_row_selected(GtkListBox *, GtkListBoxRow *, gpointer)
 
 void KvWindowShow(GtkWindow *parent, GtkApplication *app, Actor *actor)
 {
+	valueWidget = NULL;
 	kvActor = actor;
 	GtkWidget *window = gtk_application_window_new(GTK_APPLICATION(app));
 	gtk_window_set_title(GTK_WINDOW(window), "Actor Parameters");
