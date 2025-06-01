@@ -50,6 +50,8 @@ add_executable(
         Helpers/KVList.h
         UI/UiHelpers.c
         UI/UiHelpers.h
+        UI/BenchmarkWindow.c
+        UI/BenchmarkWindow.h
 )
 
 target_link_libraries(geditor ${GTK4_LIBRARIES} m json-c)
