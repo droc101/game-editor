@@ -25,10 +25,10 @@ void WriteLevel(const Level *level, const char *path)
 	// Write the has ceiling flag
 	fwrite(&level->hasCeiling, sizeof(byte), 1, file);
 	// Write the floor and ceiling textures
-	fwrite(level->ceilOrSkyTex, sizeof(char), 32, file);
-	fwrite(level->floorTex, sizeof(char), 32, file);
+	fwrite(level->ceilOrSkyTex, sizeof(char), 64, file);
+	fwrite(level->floorTex, sizeof(char), 64, file);
 	// Write the music
-	fwrite(level->music, sizeof(char), 32, file);
+	fwrite(level->music, sizeof(char), 64, file);
 	// Write the fog color and start/end
 	fwrite(&level->fogColor, sizeof(uint), 1, file);
 	fwrite(&level->fogStart, sizeof(float), 1, file);
@@ -86,7 +86,7 @@ void WriteLevel(const Level *level, const char *path)
 		fwrite(&wall->a.y, sizeof(float), 1, file);
 		fwrite(&wall->b.x, sizeof(float), 1, file);
 		fwrite(&wall->b.y, sizeof(float), 1, file);
-		fwrite(wall->tex, sizeof(char), 32, file);
+		fwrite(wall->tex, sizeof(char), 64, file);
 		fwrite(&wall->uvScale, sizeof(float), 1, file);
 		fwrite(&wall->uvOffset, sizeof(float), 1, file);
 	}
@@ -110,9 +110,9 @@ Level *ReadLevel(const char *path)
 	fread(&level->name, sizeof(char), 32, file);
 	fread(&level->courseNum, sizeof(short), 1, file);
 	fread(&level->hasCeiling, sizeof(byte), 1, file);
-	fread(&level->ceilOrSkyTex, sizeof(char), 32, file);
-	fread(&level->floorTex, sizeof(char), 32, file);
-	fread(&level->music, sizeof(char), 32, file);
+	fread(&level->ceilOrSkyTex, sizeof(char), 64, file);
+	fread(&level->floorTex, sizeof(char), 64, file);
+	fread(&level->music, sizeof(char), 64, file);
 	fread(&level->fogColor, sizeof(uint), 1, file);
 	fread(&level->fogStart, sizeof(float), 1, file);
 	fread(&level->fogEnd, sizeof(float), 1, file);
@@ -170,7 +170,7 @@ Level *ReadLevel(const char *path)
 		fread(&wall->a.y, sizeof(float), 1, file);
 		fread(&wall->b.x, sizeof(float), 1, file);
 		fread(&wall->b.y, sizeof(float), 1, file);
-		fread(&wall->tex, sizeof(char), 32, file);
+		fread(&wall->tex, sizeof(char), 64, file);
 		fread(&wall->uvScale, sizeof(float), 1, file);
 		fread(&wall->uvOffset, sizeof(float), 1, file);
 

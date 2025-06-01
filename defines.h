@@ -126,7 +126,7 @@ struct Wall
 {
 	Vector2 a; // The first point of the wall
 	Vector2 b; // The second point of the wall
-	char tex[32]; // The texture name
+	char tex[64]; // The texture name
 	float uvScale; // The X scale of the texture
 	float uvOffset; // The X offset of the texture
 };
@@ -141,10 +141,10 @@ struct Level
 	List walls; // The list of walls in the level. You must bake this into staticWalls before it is used.
 
 	bool hasCeiling;
-	char ceilOrSkyTex[32];
-	char floorTex[32];
+	char ceilOrSkyTex[64];
+	char floorTex[64];
 
-	char music[32];
+	char music[64];
 
 	uint fogColor;
 	float fogStart;

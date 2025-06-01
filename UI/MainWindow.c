@@ -741,7 +741,7 @@ GtkWidget *SetupRSidebar()
 	GtkWidget *ceilOrSkyTex = gtk_combo_box_text_new_with_entry();
 	PopulateComboBoxTextures(ceilOrSkyTex);
 	GtkEntry *entry = GTK_ENTRY(gtk_combo_box_get_child(GTK_COMBO_BOX(ceilOrSkyTex)));
-	gtk_entry_set_max_length(entry, 30);
+	gtk_entry_set_max_length(entry, 60);
 	gtk_entry_buffer_set_text(gtk_entry_get_buffer(entry), l->ceilOrSkyTex, -1);
 	g_signal_connect(entry, "changed", G_CALLBACK(level_ceil_or_sky_tex_changed), NULL);
 	gtk_box_append(GTK_BOX(rightSidebarVLayout), ceilOrSkyTex);
@@ -752,7 +752,7 @@ GtkWidget *SetupRSidebar()
 	GtkWidget *floorTex = gtk_combo_box_text_new_with_entry();
 	PopulateComboBoxTextures(floorTex);
 	entry = GTK_ENTRY(gtk_combo_box_get_child(GTK_COMBO_BOX(floorTex)));
-	gtk_entry_set_max_length(entry, 30);
+	gtk_entry_set_max_length(entry, 60);
 	gtk_entry_buffer_set_text(gtk_entry_get_buffer(entry), l->floorTex, -1);
 	g_signal_connect(entry, "changed", G_CALLBACK(level_floor_tex_changed), NULL);
 	gtk_box_append(GTK_BOX(rightSidebarVLayout), floorTex);
@@ -768,7 +768,7 @@ GtkWidget *SetupRSidebar()
 	GtkWidget *musicBox = gtk_combo_box_text_new_with_entry();
 	PopulateComboBoxMusic(musicBox);
 	entry = GTK_ENTRY(gtk_combo_box_get_child(GTK_COMBO_BOX(musicBox)));
-	gtk_entry_set_max_length(entry, 30);
+	gtk_entry_set_max_length(entry, 60);
 	gtk_entry_buffer_set_text(gtk_entry_get_buffer(entry), l->music, -1);
 	g_signal_connect(entry, "changed", G_CALLBACK(level_music_changed), NULL);
 	gtk_box_append(GTK_BOX(rightSidebarVLayout), musicBox);
@@ -845,7 +845,7 @@ GtkWidget *SetupLSidebar_WallSelection(const Wall *w)
 	GtkWidget *textureBox = gtk_combo_box_text_new_with_entry();
 	PopulateComboBoxTextures(textureBox);
 	GtkEntry *entry = GTK_ENTRY(gtk_combo_box_get_child(GTK_COMBO_BOX(textureBox)));
-	gtk_entry_set_max_length(entry, 30);
+	gtk_entry_set_max_length(entry, 60);
 	GtkEntryBuffer *buffer = gtk_entry_get_buffer(entry);
 	gtk_entry_buffer_set_text(buffer, w->tex, -1);
 	g_signal_connect(entry, "changed", G_CALLBACK(wall_texture_changed), NULL);
