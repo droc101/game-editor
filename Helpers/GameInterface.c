@@ -414,6 +414,19 @@ ActorDefinition *GetActorDefByLoadIndex(const int actor)
 	return ListGet(*actorDefs, actor);
 }
 
+size_t GetActorLoadIndexByName(const char *name)
+{
+	for (int i = 0; i < actorDefs->length; i++)
+	{
+		const ActorDefinition *def = ListGet(*actorDefs, i);
+		if (strcmp(def->actorName, name) == 0)
+		{
+			return i;
+		}
+	}
+	return -1; // Not found
+}
+
 ActorDefSignal *GetActorDefOutput(const int actor, const byte output)
 {
 	if (output >= GetActorDef(actor)->numOutputs)

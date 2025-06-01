@@ -52,6 +52,8 @@ add_executable(
         UI/UiHelpers.h
         UI/BenchmarkWindow.c
         UI/BenchmarkWindow.h
+        UI/MapPropertiesWindow.c
+        UI/MapPropertiesWindow.h
 )
 
 target_link_libraries(geditor ${GTK4_LIBRARIES} m json-c)

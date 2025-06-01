@@ -20,6 +20,9 @@ Options options;
 
 AddRequestType addRequest;
 
+char newWallTex[60] = "level_wall_test";
+int newActorType = 0;
+
 Vector2 scrollPos = {0};
 Vector2 scrollPosCentered = {0};
 double zoom = 30.0;
@@ -420,7 +423,7 @@ void EditorUpdate()
 				memset(w, 0, sizeof(Wall));
 				w->a = ScreenToWorldSnapped(GetLocalMousePos());
 				w->b = ScreenToWorldSnapped(GetLocalMousePos());
-				strcpy(w->tex, "level_wall_test");
+				strcpy(w->tex, newWallTex);
 				w->uvScale = 1.0;
 				ListAdd(&l->walls, w);
 				selectionType = SELTYPE_WALL_B;
@@ -432,7 +435,7 @@ void EditorUpdate()
 				memset(a, 0, sizeof(Actor));
 				a->position = ScreenToWorldSnapped(GetLocalMousePos());
 				a->rotation = 0.0;
-				a->actorType = 1;
+				a->actorType = newActorType;
 				a->name[0] = '\0';
 				ListCreate(&a->ioConnections);
 				ListAdd(&l->actors, a);

@@ -10,10 +10,10 @@
 GtkWindow *bmWindow;
 GtkApplication *bmApplication;
 
-size_t bmWallCount = 2000;
-size_t bmActorCount = 0;
-int bmActorType = 0;
-float bmHalfSize = 1.0f;
+size_t bmWallCount;
+size_t bmActorCount;
+int bmActorType;
+float bmHalfSize;
 
 void bm_ok_clicked(GtkButton *, gpointer)
 {
@@ -73,8 +73,8 @@ void BMWindowShow(GtkWindow *parent, GtkApplication *app)
 {
 	bmWallCount = 2000;
 	bmActorCount = 0;
-	bmActorType = 1;
-	bmHalfSize = 1.0f;
+	bmActorType = GetActorLoadIndexByName("Test Actor");
+	bmHalfSize = 10.0f;
 	GtkWidget *window = gtk_application_window_new(GTK_APPLICATION(app));
 	gtk_window_set_title(GTK_WINDOW(window), "Generate Benchmark");
 	gtk_window_set_transient_for(GTK_WINDOW(window), parent);
@@ -97,7 +97,7 @@ void BMWindowShow(GtkWindow *parent, GtkApplication *app)
 	gtk_label_set_xalign(GTK_LABEL(wallCountLabel), 0);
 	gtk_box_append(GTK_BOX(mainStack), wallCountLabel);
 	GtkWidget *wallCountBox = gtk_spin_button_new_with_range(0, 10000, 1);
-	gtk_spin_button_set_value(GTK_SPIN_BUTTON(wallCountBox), 2000);
+	gtk_spin_button_set_value(GTK_SPIN_BUTTON(wallCountBox), bmWallCount);
 	g_signal_connect(wallCountBox, "value-changed", G_CALLBACK(bm_walls_value_changed), NULL);
 	gtk_box_append(GTK_BOX(mainStack), wallCountBox);
 
@@ -105,7 +105,7 @@ void BMWindowShow(GtkWindow *parent, GtkApplication *app)
 	gtk_label_set_xalign(GTK_LABEL(actorCountLabel), 0);
 	gtk_box_append(GTK_BOX(mainStack), actorCountLabel);
 	GtkWidget *actorCountBox = gtk_spin_button_new_with_range(0, 10000, 1);
-	gtk_spin_button_set_value(GTK_SPIN_BUTTON(actorCountBox), 0);
+	gtk_spin_button_set_value(GTK_SPIN_BUTTON(actorCountBox), bmActorCount);
 	g_signal_connect(actorCountBox, "value-changed", G_CALLBACK(bm_actors_value_changed), NULL);
 	gtk_box_append(GTK_BOX(mainStack), actorCountBox);
 
@@ -114,7 +114,7 @@ void BMWindowShow(GtkWindow *parent, GtkApplication *app)
 	gtk_box_append(GTK_BOX(mainStack), actorTypeLabel);
 	GtkWidget *actorTypeCombo = gtk_combo_box_text_new();
 	PopulateComboBoxActors(actorTypeCombo);
-	gtk_combo_box_set_active(GTK_COMBO_BOX(actorTypeCombo), 0);
+	gtk_combo_box_set_active(GTK_COMBO_BOX(actorTypeCombo), bmActorType);
 	g_signal_connect(actorTypeCombo, "changed", G_CALLBACK(bm_actor_type_changed), NULL);
 	gtk_widget_set_size_request(actorTypeCombo, 200, -1);
 	gtk_box_append(GTK_BOX(mainStack), actorTypeCombo);
@@ -123,7 +123,7 @@ void BMWindowShow(GtkWindow *parent, GtkApplication *app)
 	gtk_label_set_xalign(GTK_LABEL(halfSizeLabel), 0);
 	gtk_box_append(GTK_BOX(mainStack), halfSizeLabel);
 	GtkWidget *halfSizeBox = gtk_spin_button_new_with_range(0.1, 100, 0.1);
-	gtk_spin_button_set_value(GTK_SPIN_BUTTON(halfSizeBox), 1.0);
+	gtk_spin_button_set_value(GTK_SPIN_BUTTON(halfSizeBox), bmHalfSize);
 	g_signal_connect(halfSizeBox, "changed", G_CALLBACK(bm_half_size_value_changed), NULL);
 	gtk_box_append(GTK_BOX(mainStack), halfSizeBox);
 

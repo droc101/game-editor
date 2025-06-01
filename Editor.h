@@ -25,6 +25,8 @@ typedef enum AddRequestType
 } AddRequestType;
 
 extern AddRequestType addRequest;
+extern char newWallTex[60];
+extern int newActorType;
 
 extern Level *l;
 extern Options options;

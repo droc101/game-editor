@@ -13,6 +13,7 @@
 #include "BenchmarkWindow.h"
 #include "IOWindow.h"
 #include "KvWindow.h"
+#include "MapPropertiesWindow.h"
 #include "OptionsWindow.h"
 #include "UiHelpers.h"
 
@@ -22,6 +23,7 @@ GtkWidget *statusLabel;
 GtkWidget *leftSidebarVLayout;
 GtkWidget *leftSidebarCurrent;
 
+GtkWidget *drawingArea;
 GtkWindow *mainWindow = NULL;
 GtkFileDialog *fileDialog;
 GtkApplication *mainWindowApplication;
@@ -69,6 +71,8 @@ void add_wall_clicked(GtkToggleButton *self, gpointer)
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(addActorsButton), FALSE);
 	const bool toggled = gtk_toggle_button_get_active(self);
 	addRequest = toggled ? ADDREQ_WALL : ADDREQ_NONE;
+	GdkCursor *cursor = gdk_cursor_new_from_name(toggled ? "crosshair" : "default", NULL);
+	gtk_widget_set_cursor(drawingArea, cursor);
 }
 
 /**
@@ -79,6 +83,8 @@ void add_actor_clicked(GtkToggleButton *self, gpointer)
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(addWallsButton), FALSE);
 	const bool toggled = gtk_toggle_button_get_active(self);
 	addRequest = toggled ? ADDREQ_ACTOR : ADDREQ_NONE;
+	GdkCursor *cursor = gdk_cursor_new_from_name(toggled ? "crosshair" : "default", NULL);
+	gtk_widget_set_cursor(drawingArea, cursor);
 }
 
 /**
@@ -179,6 +185,11 @@ static void new_activated(GSimpleAction *, GVariant *, gpointer)
 void delete_selected_menu_item_activated(GSimpleAction *, GVariant *, gpointer)
 {
 	delete_selected_clicked(NULL, NULL);
+}
+
+void map_properties_activated(GSimpleAction *, GVariant *, const gpointer app)
+{
+	MPWindowShow(mainWindow, GTK_APPLICATION(app));
 }
 
 #pragma endregion
@@ -390,95 +401,26 @@ void edit_kv_clicked(GtkButton *, gpointer)
 
 #pragma endregion
 
-#pragma region Level Sidebar
+#pragma region Editor Sidebar
 
-/**
- * Callback for when the level name is changed
- */
-void level_name_changed(GtkEditable *self, gpointer)
+void default_wall_tex_changed(GtkEditable *self, gpointer)
 {
 	const char *text = gtk_editable_get_text(self);
-	strcpy(l->name, text);
+	strcpy(newWallTex, text);
 }
 
-/**
- * Callback for when the level course number is changed
- */
-void level_course_num_value_changed(GtkSpinButton *self, gpointer)
+void default_actor_type_changed(GtkComboBox *self, gpointer)
 {
-	l->courseNum = gtk_spin_button_get_value(self);
-}
-
-/**
- * Callback for when the level ceil/sky switch is toggled
- */
-gboolean level_ceil_or_sky_state_set(GtkSwitch *, const gboolean state, gpointer)
-{
-	if (state)
+	const char *text = gtk_combo_box_text_get_active_text(GTK_COMBO_BOX_TEXT(self));
+	for (int i = 0; i < GetActorTypeCount(); i++)
 	{
-		l->hasCeiling = TRUE;
-	} else
-	{
-		l->hasCeiling = FALSE;
+		const ActorDefinition *def = GetActorDefByLoadIndex(i);
+		if (strcmp(def->actorName, text) == 0)
+		{
+			newActorType = def->actorType;
+			break;
+		}
 	}
-	return TRUE;
-}
-
-/**
- * Callback for when the level ceil/sky texture is changed
- */
-void level_ceil_or_sky_tex_changed(GtkEditable *self, gpointer)
-{
-	const char *text = gtk_editable_get_text(self);
-	strcpy(l->ceilOrSkyTex, text);
-}
-
-/**
- * Callback for when the level floor texture is changed
- */
-void level_floor_tex_changed(GtkEditable *self, gpointer)
-{
-	const char *text = gtk_editable_get_text(self);
-	strcpy(l->floorTex, text);
-}
-
-/**
- * Callback for when the level music is changed
- */
-void level_music_changed(GtkEditable *self, gpointer)
-{
-	const char *text = gtk_editable_get_text(self);
-	strcpy(l->music, text);
-}
-
-/**
- * Callback for when the level fog color is changed
- */
-void fog_color_set(GtkColorButton *self, gpointer)
-{
-	GdkRGBA gtkColor;
-	gtk_color_chooser_get_rgba(GTK_COLOR_CHOOSER(self), &gtkColor);
-	const uint color = (uint)(gtkColor.red * 255) << 24 |
-					   (uint)(gtkColor.green * 255) << 16 |
-					   (uint)(gtkColor.blue * 255) << 8 |
-					   (uint)(gtkColor.alpha * 255);
-	l->fogColor = color;
-}
-
-/**
- * Callback for when the fog start value is changed
- */
-void fog_start_value_changed(GtkRange *self, gpointer)
-{
-	l->fogStart = gtk_range_get_value(self);
-}
-
-/**
- * Callback for when the level fog end value is changed
- */
-void fog_end_value_changed(GtkRange *self, gpointer)
-{
-	l->fogEnd = gtk_range_get_value(self);
 }
 
 #pragma endregion
@@ -494,6 +436,7 @@ static GActionEntry menu_entries[] = {
 	{"save", save_activated, NULL, NULL, NULL},
 	{"quit", quit_activated, NULL, NULL, NULL},
 	{"delete_selected", delete_selected_menu_item_activated, NULL, NULL, NULL},
+	{"map_properties", map_properties_activated, NULL, NULL, NULL},
 	{"zoom_in", zoom_in_activated, NULL, NULL, NULL},
 	{"zoom_out", zoom_out_activated, NULL, NULL, NULL},
 	{"reset_zoom", reset_zoom_activated, NULL, NULL, NULL},
@@ -540,6 +483,7 @@ GtkWidget *SetupMenuBar(GtkApplication *app)
 
 	GMenu *edit_menu = g_menu_new();
 	g_menu_append(edit_menu, "Delete Selected", "app.delete_selected");
+	g_menu_append(edit_menu, "Level Properties", "app.map_properties");
 	g_menu_append_submenu(menu, "Edit", G_MENU_MODEL(edit_menu));
 
 	GMenu *view_menu = g_menu_new();
@@ -687,142 +631,36 @@ GtkWidget *SetupDrawingArea()
  */
 GtkWidget *SetupRSidebar()
 {
-	GtkWidget *rightSidebar = gtk_scrolled_window_new();
-	gtk_widget_set_margin_end(rightSidebar, 8);
-	gtk_widget_set_size_request(rightSidebar, 250, -1);
-	gtk_widget_set_hexpand(rightSidebar, FALSE);
-
 	GtkWidget *rightSidebarVLayout = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0);
-	gtk_scrolled_window_set_child(GTK_SCROLLED_WINDOW(rightSidebar), rightSidebarVLayout);
-	GtkWidget *rightSidebarHeader = gtk_label_new("Level Properties");
-	gtk_label_set_xalign(GTK_LABEL(rightSidebarHeader), 0);
-	gtk_widget_add_css_class(rightSidebarHeader, "sidebarHeader");
-	gtk_widget_set_margin_bottom(rightSidebarHeader, 8);
-	gtk_box_append(GTK_BOX(rightSidebarVLayout), rightSidebarHeader);
+	gtk_widget_set_size_request(rightSidebarVLayout, 250, -1);
+	gtk_widget_set_hexpand(rightSidebarVLayout, FALSE);
 
-	GtkWidget *levelNameLabel = gtk_label_new("Level Name");
-	gtk_label_set_xalign(GTK_LABEL(levelNameLabel), 0);
-	gtk_box_append(GTK_BOX(rightSidebarVLayout), levelNameLabel);
-	GtkWidget *levelNameBox = gtk_entry_new();
-	gtk_entry_set_placeholder_text(GTK_ENTRY(levelNameBox), "Level Name");
-	gtk_entry_set_max_length(GTK_ENTRY(levelNameBox), 30);
-	gtk_entry_buffer_set_text(gtk_entry_get_buffer(GTK_ENTRY(levelNameBox)), l->name, -1);
-	g_signal_connect(levelNameBox, "changed", G_CALLBACK(level_name_changed), NULL);
-	gtk_box_append(GTK_BOX(rightSidebarVLayout), levelNameBox);
+	GtkWidget *seperator = gtk_separator_new(GTK_ORIENTATION_HORIZONTAL);
+	gtk_widget_set_margin_top(seperator, 8);
+	gtk_widget_set_margin_bottom(seperator, 8);
+	gtk_box_append(GTK_BOX(rightSidebarVLayout), seperator);
 
-	GtkWidget *courseNumLabel = gtk_label_new("Course Number");
-	gtk_label_set_xalign(GTK_LABEL(courseNumLabel), 0);
-	gtk_box_append(GTK_BOX(rightSidebarVLayout), courseNumLabel);
-
-	GtkWidget *courseNumBox = gtk_spin_button_new_with_range(-1, 100, 1);
-	gtk_spin_button_set_value(GTK_SPIN_BUTTON(courseNumBox), l->courseNum);
-	g_signal_connect(courseNumBox, "value-changed", G_CALLBACK(level_course_num_value_changed), NULL);
-	gtk_box_append(GTK_BOX(rightSidebarVLayout), courseNumBox);
-
-	GtkWidget *sep1 = gtk_separator_new(GTK_ORIENTATION_HORIZONTAL);
-	gtk_widget_set_margin_top(sep1, 8);
-	gtk_widget_set_margin_bottom(sep1, 8);
-	gtk_box_append(GTK_BOX(rightSidebarVLayout), sep1);
-
-	GtkWidget *ceilOrSkyHBox = gtk_center_box_new();
-	gtk_widget_set_hexpand(ceilOrSkyHBox, TRUE);
-	gtk_widget_set_margin_bottom(ceilOrSkyHBox, 8);
-	gtk_box_append(GTK_BOX(rightSidebarVLayout), ceilOrSkyHBox);
-
-	GtkWidget *ceilLabel = gtk_label_new("Ceiling");
-	gtk_label_set_xalign(GTK_LABEL(ceilLabel), 1);
-	GtkWidget *skyLabel = gtk_label_new("Sky");
-
-	GtkWidget *ceilSkySwitch = gtk_switch_new();
-	gtk_widget_add_css_class(ceilSkySwitch, "skySwitch");
-	gtk_widget_set_hexpand(ceilSkySwitch, FALSE);
-	gtk_switch_set_state(GTK_SWITCH(ceilSkySwitch), l->hasCeiling);
-	g_signal_connect(ceilSkySwitch, "state-set", G_CALLBACK(level_ceil_or_sky_state_set), NULL);
-
-	gtk_center_box_set_end_widget(GTK_CENTER_BOX(ceilOrSkyHBox), ceilLabel);
-	gtk_center_box_set_center_widget(GTK_CENTER_BOX(ceilOrSkyHBox), ceilSkySwitch);
-	gtk_center_box_set_start_widget(GTK_CENTER_BOX(ceilOrSkyHBox), skyLabel);
-
-	GtkWidget *ceilOrSkyLabel = gtk_label_new("Ceiling/Sky Texture");
-	gtk_label_set_xalign(GTK_LABEL(ceilOrSkyLabel), 0);
-	gtk_box_append(GTK_BOX(rightSidebarVLayout), ceilOrSkyLabel);
-	GtkWidget *ceilOrSkyTex = gtk_combo_box_text_new_with_entry();
-	PopulateComboBoxTextures(ceilOrSkyTex);
-	GtkEntry *entry = GTK_ENTRY(gtk_combo_box_get_child(GTK_COMBO_BOX(ceilOrSkyTex)));
+	GtkWidget *textureLabel = gtk_label_new("New Wall Texture");
+	gtk_label_set_xalign(GTK_LABEL(textureLabel), 0);
+	gtk_box_append(GTK_BOX(rightSidebarVLayout), textureLabel);
+	GtkWidget *textureBox = gtk_combo_box_text_new_with_entry();
+	PopulateComboBoxTextures(textureBox);
+	GtkEntry *entry = GTK_ENTRY(gtk_combo_box_get_child(GTK_COMBO_BOX(textureBox)));
 	gtk_entry_set_max_length(entry, 60);
-	gtk_entry_buffer_set_text(gtk_entry_get_buffer(entry), l->ceilOrSkyTex, -1);
-	g_signal_connect(entry, "changed", G_CALLBACK(level_ceil_or_sky_tex_changed), NULL);
-	gtk_box_append(GTK_BOX(rightSidebarVLayout), ceilOrSkyTex);
+	gtk_entry_buffer_set_text(gtk_entry_get_buffer(entry), newWallTex, -1);
+	g_signal_connect(entry, "changed", G_CALLBACK(default_wall_tex_changed), NULL);
+	gtk_box_append(GTK_BOX(rightSidebarVLayout), textureBox);
 
-	GtkWidget *floorTexLabel = gtk_label_new("Floor Texture");
-	gtk_label_set_xalign(GTK_LABEL(floorTexLabel), 0);
-	gtk_box_append(GTK_BOX(rightSidebarVLayout), floorTexLabel);
-	GtkWidget *floorTex = gtk_combo_box_text_new_with_entry();
-	PopulateComboBoxTextures(floorTex);
-	entry = GTK_ENTRY(gtk_combo_box_get_child(GTK_COMBO_BOX(floorTex)));
-	gtk_entry_set_max_length(entry, 60);
-	gtk_entry_buffer_set_text(gtk_entry_get_buffer(entry), l->floorTex, -1);
-	g_signal_connect(entry, "changed", G_CALLBACK(level_floor_tex_changed), NULL);
-	gtk_box_append(GTK_BOX(rightSidebarVLayout), floorTex);
+	GtkWidget *actorLabel = gtk_label_new("New Actor Type");
+	gtk_label_set_xalign(GTK_LABEL(actorLabel), 0);
+	gtk_box_append(GTK_BOX(rightSidebarVLayout), actorLabel);
+	GtkWidget *actorBox = gtk_combo_box_text_new();
+	PopulateComboBoxActors(actorBox);
+	gtk_combo_box_set_active(GTK_COMBO_BOX(actorBox), 0);
+	g_signal_connect(actorBox, "changed", G_CALLBACK(default_actor_type_changed), NULL);
+	gtk_box_append(GTK_BOX(rightSidebarVLayout), actorBox);
 
-	GtkWidget *sep2 = gtk_separator_new(GTK_ORIENTATION_HORIZONTAL);
-	gtk_widget_set_margin_top(sep2, 8);
-	gtk_widget_set_margin_bottom(sep2, 8);
-	gtk_box_append(GTK_BOX(rightSidebarVLayout), sep2);
-
-	GtkWidget *musicLabel = gtk_label_new("Music");
-	gtk_label_set_xalign(GTK_LABEL(musicLabel), 0);
-	gtk_box_append(GTK_BOX(rightSidebarVLayout), musicLabel);
-	GtkWidget *musicBox = gtk_combo_box_text_new_with_entry();
-	PopulateComboBoxMusic(musicBox);
-	entry = GTK_ENTRY(gtk_combo_box_get_child(GTK_COMBO_BOX(musicBox)));
-	gtk_entry_set_max_length(entry, 60);
-	gtk_entry_buffer_set_text(gtk_entry_get_buffer(entry), l->music, -1);
-	g_signal_connect(entry, "changed", G_CALLBACK(level_music_changed), NULL);
-	gtk_box_append(GTK_BOX(rightSidebarVLayout), musicBox);
-
-	GtkWidget *sep3 = gtk_separator_new(GTK_ORIENTATION_HORIZONTAL);
-	gtk_widget_set_margin_top(sep3, 8);
-	gtk_widget_set_margin_bottom(sep3, 8);
-	gtk_box_append(GTK_BOX(rightSidebarVLayout), sep3);
-
-	GtkWidget *fogColorLabel = gtk_label_new("Fog Color");
-	gtk_label_set_xalign(GTK_LABEL(fogColorLabel), 0);
-	gtk_box_append(GTK_BOX(rightSidebarVLayout), fogColorLabel);
-	GdkRGBA fogColorRGBA = {0, 0, 0, 1};
-	fogColorRGBA.red = (l->fogColor >> 24) / 255.0;
-	fogColorRGBA.green = ((l->fogColor >> 16) & 0xFF) / 255.0;
-	fogColorRGBA.blue = ((l->fogColor >> 8) & 0xFF) / 255.0;
-	fogColorRGBA.alpha = (l->fogColor & 0xFF) / 255.0;
-	GtkWidget *fogColor = gtk_color_button_new_with_rgba(&fogColorRGBA);
-	g_signal_connect(fogColor, "color-set", G_CALLBACK(fog_color_set), NULL);
-	gtk_box_append(GTK_BOX(rightSidebarVLayout), fogColor);
-
-	GtkWidget *fogStartLabel = gtk_label_new("Fog Start");
-	gtk_label_set_xalign(GTK_LABEL(fogStartLabel), 0);
-	gtk_box_append(GTK_BOX(rightSidebarVLayout), fogStartLabel);
-
-	GtkWidget *fogStartSlider = gtk_scale_new_with_range(GTK_ORIENTATION_HORIZONTAL, -50, 200, 1);
-	gtk_scale_set_value_pos(GTK_SCALE(fogStartSlider), GTK_POS_RIGHT);
-	gtk_scale_set_digits(GTK_SCALE(fogStartSlider), 0);
-	gtk_scale_set_draw_value(GTK_SCALE(fogStartSlider), TRUE);
-	gtk_range_set_value(GTK_RANGE(fogStartSlider), l->fogStart);
-	g_signal_connect(fogStartSlider, "value-changed", G_CALLBACK(fog_start_value_changed), NULL);
-	gtk_box_append(GTK_BOX(rightSidebarVLayout), fogStartSlider);
-
-	GtkWidget *fogEndLabel = gtk_label_new("Fog End");
-	gtk_label_set_xalign(GTK_LABEL(fogEndLabel), 0);
-	gtk_box_append(GTK_BOX(rightSidebarVLayout), fogEndLabel);
-
-	GtkWidget *fogEndSlider = gtk_scale_new_with_range(GTK_ORIENTATION_HORIZONTAL, 0, 300, 1);
-	gtk_scale_set_value_pos(GTK_SCALE(fogEndSlider), GTK_POS_RIGHT);
-	gtk_scale_set_digits(GTK_SCALE(fogEndSlider), 0);
-	gtk_scale_set_draw_value(GTK_SCALE(fogEndSlider), TRUE);
-	gtk_range_set_value(GTK_RANGE(fogEndSlider), l->fogEnd);
-	g_signal_connect(fogEndSlider, "value-changed", G_CALLBACK(fog_end_value_changed), NULL);
-	gtk_box_append(GTK_BOX(rightSidebarVLayout), fogEndSlider);
-
-	return rightSidebar;
+	return rightSidebarVLayout;
 }
 
 /**
@@ -1010,13 +848,20 @@ void MainWindowActivate(GtkApplication *app, gpointer *)
 
 	GtkWidget *menuBar = SetupMenuBar(app);
 
-	GtkWidget *drawingArea = SetupDrawingArea();
+	drawingArea = SetupDrawingArea();
+
+	GtkWidget *sidebarsBox = gtk_box_new(GTK_ORIENTATION_VERTICAL, 8);
+	gtk_widget_set_vexpand(sidebarsBox, TRUE);
+	gtk_widget_set_margin_start(sidebarsBox, 8);
+	gtk_widget_set_margin_end(sidebarsBox, 8);
+	gtk_widget_set_margin_top(sidebarsBox, 8);
+	gtk_widget_set_margin_bottom(sidebarsBox, 8);
 
 	GtkWidget *leftSidebar = gtk_scrolled_window_new();
-	gtk_widget_set_margin_start(leftSidebar, 8);
 	gtk_widget_set_size_request(leftSidebar, 250, -1);
 	gtk_widget_set_hexpand(leftSidebar, FALSE);
 	leftSidebarVLayout = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0);
+	gtk_widget_set_vexpand(leftSidebar, TRUE);
 	GtkWidget *leftSidebarHeader = gtk_label_new("Selection Properties");
 	gtk_label_set_xalign(GTK_LABEL(leftSidebarHeader), 0);
 	gtk_widget_add_css_class(leftSidebarHeader, "sidebarHeader");
@@ -1024,16 +869,19 @@ void MainWindowActivate(GtkApplication *app, gpointer *)
 	gtk_box_append(GTK_BOX(leftSidebarVLayout), leftSidebarHeader);
 	gtk_scrolled_window_set_child(GTK_SCROLLED_WINDOW(leftSidebar), leftSidebarVLayout);
 
+	gtk_box_append(GTK_BOX(sidebarsBox), leftSidebar);
+
 	SelectionTypeChanged(SELTYPE_NONE, 0);
 
 	GtkWidget *rightSidebar = SetupRSidebar();
+	gtk_box_append(GTK_BOX(sidebarsBox), rightSidebar);
 
 	GtkGrid *mainHLayout = GTK_GRID(gtk_grid_new());
 	gtk_grid_set_column_homogeneous(mainHLayout, FALSE);
-	gtk_grid_set_column_spacing(mainHLayout, 8);
-	gtk_grid_attach(mainHLayout, leftSidebar, 0, 0, 1, 1);
+	gtk_grid_set_column_spacing(mainHLayout, 0);
+	gtk_grid_attach(mainHLayout, sidebarsBox, 0, 0, 1, 1);
 	gtk_grid_attach(mainHLayout, drawingArea, 1, 0, 1, 1);
-	gtk_grid_attach(mainHLayout, rightSidebar, 2, 0, 1, 1);
+	// gtk_grid_attach(mainHLayout, rightSidebar, 2, 0, 1, 1);
 
 	GtkWidget *toolbar = SetupToolbar();
 

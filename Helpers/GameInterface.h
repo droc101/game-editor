@@ -116,6 +116,8 @@ ActorDefinition *GetActorDef(int actor);
 
 ActorDefinition *GetActorDefByLoadIndex(int actor);
 
+size_t GetActorLoadIndexByName(const char *name);
+
 ActorDefSignal *GetActorDefOutput(int actor, byte output);
 
 ActorDefSignal *GetActorDefInput(int actor, byte input);

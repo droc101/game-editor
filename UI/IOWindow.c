@@ -410,9 +410,8 @@ void param_type_changed(GtkComboBox *self, gpointer)
 		return;
 	}
 
-	GetCurrentConnection()->outParamOverride.type = gtk_combo_box_get_active(GTK_COMBO_BOX(self));
-	// zero out the value to avoid reading data of previous type as if it were the new type
 	memset(&GetCurrentConnection()->outParamOverride, 0, sizeof(GetCurrentConnection()->outParamOverride));
+	GetCurrentConnection()->outParamOverride.type = gtk_combo_box_get_active(GTK_COMBO_BOX(self));
 
 	IOWindowReloadBoxes();
 	IOWindowReloadList();
