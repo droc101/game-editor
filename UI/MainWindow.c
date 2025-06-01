@@ -14,6 +14,7 @@
 #include "IOWindow.h"
 #include "KvWindow.h"
 #include "MapPropertiesWindow.h"
+#include "Message.h"
 #include "OptionsWindow.h"
 #include "UiHelpers.h"
 
@@ -834,8 +835,16 @@ void MainWindowActivate(GtkApplication *app, gpointer *)
 
 	if (!RescanAssets())
 	{
-		printf("Failed to rescan assets\n");
-		exit(1);
+		GtkWidget *dummyWindow = gtk_application_window_new(app);
+		gtk_window_set_transient_for(GTK_WINDOW(dummyWindow), GTK_WINDOW(mainWindow));
+		gtk_window_set_modal(GTK_WINDOW(dummyWindow), TRUE);
+		gtk_window_set_default_size(GTK_WINDOW(dummyWindow), 1, 1);
+		gtk_window_set_decorated(GTK_WINDOW(dummyWindow), FALSE);
+		gtk_window_minimize(GTK_WINDOW(dummyWindow));
+		gtk_window_present(GTK_WINDOW(dummyWindow));
+		MessageWindowShow(GTK_WINDOW(dummyWindow), "Error", "Failed to rescan assets. Please check your game directory and definition files, then try again. More detailed errors may be available in the console log.", mb_exit_callback);
+		mainWindow = GTK_WINDOW(dummyWindow);
+		return;
 	}
 
 	mainWindowApplication = app;

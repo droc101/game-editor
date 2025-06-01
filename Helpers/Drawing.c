@@ -14,6 +14,7 @@ void BeginRender(GtkDrawingArea *ar, cairo_t *c)
 	area = ar;
 	cr = c;
 	frameSize = v2(gtk_widget_get_width(GTK_WIDGET(ar)), gtk_widget_get_height(GTK_WIDGET(ar)));
+	cairo_set_antialias(cr, CAIRO_ANTIALIAS_NONE);
 }
 
 void DrawRect(const Vector2 start, const Vector2 size, const GdkRGBA color) /* RGBA 0-255 */

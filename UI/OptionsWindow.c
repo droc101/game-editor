@@ -3,8 +3,10 @@
 //
 
 #include "OptionsWindow.h"
+
 #include "../Editor.h"
 #include "../Helpers/Options.h"
+#include "Message.h"
 
 GtkWindow *optionsWindow;
 GtkFileDialog *gameFolderDialog;
@@ -62,14 +64,9 @@ void opt_ok_clicked(GtkButton *, gpointer)
 
 	if (!IsValidGameDirectory(&options))
 	{
-		// inform the user they have made a mistake
-		GtkAlertDialog *dialog = gtk_alert_dialog_new("");
-		gtk_alert_dialog_set_message(dialog, "Invalid game directory");
-		gtk_alert_dialog_set_detail(
-				dialog,
-				"The selected directory does not contain a valid game executable and assets folder.");
-		gtk_alert_dialog_set_modal(dialog, TRUE);
-		gtk_alert_dialog_show(dialog, optionsWindow);
+		MessageWindowShow(optionsWindow, "Invalid Game Directory",
+						  "The selected directory does not contain a valid game executable and assets folder.",
+						  NULL);
 		strncpy(options.gameDirectory, oldPath, 260);
 		return;
 	}

@@ -43,8 +43,8 @@ List *modelList = NULL;
 List *soundList = NULL;
 List *levelList = NULL;
 
-const GdkRGBA bg = Color(0x123456FF);
-const GdkRGBA grid = Color(0x808080FF);
+const GdkRGBA bg = Color(0x101010FF);
+const GdkRGBA grid = Color(0x505050FF);
 const GdkRGBA xAxis = Color(0xFF0000FF);
 const GdkRGBA zAxis = Color(0x0000FFFF);
 const GdkRGBA selectionOutline = Color(0xFF0000FF);
@@ -231,11 +231,11 @@ void RenderGrid()
 
 	for (int x = gridOffsetX; x < WindowWidth(); x += gridSpacing)
 	{
-		DrawLine(v2(x, 0), v2(x, WindowHeight()), grid, .5f);
+		DrawLine(v2(x, 0), v2(x, WindowHeight()), grid, 1.0f);
 	}
 	for (int y = gridOffsetY; y < WindowHeight(); y += gridSpacing)
 	{
-		DrawLine(v2(0, y), v2(WindowWidth(), y), grid, .5f);
+		DrawLine(v2(0, y), v2(WindowWidth(), y), grid, 1.0f);
 	}
 
 	DrawLine(v2(scrollPosCentered.x, 0), v2(scrollPosCentered.x, WindowHeight()), zAxis, 2.0f);
