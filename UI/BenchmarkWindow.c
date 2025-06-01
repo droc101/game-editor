@@ -71,6 +71,10 @@ void bm_actor_type_changed(GtkComboBox *self, gpointer)
 
 void BMWindowShow(GtkWindow *parent, GtkApplication *app)
 {
+	bmWallCount = 2000;
+	bmActorCount = 0;
+	bmActorType = 0;
+	bmHalfSize = 1.0f;
 	GtkWidget *window = gtk_application_window_new(GTK_APPLICATION(app));
 	gtk_window_set_title(GTK_WINDOW(window), "Generate Benchmark");
 	gtk_window_set_transient_for(GTK_WINDOW(window), parent);
