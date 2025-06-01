@@ -73,7 +73,7 @@ void BMWindowShow(GtkWindow *parent, GtkApplication *app)
 {
 	bmWallCount = 2000;
 	bmActorCount = 0;
-	bmActorType = 0;
+	bmActorType = 1;
 	bmHalfSize = 1.0f;
 	GtkWidget *window = gtk_application_window_new(GTK_APPLICATION(app));
 	gtk_window_set_title(GTK_WINDOW(window), "Generate Benchmark");
