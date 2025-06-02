@@ -73,7 +73,7 @@ void PopulateComboBoxLevels(GtkWidget *box)
 	}
 }
 
-void PopulateComboBoxWithActors(GtkWidget *box, const char *selected)
+void PopulateComboBoxWithActorNames(GtkWidget *box, const char *selected)
 {
 	int selectedIndex = -1;
 	int location = 0;

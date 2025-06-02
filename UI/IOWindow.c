@@ -269,7 +269,7 @@ void IOWindowReloadBoxes()
 		PopulateComboBoxWithSignals(myOutputCombo, def->numOutputs, def->outputs);
 		gtk_combo_box_set_active(GTK_COMBO_BOX(myOutputCombo), GetCurrentConnection()->myOutput);
 
-		PopulateComboBoxWithActors(targetActorCombo, GetCurrentConnection()->outActorName);
+		PopulateComboBoxWithActorNames(targetActorCombo, GetCurrentConnection()->outActorName);
 
 		const ActorConnection *conn = g_object_get_data(G_OBJECT(row), "connection");
 		const Actor *target = NULL;

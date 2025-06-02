@@ -7,6 +7,8 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "../UI/Message.h"
+#include "GameInterface.h"
 #include "KVList.h"
 
 void WriteLevel(const Level *level, const char *path)
@@ -96,6 +98,7 @@ void WriteLevel(const Level *level, const char *path)
 
 Level *ReadLevel(const char *path)
 {
+	int unknownActors = 0;
 	FILE *file = fopen(path, "rb");
 	if (file == NULL)
 	{
@@ -133,6 +136,13 @@ Level *ReadLevel(const char *path)
 		fread(&actor->rotation, sizeof(float), 1, file);
 		fread(&actor->actorType, sizeof(int), 1, file);
 		fread(&actor->name, sizeof(char) * 64, 1, file);
+
+		const ActorDefinition *def = GetActorDef(actor->actorType);
+		if (def == NULL)
+		{
+			unknownActors++;
+			actor->actorType = 0;
+		}
 
 		uint paramCount = 0;
 		fread(&paramCount, sizeof(uint), 1, file);
@@ -175,6 +185,14 @@ Level *ReadLevel(const char *path)
 		fread(&wall->uvOffset, sizeof(float), 1, file);
 
 		ListAdd(&level->walls, wall);
+	}
+
+	if (unknownActors > 0)
+	{
+		char message[256];
+		sprintf(message, "%d actor(s) with unknown types were encountered during level loading. They have been changed to type 0.", unknownActors);
+		MessageWindowShow(NULL, "Unknown Actor Types",
+							  message, NULL);
 	}
 
 	return level;

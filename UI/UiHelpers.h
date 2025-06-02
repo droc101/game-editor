@@ -11,7 +11,7 @@
 void PopulateComboBoxTextures(GtkWidget *box);
 void PopulateComboBoxActors(GtkWidget *box);
 void PopulateComboBoxMusic(GtkWidget *box);
-void PopulateComboBoxWithActors(GtkWidget *box, const char *selected);
+void PopulateComboBoxWithActorNames(GtkWidget *box, const char *selected);
 void PopulateComboBoxWithSignals(GtkWidget *box, size_t count, const ActorDefSignal *signals);
 void PopulateComboBoxModels(GtkWidget *box);
 
