@@ -174,6 +174,7 @@ static void open_activated(GSimpleAction *, GVariant *, gpointer)
 static void new_activated(GSimpleAction *, GVariant *, gpointer)
 {
 	EditorNewLevel();
+	SelectionTypeChanged();
 }
 
 #pragma endregion

@@ -178,6 +178,8 @@ void EditorNewLevel()
 	l->fogStart = 50.0f;
 	l->fogEnd = 100.0f;
 	l->player.rotation = degToRad(-90.0);
+
+	selectionType = SELTYPE_NONE;
 }
 
 Vector2 WorldToScreen(const Vector2 wp)
