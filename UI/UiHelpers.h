@@ -8,6 +8,8 @@
 #include <gtk/gtk.h>
 #include "../Helpers/GameInterface.h"
 
+extern GtkApplication *application;
+
 void PopulateComboBoxTextures(GtkWidget *box);
 void PopulateComboBoxActors(GtkWidget *box);
 void PopulateComboBoxMusic(GtkWidget *box);
@@ -18,5 +20,7 @@ void PopulateComboBoxModels(GtkWidget *box);
 void PopulateComboBoxSounds(GtkWidget *box);
 
 void PopulateComboBoxLevels(GtkWidget *box);
+
+GtkWidget *CreateTextureComboBox(const char *selected, GtkWidget *comboBox, GtkWindow *window);
 
 #endif //UIHELPERS_H

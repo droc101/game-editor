@@ -8,7 +8,6 @@
 #include "UiHelpers.h"
 
 GtkWindow *ioWindow;
-GtkApplication *ioApplication;
 Actor *ioActor;
 GtkWidget *listBox;
 GtkWidget *myOutputCombo;
@@ -419,10 +418,10 @@ void param_type_changed(GtkComboBox *self, gpointer)
 
 #pragma endregion
 
-void IOWindowShow(GtkWindow *parent, GtkApplication *app, Actor *actor)
+void IOWindowShow(GtkWindow *parent, Actor *actor)
 {
 	ioActor = actor;
-	GtkWidget *window = gtk_application_window_new(GTK_APPLICATION(app));
+	GtkWidget *window = gtk_application_window_new(GTK_APPLICATION(application));
 	gtk_window_set_title(GTK_WINDOW(window), "I/O Connections");
 	gtk_window_set_transient_for(GTK_WINDOW(window), parent);
 	gtk_window_set_modal(GTK_WINDOW(window), TRUE);
@@ -573,7 +572,6 @@ void IOWindowShow(GtkWindow *parent, GtkApplication *app, Actor *actor)
 	gtk_window_set_child(GTK_WINDOW(window), mainStack);
 
 	ioWindow = GTK_WINDOW(window);
-	ioApplication = app;
 
 	gtk_window_present(GTK_WINDOW(window));
 }

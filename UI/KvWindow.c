@@ -3,14 +3,15 @@
 //
 
 #include "KvWindow.h"
+
 #include "../Editor.h"
 #include "../Helpers/GameInterface.h"
 #include "../Helpers/KVList.h"
+#include "Message.h"
 #include "UiHelpers.h"
 
 Actor *kvActor = NULL;
 GtkWindow *kvWindow;
-GtkApplication *kvApplication;
 GtkWidget *kvListBox;
 GtkWidget *valueWidget = NULL;
 GtkWidget *valueBox;
@@ -233,7 +234,7 @@ void CreateKVHintString(const StringParamHint hint)
 			PopulateComboBoxLevels(valueWidget);
 			break;
 		case HINT_ACTOR:
-			PopulateComboBoxTextures(valueWidget);
+			PopulateComboBoxWithActorNames(valueWidget, "");
 			break;
 		case HINT_MUSIC:
 			PopulateComboBoxMusic(valueWidget);
@@ -332,11 +333,11 @@ void kv_row_selected(GtkListBox *, GtkListBoxRow *, gpointer)
 	KvWindowReloadList();
 }
 
-void KvWindowShow(GtkWindow *parent, GtkApplication *app, Actor *actor)
+void KvWindowShow(GtkWindow *parent, Actor *actor)
 {
 	valueWidget = NULL;
 	kvActor = actor;
-	GtkWidget *window = gtk_application_window_new(GTK_APPLICATION(app));
+	GtkWidget *window = gtk_application_window_new(GTK_APPLICATION(application));
 	gtk_window_set_title(GTK_WINDOW(window), "Actor Parameters");
 	gtk_window_set_transient_for(GTK_WINDOW(window), parent);
 	gtk_window_set_modal(GTK_WINDOW(window), TRUE);
@@ -416,7 +417,6 @@ void KvWindowShow(GtkWindow *parent, GtkApplication *app, Actor *actor)
 	gtk_window_set_child(GTK_WINDOW(window), mainStack);
 
 	kvWindow = GTK_WINDOW(window);
-	kvApplication = app;
 
 	gtk_window_present(GTK_WINDOW(window));
 }

@@ -8,6 +8,6 @@
 #include <gtk/gtk.h>
 #include "../defines.h"
 
-void IOWindowShow(GtkWindow *parent, GtkApplication *app, Actor *actor);
+void IOWindowShow(GtkWindow *parent, Actor *actor);
 
 #endif //IOWINDOW_H

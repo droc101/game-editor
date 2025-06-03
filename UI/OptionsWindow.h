@@ -15,9 +15,8 @@ extern bool optionsWindowOpen;
 /**
  * Show the options window
  * @param parent The parent window (@c NULL is OK)
- * @param app The GTK application
  * @param required Whether this is required (turns cancel into quit)
  */
-void OptionsWindowShow(GtkWindow *parent, GtkApplication *app, bool required);
+void OptionsWindowShow(GtkWindow *parent, bool required);
 
 #endif //OPTIONSWINDOW_H

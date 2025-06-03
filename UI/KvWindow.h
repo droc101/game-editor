@@ -8,6 +8,6 @@
 #include <gtk/gtk.h>
 #include "../defines.h"
 
-void KvWindowShow(GtkWindow *parent, GtkApplication *app, Actor *actor);
+void KvWindowShow(GtkWindow *parent, Actor *actor);
 
 #endif //KVWINDOW_H

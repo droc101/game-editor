@@ -7,6 +7,6 @@
 
 #include <gtk/gtk.h>
 
-void MPWindowShow(GtkWindow *parent, GtkApplication *app);
+void MPWindowShow(GtkWindow *parent);
 
 #endif //MAPPROPERTIESWINDOW_H

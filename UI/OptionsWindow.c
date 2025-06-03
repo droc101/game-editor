@@ -7,14 +7,13 @@
 #include "../Editor.h"
 #include "../Helpers/Options.h"
 #include "Message.h"
+#include "UiHelpers.h"
 
 GtkWindow *optionsWindow;
 GtkFileDialog *gameFolderDialog;
 GtkWidget *gamePathEntry;
 bool optionsWindowOpen = false;
 bool optionsRequired = false;
-
-GtkApplication *optionsApplication;
 
 /**
  * The callback for when a game folder was selected from the folder dialog
@@ -83,17 +82,17 @@ void options_closed(GtkWindow *, gpointer)
 {
 	if (optionsRequired)
 	{
-		g_application_quit(G_APPLICATION(optionsApplication));
+		g_application_quit(G_APPLICATION(application));
 		EditorDestroy();
 		exit(1);
 	}
 	optionsWindowOpen = false;
 }
 
-void OptionsWindowShow(GtkWindow *parent, GtkApplication *app, const bool required)
+void OptionsWindowShow(GtkWindow *parent, const bool required)
 {
 	optionsWindowOpen = true;
-	GtkWidget *window = gtk_application_window_new(GTK_APPLICATION(app));
+	GtkWidget *window = gtk_application_window_new(GTK_APPLICATION(application));
 	gtk_window_set_title(GTK_WINDOW(window), "Setup");
 	gtk_window_set_transient_for(GTK_WINDOW(window), parent);
 	gtk_window_set_modal(GTK_WINDOW(window), TRUE);
@@ -163,7 +162,6 @@ void OptionsWindowShow(GtkWindow *parent, GtkApplication *app, const bool requir
 
 	optionsWindow = GTK_WINDOW(window);
 	optionsRequired = required;
-	optionsApplication = app;
 
 	g_signal_connect(window, "destroy", G_CALLBACK(options_closed), NULL);
 

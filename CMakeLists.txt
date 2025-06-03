@@ -15,6 +15,9 @@ pkg_check_modules(GTK4 REQUIRED gtk4)
 include_directories(${GTK4_INCLUDE_DIRS})
 link_directories(${GTK4_LIBRARY_DIRS})
 
+find_package(ZLIB REQUIRED)
+include_directories(${ZLIB_INCLUDE_DIRS})
+
 find_package(json-c CONFIG)
 include_directories(${json-c_INCLUDE_DIRS})
 
@@ -56,9 +59,13 @@ add_executable(
         UI/MapPropertiesWindow.h
         UI/Message.c
         UI/Message.h
+        UI/TextureBrowserWindow.c
+        UI/TextureBrowserWindow.h
+        Helpers/TextureReader.c
+        Helpers/TextureReader.h
 )
 
-target_link_libraries(geditor ${GTK4_LIBRARIES} m json-c)
+target_link_libraries(geditor ${GTK4_LIBRARIES} m json-c z)
 
 # Copy the runtime assets to the build directory ("Assets" folder)
 add_custom_target(

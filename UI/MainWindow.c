@@ -191,7 +191,7 @@ void delete_selected_menu_item_activated(GSimpleAction *, GVariant *, gpointer)
 
 void map_properties_activated(GSimpleAction *, GVariant *, const gpointer app)
 {
-	MPWindowShow(mainWindow, GTK_APPLICATION(app));
+	MPWindowShow(mainWindow);
 }
 
 #pragma endregion
@@ -262,12 +262,12 @@ static void snap_reset_activated(GSimpleAction *, GVariant *, gpointer)
  */
 void setup_activated(GSimpleAction *, GVariant *, const gpointer app)
 {
-	OptionsWindowShow(mainWindow, GTK_APPLICATION(app), false);
+	OptionsWindowShow(mainWindow, false);
 }
 
 void generate_benchmark_activated(GSimpleAction *, GVariant *, const gpointer app)
 {
-	BMWindowShow(mainWindow, GTK_APPLICATION(app));
+	BMWindowShow(mainWindow);
 }
 
 #pragma endregion
@@ -393,12 +393,12 @@ static void actor_name_changed(GtkEditable *self, gpointer)
 
 void edit_io_clicked(GtkButton *, gpointer)
 {
-	IOWindowShow(mainWindow, GTK_APPLICATION(mainWindowApplication), ListGet(l->actors, selectionIndex));
+	IOWindowShow(mainWindow, ListGet(l->actors, selectionIndex));
 }
 
 void edit_kv_clicked(GtkButton *, gpointer)
 {
-	KvWindowShow(mainWindow, GTK_APPLICATION(mainWindowApplication), ListGet(l->actors, selectionIndex));
+	KvWindowShow(mainWindow, ListGet(l->actors, selectionIndex));
 }
 
 #pragma endregion
@@ -645,13 +645,12 @@ GtkWidget *SetupRSidebar()
 	GtkWidget *textureLabel = gtk_label_new("New Wall Texture");
 	gtk_label_set_xalign(GTK_LABEL(textureLabel), 0);
 	gtk_box_append(GTK_BOX(rightSidebarVLayout), textureLabel);
-	GtkWidget *textureBox = gtk_combo_box_text_new_with_entry();
-	PopulateComboBoxTextures(textureBox);
-	GtkEntry *entry = GTK_ENTRY(gtk_combo_box_get_child(GTK_COMBO_BOX(textureBox)));
+	GtkWidget *textureComboBox = NULL;
+	GtkWidget *textureHBox = CreateTextureComboBox(newWallTex, textureComboBox, mainWindow);
+	GtkEntry *entry = GTK_ENTRY(gtk_combo_box_get_child(GTK_COMBO_BOX(textureComboBox)));
 	gtk_entry_set_max_length(entry, 60);
-	gtk_entry_buffer_set_text(gtk_entry_get_buffer(entry), newWallTex, -1);
 	g_signal_connect(entry, "changed", G_CALLBACK(default_wall_tex_changed), NULL);
-	gtk_box_append(GTK_BOX(rightSidebarVLayout), textureBox);
+	gtk_box_append(GTK_BOX(rightSidebarVLayout), textureHBox);
 
 	GtkWidget *actorLabel = gtk_label_new("New Actor Type");
 	gtk_label_set_xalign(GTK_LABEL(actorLabel), 0);
@@ -690,14 +689,12 @@ GtkWidget *SetupLSidebar_WallSelection(const Wall *w)
 	GtkWidget *textureLabel = gtk_label_new("Texture");
 	gtk_label_set_xalign(GTK_LABEL(textureLabel), 0);
 	gtk_box_append(GTK_BOX(wallSelectionSidebar), textureLabel);
-	GtkWidget *textureBox = gtk_combo_box_text_new_with_entry();
-	PopulateComboBoxTextures(textureBox);
-	GtkEntry *entry = GTK_ENTRY(gtk_combo_box_get_child(GTK_COMBO_BOX(textureBox)));
+	GtkWidget *textureComboBox = NULL;
+	GtkWidget *textureHBox = CreateTextureComboBox(w->tex, textureComboBox, mainWindow);
+	GtkEntry *entry = GTK_ENTRY(gtk_combo_box_get_child(GTK_COMBO_BOX(textureComboBox)));
 	gtk_entry_set_max_length(entry, 60);
-	GtkEntryBuffer *buffer = gtk_entry_get_buffer(entry);
-	gtk_entry_buffer_set_text(buffer, w->tex, -1);
 	g_signal_connect(entry, "changed", G_CALLBACK(wall_texture_changed), NULL);
-	gtk_box_append(GTK_BOX(wallSelectionSidebar), textureBox);
+	gtk_box_append(GTK_BOX(wallSelectionSidebar), textureHBox);
 
 	GtkWidget *sep1 = gtk_separator_new(GTK_ORIENTATION_HORIZONTAL);
 	gtk_widget_set_margin_top(sep1, 8);
@@ -827,7 +824,7 @@ void MainWindowActivate(GtkApplication *app, gpointer *)
 {
 	if (!IsValidGameDirectory(&options))
 	{
-		OptionsWindowShow(mainWindow, app, true);
+		OptionsWindowShow(mainWindow, true);
 		while (optionsWindowOpen)
 		{
 			g_main_context_iteration(NULL, TRUE);

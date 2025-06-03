@@ -7,6 +7,6 @@
 
 #include <gtk/gtk.h>
 
-void BMWindowShow(GtkWindow *parent, GtkApplication *app);
+void BMWindowShow(GtkWindow *parent);
 
 #endif //BENCHMARKWINDOW_H

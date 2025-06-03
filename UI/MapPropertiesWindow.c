@@ -8,7 +8,6 @@
 #include "UiHelpers.h"
 
 GtkWindow *mpWindow;
-GtkApplication *mpApplication;
 
 void mp_ok_clicked(GtkButton *, gpointer)
 {
@@ -162,24 +161,22 @@ GtkWidget *SetupPropsView()
 	GtkWidget *ceilOrSkyLabel = gtk_label_new("Ceiling/Sky Texture");
 	gtk_label_set_xalign(GTK_LABEL(ceilOrSkyLabel), 0);
 	gtk_box_append(GTK_BOX(rightSidebarVLayout), ceilOrSkyLabel);
-	GtkWidget *ceilOrSkyTex = gtk_combo_box_text_new_with_entry();
-	PopulateComboBoxTextures(ceilOrSkyTex);
+	GtkWidget *ceilOrSkyTex = NULL;
+	GtkWidget *ceilOrSkyBox = CreateTextureComboBox(l->ceilOrSkyTex, ceilOrSkyTex, GTK_WINDOW(mpWindow));
 	GtkEntry *entry = GTK_ENTRY(gtk_combo_box_get_child(GTK_COMBO_BOX(ceilOrSkyTex)));
 	gtk_entry_set_max_length(entry, 60);
-	gtk_entry_buffer_set_text(gtk_entry_get_buffer(entry), l->ceilOrSkyTex, -1);
 	g_signal_connect(entry, "changed", G_CALLBACK(level_ceil_or_sky_tex_changed), NULL);
-	gtk_box_append(GTK_BOX(rightSidebarVLayout), ceilOrSkyTex);
+	gtk_box_append(GTK_BOX(rightSidebarVLayout), ceilOrSkyBox);
 
 	GtkWidget *floorTexLabel = gtk_label_new("Floor Texture");
 	gtk_label_set_xalign(GTK_LABEL(floorTexLabel), 0);
 	gtk_box_append(GTK_BOX(rightSidebarVLayout), floorTexLabel);
-	GtkWidget *floorTex = gtk_combo_box_text_new_with_entry();
-	PopulateComboBoxTextures(floorTex);
+	GtkWidget *floorTex = NULL;
+	GtkWidget *floorTexBox = CreateTextureComboBox(l->floorTex, floorTex, GTK_WINDOW(mpWindow));
 	entry = GTK_ENTRY(gtk_combo_box_get_child(GTK_COMBO_BOX(floorTex)));
 	gtk_entry_set_max_length(entry, 60);
-	gtk_entry_buffer_set_text(gtk_entry_get_buffer(entry), l->floorTex, -1);
 	g_signal_connect(entry, "changed", G_CALLBACK(level_floor_tex_changed), NULL);
-	gtk_box_append(GTK_BOX(rightSidebarVLayout), floorTex);
+	gtk_box_append(GTK_BOX(rightSidebarVLayout), floorTexBox);
 
 	GtkWidget *sep2 = gtk_separator_new(GTK_ORIENTATION_HORIZONTAL);
 	gtk_widget_set_margin_top(sep2, 8);
@@ -241,9 +238,9 @@ GtkWidget *SetupPropsView()
 	return rightSidebar;
 }
 
-void MPWindowShow(GtkWindow *parent, GtkApplication *app)
+void MPWindowShow(GtkWindow *parent)
 {
-	GtkWidget *window = gtk_application_window_new(GTK_APPLICATION(app));
+	GtkWidget *window = gtk_application_window_new(GTK_APPLICATION(application));
 	gtk_window_set_title(GTK_WINDOW(window), "Level Properties");
 	gtk_window_set_transient_for(GTK_WINDOW(window), parent);
 	gtk_window_set_modal(GTK_WINDOW(window), TRUE);
@@ -284,7 +281,6 @@ void MPWindowShow(GtkWindow *parent, GtkApplication *app)
 	gtk_window_set_child(GTK_WINDOW(window), mainStack);
 
 	mpWindow = GTK_WINDOW(window);
-	mpApplication = app;
 
 	gtk_window_present(GTK_WINDOW(window));
 }

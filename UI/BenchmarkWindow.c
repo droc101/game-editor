@@ -8,7 +8,6 @@
 #include "UiHelpers.h"
 
 GtkWindow *bmWindow;
-GtkApplication *bmApplication;
 
 size_t bmWallCount;
 size_t bmActorCount;
@@ -57,13 +56,13 @@ void bm_actor_type_changed(GtkComboBox *self, gpointer)
 	bmActorType = type;
 }
 
-void BMWindowShow(GtkWindow *parent, GtkApplication *app)
+void BMWindowShow(GtkWindow *parent)
 {
 	bmWallCount = 2000;
 	bmActorCount = 0;
 	bmActorType = GetActorLoadIndexByName("Test Actor");
 	bmHalfSize = 10.0f;
-	GtkWidget *window = gtk_application_window_new(GTK_APPLICATION(app));
+	GtkWidget *window = gtk_application_window_new(GTK_APPLICATION(application));
 	gtk_window_set_title(GTK_WINDOW(window), "Generate Benchmark");
 	gtk_window_set_transient_for(GTK_WINDOW(window), parent);
 	gtk_window_set_modal(GTK_WINDOW(window), TRUE);
@@ -140,7 +139,6 @@ void BMWindowShow(GtkWindow *parent, GtkApplication *app)
 	gtk_window_set_child(GTK_WINDOW(window), mainStack);
 
 	bmWindow = GTK_WINDOW(window);
-	bmApplication = app;
 
 	gtk_window_present(GTK_WINDOW(window));
 }

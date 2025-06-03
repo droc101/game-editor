@@ -3,8 +3,12 @@
 //
 
 #include "UiHelpers.h"
+
 #include "../Editor.h"
 #include "../Helpers/GameInterface.h"
+#include "TextureBrowserWindow.h"
+
+GtkApplication *application;
 
 /**
  * Populate a combo box with texture names
@@ -93,7 +97,10 @@ void PopulateComboBoxWithActorNames(GtkWidget *box, const char *selected)
 		}
 		location++;
 	}
-	gtk_combo_box_set_active(GTK_COMBO_BOX(box), selectedIndex);
+	if (selectedIndex != -1)
+	{
+		gtk_combo_box_set_active(GTK_COMBO_BOX(box), selectedIndex);
+	}
 }
 
 void PopulateComboBoxWithSignals(GtkWidget *box, const size_t count, const ActorDefSignal *signals)
@@ -104,4 +111,34 @@ void PopulateComboBoxWithSignals(GtkWidget *box, const size_t count, const Actor
 		const ActorDefSignal *signal = &signals[i];
 		gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(box), signal->name);
 	}
+}
+
+void TextureBrowseButtonPressed(GtkButton *self, gpointer *)
+{
+	GtkWidget *button = GTK_WIDGET(self);
+	GtkWindow *wnd = GTK_WINDOW(g_object_get_data(G_OBJECT(button), "window"));
+	GtkWidget *comboBox = GTK_WIDGET(g_object_get_data(G_OBJECT(button), "comboBox"));
+	TextureBrowserShow(wnd, comboBox);
+}
+
+GtkWidget *CreateTextureComboBox(const char *selected, GtkWidget *comboBox, GtkWindow *window)
+{
+	GtkWidget *hBox = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 4);
+	gtk_widget_set_hexpand(hBox, TRUE);
+
+	comboBox = gtk_combo_box_text_new_with_entry();
+	PopulateComboBoxTextures(comboBox);
+	GtkEntry *entry = GTK_ENTRY(gtk_combo_box_get_child(GTK_COMBO_BOX(comboBox)));
+	gtk_entry_set_max_length(entry, 60);
+	gtk_entry_buffer_set_text(gtk_entry_get_buffer(entry), selected, -1);
+	gtk_box_append(GTK_BOX(hBox), comboBox);
+
+	GtkWidget *browseButton = gtk_button_new_with_label("Browse");
+	gtk_widget_set_size_request(browseButton, 80, -1);
+	g_object_set_data(G_OBJECT(browseButton), "comboBox", comboBox);
+	g_object_set_data(G_OBJECT(browseButton), "window", window);
+	g_signal_connect(browseButton, "clicked", G_CALLBACK(TextureBrowseButtonPressed), NULL);
+	gtk_box_append(GTK_BOX(hBox), browseButton);
+
+	return hBox;
 }
