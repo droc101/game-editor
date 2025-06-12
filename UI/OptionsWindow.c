@@ -9,7 +9,7 @@
 #include "Message.h"
 #include "UiHelpers.h"
 
-GtkWindow *optionsWindow;
+AdwDialog *optionsWindow;
 GtkFileDialog *gameFolderDialog;
 GtkWidget *gamePathEntry;
 bool optionsWindowOpen = false;
@@ -39,7 +39,7 @@ void game_folder_selected(GObject *, GAsyncResult *res, gpointer)
 void pick_folder_clicked(GtkButton *, gpointer)
 {
 	gameFolderDialog = gtk_file_dialog_new();
-	gtk_file_dialog_select_folder(gameFolderDialog, optionsWindow, NULL, game_folder_selected, NULL);
+	gtk_file_dialog_select_folder(gameFolderDialog, GTK_WINDOW(optionsWindow), NULL, game_folder_selected, NULL);
 }
 
 /**
@@ -47,7 +47,7 @@ void pick_folder_clicked(GtkButton *, gpointer)
  */
 void opt_cancel_clicked(GtkButton *, gpointer)
 {
-	gtk_window_close(optionsWindow);
+	adw_dialog_close(optionsWindow);
 }
 
 /**
@@ -63,7 +63,7 @@ void opt_ok_clicked(GtkButton *, gpointer)
 
 	if (!IsValidGameDirectory(&options))
 	{
-		MessageWindowShow(optionsWindow,
+		MessageWindowShow(GTK_WINDOW(optionsWindow),
 						  "Invalid Game Directory",
 						  "The selected directory does not contain a valid game executable and assets folder.",
 						  NULL);
@@ -72,7 +72,7 @@ void opt_ok_clicked(GtkButton *, gpointer)
 	}
 
 	optionsRequired = false;
-	gtk_window_close(optionsWindow);
+	adw_dialog_close(optionsWindow);
 }
 
 /**
@@ -92,18 +92,15 @@ void options_closed(GtkWindow *, gpointer)
 void OptionsWindowShow(GtkWindow *parent, const bool required)
 {
 	optionsWindowOpen = true;
-	GtkWidget *window = gtk_application_window_new(GTK_APPLICATION(application));
-	gtk_window_set_title(GTK_WINDOW(window), "Setup");
-	gtk_window_set_transient_for(GTK_WINDOW(window), parent);
-	gtk_window_set_modal(GTK_WINDOW(window), TRUE);
-	gtk_window_set_resizable(GTK_WINDOW(window), FALSE);
-	gtk_window_set_default_size(GTK_WINDOW(window), 400, -1);
+	AdwDialog *window = adw_dialog_new();
+	adw_dialog_set_title(window, "Setup");
+	adw_dialog_set_content_width(window, 400);
 
 	GtkWidget *mainStack = gtk_box_new(GTK_ORIENTATION_VERTICAL, 8);
-	gtk_widget_set_margin_start(mainStack, 4);
-	gtk_widget_set_margin_end(mainStack, 4);
-	gtk_widget_set_margin_top(mainStack, 4);
-	gtk_widget_set_margin_bottom(mainStack, 4);
+	gtk_widget_set_margin_start(mainStack, 12);
+	gtk_widget_set_margin_end(mainStack, 12);
+	gtk_widget_set_margin_top(mainStack, 12);
+	gtk_widget_set_margin_bottom(mainStack, 12);
 
 	GtkWidget *headerLabel = gtk_label_new("");
 	gtk_label_set_markup(GTK_LABEL(headerLabel), "<big><b>Setup</b></big>");
@@ -158,12 +155,12 @@ void OptionsWindowShow(GtkWindow *parent, const bool required)
 	g_signal_connect(cancelButton, "clicked", G_CALLBACK(opt_cancel_clicked), NULL);
 	gtk_box_append(GTK_BOX(okCancelBox), cancelButton);
 
-	gtk_window_set_child(GTK_WINDOW(window), mainStack);
+	adw_dialog_set_child(window, mainStack);
 
-	optionsWindow = GTK_WINDOW(window);
+	optionsWindow = window;
 	optionsRequired = required;
 
 	g_signal_connect(window, "destroy", G_CALLBACK(options_closed), NULL);
 
-	gtk_window_present(GTK_WINDOW(window));
+	adw_dialog_present(window, GTK_WIDGET(parent));
 }

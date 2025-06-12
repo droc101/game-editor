@@ -12,10 +12,6 @@
     box-shadow: none;
 }
 
-window {
-    border-radius: 0;
-}
-
 placeholder {
     color: gray;
 }

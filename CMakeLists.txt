@@ -11,9 +11,13 @@ set(CMAKE_C_FLAGS "-Wno-deprecated-declarations")
 
 find_package(PkgConfig REQUIRED)
 pkg_check_modules(GTK4 REQUIRED gtk4)
+pkg_check_modules(adwaita REQUIRED libadwaita-1)
 
 include_directories(${GTK4_INCLUDE_DIRS})
 link_directories(${GTK4_LIBRARY_DIRS})
+
+include_directories(${adwaita_INCLUDE_DIRS})
+link_directories(${adwaita_LIBRARY_DIRS})
 
 find_package(ZLIB REQUIRED)
 include_directories(${ZLIB_INCLUDE_DIRS})
@@ -65,7 +69,7 @@ add_executable(
         Helpers/TextureReader.h
 )
 
-target_link_libraries(geditor ${GTK4_LIBRARIES} m json-c z)
+target_link_libraries(geditor ${GTK4_LIBRARIES} ${adwaita_LIBRARIES} m json-c z)
 
 # Copy the runtime assets to the build directory ("Assets" folder)
 add_custom_target(

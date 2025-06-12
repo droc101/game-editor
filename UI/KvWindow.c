@@ -11,7 +11,7 @@
 #include "UiHelpers.h"
 
 Actor *kvActor = NULL;
-GtkWindow *kvWindow;
+AdwDialog *kvWindow;
 GtkWidget *kvListBox;
 GtkWidget *valueWidget = NULL;
 GtkWidget *valueBox;
@@ -319,7 +319,7 @@ void KvWindowReloadBoxes()
  */
 void kv_ok_clicked(GtkButton *, gpointer)
 {
-	gtk_window_close(kvWindow);
+	adw_dialog_close(kvWindow);
 	valueWidget = NULL;
 }
 
@@ -337,18 +337,15 @@ void KvWindowShow(GtkWindow *parent, Actor *actor)
 {
 	valueWidget = NULL;
 	kvActor = actor;
-	GtkWidget *window = gtk_application_window_new(GTK_APPLICATION(application));
-	gtk_window_set_title(GTK_WINDOW(window), "Actor Parameters");
-	gtk_window_set_transient_for(GTK_WINDOW(window), parent);
-	gtk_window_set_modal(GTK_WINDOW(window), TRUE);
-	// gtk_window_set_resizable(GTK_WINDOW(window), FALSE);
-	gtk_window_set_default_size(GTK_WINDOW(window), 600, -1);
+	AdwDialog *window = adw_dialog_new();
+	adw_dialog_set_title(window, "Actor Parameters");
+	adw_dialog_set_content_width(window, 600);
 
 	GtkWidget *mainStack = gtk_box_new(GTK_ORIENTATION_VERTICAL, 8);
-	gtk_widget_set_margin_start(mainStack, 4);
-	gtk_widget_set_margin_end(mainStack, 4);
-	gtk_widget_set_margin_top(mainStack, 4);
-	gtk_widget_set_margin_bottom(mainStack, 4);
+	gtk_widget_set_margin_start(mainStack, 12);
+	gtk_widget_set_margin_end(mainStack, 12);
+	gtk_widget_set_margin_top(mainStack, 12);
+	gtk_widget_set_margin_bottom(mainStack, 12);
 
 	GtkWidget *headerLabel = gtk_label_new("");
 	gtk_label_set_markup(GTK_LABEL(headerLabel), "<big><b>Actor Parameters</b></big>");
@@ -414,9 +411,9 @@ void KvWindowShow(GtkWindow *parent, Actor *actor)
 	gtk_box_append(GTK_BOX(mainStack), buttonBox);
 	gtk_widget_set_hexpand(buttonBox, TRUE);
 
-	gtk_window_set_child(GTK_WINDOW(window), mainStack);
+	adw_dialog_set_child(window, mainStack);
 
-	kvWindow = GTK_WINDOW(window);
+	kvWindow = window;
 
-	gtk_window_present(GTK_WINDOW(window));
+	adw_dialog_present(window, GTK_WIDGET(parent));
 }

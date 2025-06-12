@@ -3,6 +3,7 @@
 //
 
 #include "Message.h"
+#include <adwaita.h>
 
 void mb_exit_callback(GObject *, GAsyncResult *, gpointer)
 {
@@ -11,9 +12,6 @@ void mb_exit_callback(GObject *, GAsyncResult *, gpointer)
 
 void MessageWindowShow(GtkWindow *parent, const char *title, const char *message, const GAsyncReadyCallback callback)
 {
-	GtkAlertDialog *dialog = gtk_alert_dialog_new("");
-	gtk_alert_dialog_set_message(dialog, title);
-	gtk_alert_dialog_set_detail(dialog, message);
-	gtk_alert_dialog_set_modal(dialog, TRUE);
-	gtk_alert_dialog_choose(dialog, parent, NULL, callback, NULL);
+	GtkWidget *dialog = adw_message_dialog_new(parent, title, message);
+	adw_message_dialog_choose(ADW_MESSAGE_DIALOG(dialog), NULL, callback, NULL);
 }

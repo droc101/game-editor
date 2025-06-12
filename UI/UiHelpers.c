@@ -8,7 +8,7 @@
 #include "../Helpers/GameInterface.h"
 #include "TextureBrowserWindow.h"
 
-GtkApplication *application;
+AdwApplication *application;
 
 /**
  * Populate a combo box with texture names

@@ -6,9 +6,10 @@
 #define UIHELPERS_H
 
 #include <gtk/gtk.h>
+#include <adwaita.h>
 #include "../Helpers/GameInterface.h"
 
-extern GtkApplication *application;
+extern AdwApplication *application;
 
 void PopulateComboBoxTextures(GtkWidget *box);
 void PopulateComboBoxActors(GtkWidget *box);

@@ -14,9 +14,9 @@ int main(const int argc, char *argv[])
 
 	EditorInit();
 
-	GtkApplication *app = gtk_application_new("dev.droc101.game.editor",
+	AdwApplication *app = adw_application_new("dev.droc101.game.editor",
 											  G_APPLICATION_DEFAULT_FLAGS | G_APPLICATION_NON_UNIQUE);
-	application = GTK_APPLICATION(app);
+	application = ADW_APPLICATION(app);
 	g_signal_connect(app, "activate", G_CALLBACK(MainWindowActivate), NULL);
 	const int status = g_application_run(G_APPLICATION(app), argc, argv);
 	g_object_unref(app);

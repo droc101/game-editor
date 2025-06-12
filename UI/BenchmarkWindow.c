@@ -7,7 +7,7 @@
 #include "../Editor.h"
 #include "UiHelpers.h"
 
-GtkWindow *bmWindow;
+AdwDialog *bmWindow;
 
 size_t bmWallCount;
 size_t bmActorCount;
@@ -17,12 +17,12 @@ float bmHalfSize;
 void bm_ok_clicked(GtkButton *, gpointer)
 {
 	GenerateBenchmarkLevel(bmWallCount, bmActorCount, bmActorType, bmHalfSize);
-	gtk_window_close(bmWindow);
+	adw_dialog_close(bmWindow);
 }
 
 void bm_cancel_clicked(GtkButton *, gpointer)
 {
-	gtk_window_close(bmWindow);
+	adw_dialog_close(bmWindow);
 }
 
 void bm_walls_value_changed(GtkSpinButton *self, gpointer)
@@ -62,18 +62,16 @@ void BMWindowShow(GtkWindow *parent)
 	bmActorCount = 0;
 	bmActorType = GetActorLoadIndexByName("Test Actor");
 	bmHalfSize = 10.0f;
-	GtkWidget *window = gtk_application_window_new(GTK_APPLICATION(application));
-	gtk_window_set_title(GTK_WINDOW(window), "Generate Benchmark");
-	gtk_window_set_transient_for(GTK_WINDOW(window), parent);
-	gtk_window_set_modal(GTK_WINDOW(window), TRUE);
-	// gtk_window_set_resizable(GTK_WINDOW(window), FALSE);
-	gtk_window_set_default_size(GTK_WINDOW(window), 600, -1);
+	AdwDialog *window = adw_dialog_new();
+	adw_dialog_set_title(window, "Generate Benchmark");
+	adw_dialog_set_content_height(window, -1);
+	adw_dialog_set_content_width(window, 600);
 
 	GtkWidget *mainStack = gtk_box_new(GTK_ORIENTATION_VERTICAL, 8);
-	gtk_widget_set_margin_start(mainStack, 4);
-	gtk_widget_set_margin_end(mainStack, 4);
-	gtk_widget_set_margin_top(mainStack, 4);
-	gtk_widget_set_margin_bottom(mainStack, 4);
+	gtk_widget_set_margin_start(mainStack, 12);
+	gtk_widget_set_margin_end(mainStack, 12);
+	gtk_widget_set_margin_top(mainStack, 12);
+	gtk_widget_set_margin_bottom(mainStack, 12);
 
 	GtkWidget *headerLabel = gtk_label_new("");
 	gtk_label_set_markup(GTK_LABEL(headerLabel), "<big><b>Generate Benchmark</b></big>");
@@ -136,9 +134,9 @@ void BMWindowShow(GtkWindow *parent)
 	gtk_box_append(GTK_BOX(mainStack), buttonBox);
 	gtk_widget_set_hexpand(buttonBox, TRUE);
 
-	gtk_window_set_child(GTK_WINDOW(window), mainStack);
+	adw_dialog_set_child(window, mainStack);
 
-	bmWindow = GTK_WINDOW(window);
+	bmWindow = window;
 
-	gtk_window_present(GTK_WINDOW(window));
+	adw_dialog_present(bmWindow, GTK_WIDGET(parent));
 }

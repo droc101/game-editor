@@ -6,6 +6,7 @@
 #define MAINWINDOW_H
 
 #include <gtk/gtk.h>
+#include <adwaita.h>
 
 void UpdateActorSidebar();
 
@@ -13,7 +14,7 @@ void UpdateActorSidebar();
  * Show the main window
  * @param app The GTK Application
  */
-void MainWindowActivate(GtkApplication *app, gpointer *);
+void MainWindowActivate(AdwApplication *app, gpointer *);
 
 /**
  * Inform the main window that the selection type has changed, causing it to recreate the left sidebar

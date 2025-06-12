@@ -7,7 +7,7 @@
 #include "../Helpers/GameInterface.h"
 #include "UiHelpers.h"
 
-GtkWindow *ioWindow;
+AdwDialog *ioWindow;
 Actor *ioActor;
 GtkWidget *listBox;
 GtkWidget *myOutputCombo;
@@ -331,7 +331,7 @@ void IOWindowReloadBoxes()
  */
 void io_ok_clicked(GtkButton *, gpointer)
 {
-	gtk_window_close(ioWindow);
+	adw_dialog_close(ioWindow);
 }
 
 void io_add_clicked(GtkButton *, gpointer)
@@ -421,18 +421,15 @@ void param_type_changed(GtkComboBox *self, gpointer)
 void IOWindowShow(GtkWindow *parent, Actor *actor)
 {
 	ioActor = actor;
-	GtkWidget *window = gtk_application_window_new(GTK_APPLICATION(application));
-	gtk_window_set_title(GTK_WINDOW(window), "I/O Connections");
-	gtk_window_set_transient_for(GTK_WINDOW(window), parent);
-	gtk_window_set_modal(GTK_WINDOW(window), TRUE);
-	// gtk_window_set_resizable(GTK_WINDOW(window), FALSE);
-	gtk_window_set_default_size(GTK_WINDOW(window), 600, -1);
+	AdwDialog *window = adw_dialog_new();
+	adw_dialog_set_title(window, "I/O Connections");
+	adw_dialog_set_content_width(window, 600);
 
 	GtkWidget *mainStack = gtk_box_new(GTK_ORIENTATION_VERTICAL, 8);
-	gtk_widget_set_margin_start(mainStack, 4);
-	gtk_widget_set_margin_end(mainStack, 4);
-	gtk_widget_set_margin_top(mainStack, 4);
-	gtk_widget_set_margin_bottom(mainStack, 4);
+	gtk_widget_set_margin_start(mainStack, 12);
+	gtk_widget_set_margin_end(mainStack, 12);
+	gtk_widget_set_margin_top(mainStack, 12);
+	gtk_widget_set_margin_bottom(mainStack, 12);
 
 	GtkWidget *headerLabel = gtk_label_new("");
 	gtk_label_set_markup(GTK_LABEL(headerLabel), "<big><b>I/O Connections</b></big>");
@@ -569,9 +566,9 @@ void IOWindowShow(GtkWindow *parent, Actor *actor)
 	gtk_box_append(GTK_BOX(mainStack), buttonBox);
 	gtk_widget_set_hexpand(buttonBox, TRUE);
 
-	gtk_window_set_child(GTK_WINDOW(window), mainStack);
+	adw_dialog_set_child(window, mainStack);
 
-	ioWindow = GTK_WINDOW(window);
+	ioWindow = window;
 
-	gtk_window_present(GTK_WINDOW(window));
+	adw_dialog_present(window, GTK_WIDGET(parent));
 }

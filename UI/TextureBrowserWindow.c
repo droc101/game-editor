@@ -9,7 +9,7 @@
 #include "../Helpers/TextureReader.h"
 #include "UiHelpers.h"
 
-GtkWindow *tbWindow;
+AdwDialog *tbWindow;
 GtkWidget *tbFilter;
 GtkWidget *tbFlowBox;
 GtkWidget *tbComboBox;
@@ -39,12 +39,12 @@ void tb_ok_clicked(GtkButton *, gpointer)
 	tbFlowBox = NULL;
 	tbFilter = NULL;
 
-	gtk_window_close(tbWindow);
+	adw_dialog_close(tbWindow);
 }
 
 void tb_cancel_clicked(GtkButton *, gpointer)
 {
-	gtk_window_close(tbWindow);
+	adw_dialog_close(tbWindow);
 }
 
 GdkPixbuf *CreatePixbuf(Image *img)
@@ -120,18 +120,16 @@ void TextureBrowserShow(GtkWindow *parent, GtkWidget *comboBox)
 			}
 		}
 	}
-	GtkWidget *window = gtk_application_window_new(GTK_APPLICATION(application));
-	gtk_window_set_title(GTK_WINDOW(window), "Texture Browser");
-	gtk_window_set_transient_for(GTK_WINDOW(window), parent);
-	gtk_window_set_modal(GTK_WINDOW(window), TRUE);
-	// gtk_window_set_resizable(GTK_WINDOW(window), FALSE);
-	gtk_window_set_default_size(GTK_WINDOW(window), 600, -1);
+	AdwDialog *window = adw_dialog_new();
+	adw_dialog_set_title(window, "Texture Browser");
+	adw_dialog_set_content_width(window, 700);
+	adw_dialog_set_content_height(window, 500);
 
 	GtkWidget *mainStack = gtk_box_new(GTK_ORIENTATION_VERTICAL, 8);
-	gtk_widget_set_margin_start(mainStack, 4);
-	gtk_widget_set_margin_end(mainStack, 4);
-	gtk_widget_set_margin_top(mainStack, 4);
-	gtk_widget_set_margin_bottom(mainStack, 4);
+	gtk_widget_set_margin_start(mainStack, 12);
+	gtk_widget_set_margin_end(mainStack, 12);
+	gtk_widget_set_margin_top(mainStack, 12);
+	gtk_widget_set_margin_bottom(mainStack, 12);
 
 	GtkWidget *headerLabel = gtk_label_new("");
 	gtk_label_set_markup(GTK_LABEL(headerLabel), "<big><b>Texture Browser</b></big>");
@@ -215,9 +213,9 @@ void TextureBrowserShow(GtkWindow *parent, GtkWidget *comboBox)
 	gtk_box_append(GTK_BOX(mainStack), buttonBox);
 	gtk_widget_set_hexpand(buttonBox, TRUE);
 
-	gtk_window_set_child(GTK_WINDOW(window), mainStack);
+	adw_dialog_set_child(window, mainStack);
 
-	tbWindow = GTK_WINDOW(window);
+	tbWindow = window;
 
-	gtk_window_present(GTK_WINDOW(window));
+	adw_dialog_present(window, GTK_WIDGET(parent));
 }

@@ -27,7 +27,7 @@ GtkWidget *leftSidebarCurrent;
 GtkWidget *drawingArea;
 GtkWindow *mainWindow = NULL;
 GtkFileDialog *fileDialog;
-GtkApplication *mainWindowApplication;
+AdwApplication *mainWindowApplication;
 
 GtkWidget *addWallsButton;
 GtkWidget *addActorsButton;
@@ -285,22 +285,19 @@ static void about_activated(GSimpleAction *, GVariant *, const gpointer app)
 	GdkTexture *logo = gdk_texture_new_from_file(logo_file, NULL);
 	g_object_unref(logo_file);
 
-	GtkWidget *about_dialog = gtk_about_dialog_new();
-	gtk_about_dialog_set_program_name(GTK_ABOUT_DIALOG(about_dialog), "Game Editor");
-	gtk_about_dialog_set_version(GTK_ABOUT_DIALOG(about_dialog), "0.0.1");
-	gtk_about_dialog_set_copyright(GTK_ABOUT_DIALOG(about_dialog), "© 2025 Droc101 Development");
-	gtk_about_dialog_set_comments(GTK_ABOUT_DIALOG(about_dialog), "Level editor for Game");
-	gtk_about_dialog_set_website(GTK_ABOUT_DIALOG(about_dialog), "https://droc101.dev");
-	gtk_about_dialog_set_authors(GTK_ABOUT_DIALOG(about_dialog), (const gchar *[]){"droc101", "NBT22", NULL});
-	gtk_about_dialog_add_credit_section(GTK_ABOUT_DIALOG(about_dialog),
+	AdwDialog *about_dialog = adw_about_dialog_new();
+	adw_about_dialog_set_application_name(ADW_ABOUT_DIALOG(about_dialog), "Game Editor");
+	adw_about_dialog_set_version(ADW_ABOUT_DIALOG(about_dialog), "0.0.1");
+	adw_about_dialog_set_copyright(ADW_ABOUT_DIALOG(about_dialog), "© 2025 Droc101 Development");
+	adw_about_dialog_set_comments(ADW_ABOUT_DIALOG(about_dialog), "Level editor for Game");
+	adw_about_dialog_set_website(ADW_ABOUT_DIALOG(about_dialog), "https://droc101.dev");
+	adw_about_dialog_set_developers(ADW_ABOUT_DIALOG(about_dialog), (const gchar *[]){"droc101", "NBT22", NULL});
+	adw_about_dialog_add_credit_section(ADW_ABOUT_DIALOG(about_dialog),
 										"Third-Party Libraries",
-										(const gchar *[]){"GTK4", "JSON-C", NULL});
-	gtk_about_dialog_set_logo(GTK_ABOUT_DIALOG(about_dialog), GDK_PAINTABLE(logo));
+										(const gchar *[]){"GTK4", "Libadwaita", "JSON-C", "ZLIB", NULL});
+	// adw_about_dialog_set_application_icon(ADW_ABOUT_DIALOG(about_dialog), "Assers/editor_icon.png");
 
-	gtk_window_set_transient_for(GTK_WINDOW(about_dialog), GTK_WINDOW(window));
-	gtk_window_set_modal(GTK_WINDOW(about_dialog), TRUE);
-
-	gtk_widget_set_visible(about_dialog, true);
+	adw_dialog_present(ADW_DIALOG(about_dialog), GTK_WIDGET(mainWindow));
 }
 
 #pragma endregion
@@ -820,7 +817,7 @@ void SetupCss(GtkWindow *)
 	gtk_style_context_add_provider_for_display(display, GTK_STYLE_PROVIDER(provider), GTK_STYLE_PROVIDER_PRIORITY_USER);
 }
 
-void MainWindowActivate(GtkApplication *app, gpointer *)
+void MainWindowActivate(AdwApplication *app, gpointer *)
 {
 	if (!IsValidGameDirectory(&options))
 	{
@@ -833,7 +830,7 @@ void MainWindowActivate(GtkApplication *app, gpointer *)
 
 	if (!RescanAssets())
 	{
-		GtkWidget *dummyWindow = gtk_application_window_new(app);
+		GtkWidget *dummyWindow = adw_application_window_new(GTK_APPLICATION(app));
 		gtk_window_set_transient_for(GTK_WINDOW(dummyWindow), GTK_WINDOW(mainWindow));
 		gtk_window_set_modal(GTK_WINDOW(dummyWindow), TRUE);
 		gtk_window_set_default_size(GTK_WINDOW(dummyWindow), 1, 1);
@@ -851,13 +848,13 @@ void MainWindowActivate(GtkApplication *app, gpointer *)
 
 	mainWindowApplication = app;
 
-	GtkWidget *window = gtk_application_window_new(app);
+	GtkWidget *window = gtk_application_window_new(GTK_APPLICATION(app));
 	gtk_window_set_title(GTK_WINDOW(window), "Game Level Editor");
 	gtk_window_set_default_size(GTK_WINDOW(window), 1440, 900);
 
 	SetupCss(GTK_WINDOW(window));
 
-	GtkWidget *menuBar = SetupMenuBar(app);
+	GtkWidget *menuBar = SetupMenuBar(GTK_APPLICATION(app));
 
 	drawingArea = SetupDrawingArea();
 
@@ -896,7 +893,11 @@ void MainWindowActivate(GtkApplication *app, gpointer *)
 
 	GtkWidget *toolbar = SetupToolbar();
 
+	GtkWidget *header = adw_header_bar_new();
+	gtk_window_set_titlebar(GTK_WINDOW(window), header);
+
 	GtkWidget *mainVLayout = gtk_box_new(GTK_ORIENTATION_VERTICAL, 4);
+	gtk_box_append(GTK_BOX(mainVLayout), header);
 	gtk_box_append(GTK_BOX(mainVLayout), menuBar);
 	gtk_box_append(GTK_BOX(mainVLayout), toolbar);
 	gtk_box_append(GTK_BOX(mainVLayout), GTK_WIDGET(mainHLayout));
