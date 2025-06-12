@@ -643,7 +643,7 @@ GtkWidget *SetupRSidebar()
 	gtk_label_set_xalign(GTK_LABEL(textureLabel), 0);
 	gtk_box_append(GTK_BOX(rightSidebarVLayout), textureLabel);
 	GtkWidget *textureComboBox = NULL;
-	GtkWidget *textureHBox = CreateTextureComboBox(newWallTex, &textureComboBox, mainWindow);
+	GtkWidget *textureHBox = CreateTextureComboBox(newWallTex, &textureComboBox, GTK_WIDGET(mainWindow));
 	GtkEntry *entry = GTK_ENTRY(gtk_combo_box_get_child(GTK_COMBO_BOX(textureComboBox)));
 	gtk_entry_set_max_length(entry, 60);
 	g_signal_connect(entry, "changed", G_CALLBACK(default_wall_tex_changed), NULL);
@@ -687,7 +687,7 @@ GtkWidget *SetupLSidebar_WallSelection(const Wall *w)
 	gtk_label_set_xalign(GTK_LABEL(textureLabel), 0);
 	gtk_box_append(GTK_BOX(wallSelectionSidebar), textureLabel);
 	GtkWidget *textureComboBox = NULL;
-	GtkWidget *textureHBox = CreateTextureComboBox(w->tex, &textureComboBox, mainWindow);
+	GtkWidget *textureHBox = CreateTextureComboBox(w->tex, &textureComboBox, GTK_WIDGET(mainWindow));
 	GtkEntry *entry = GTK_ENTRY(gtk_combo_box_get_child(GTK_COMBO_BOX(textureComboBox)));
 	gtk_entry_set_max_length(entry, 60);
 	g_signal_connect(entry, "changed", G_CALLBACK(wall_texture_changed), NULL);
@@ -851,6 +851,7 @@ void MainWindowActivate(AdwApplication *app, gpointer *)
 	GtkWidget *window = gtk_application_window_new(GTK_APPLICATION(app));
 	gtk_window_set_title(GTK_WINDOW(window), "Game Level Editor");
 	gtk_window_set_default_size(GTK_WINDOW(window), 1440, 900);
+	mainWindow = GTK_WINDOW(window);
 
 	SetupCss(GTK_WINDOW(window));
 
@@ -911,8 +912,6 @@ void MainWindowActivate(AdwApplication *app, gpointer *)
 
 	gtk_file_dialog_set_filters(fileDialog, G_LIST_MODEL(g_list_store_new(GTK_TYPE_FILE_FILTER)));
 	g_list_store_append(G_LIST_STORE(gtk_file_dialog_get_filters(fileDialog)), binFilter);
-
-	mainWindow = GTK_WINDOW(window);
 
 	gtk_window_present(GTK_WINDOW(window));
 }

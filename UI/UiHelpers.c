@@ -116,12 +116,12 @@ void PopulateComboBoxWithSignals(GtkWidget *box, const size_t count, const Actor
 void TextureBrowseButtonPressed(GtkButton *self, gpointer *)
 {
 	GtkWidget *button = GTK_WIDGET(self);
-	GtkWindow *wnd = GTK_WINDOW(g_object_get_data(G_OBJECT(button), "window"));
+	GtkWidget *wnd = GTK_WIDGET(g_object_get_data(G_OBJECT(button), "window"));
 	GtkWidget *comboBox = GTK_WIDGET(g_object_get_data(G_OBJECT(button), "comboBox"));
 	TextureBrowserShow(wnd, comboBox);
 }
 
-GtkWidget *CreateTextureComboBox(const char *selected, GtkWidget **comboBox, GtkWindow *window)
+GtkWidget *CreateTextureComboBox(const char *selected, GtkWidget **comboBox, GtkWidget *window)
 {
 	GtkWidget *hBox = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 4);
 	gtk_widget_set_hexpand(hBox, TRUE);

@@ -103,7 +103,7 @@ void flowbox_child_activated(GtkFlowBox *, GtkFlowBoxChild *, gpointer)
 }
 
 
-void TextureBrowserShow(GtkWindow *parent, GtkWidget *comboBox)
+void TextureBrowserShow(GtkWidget *parent, GtkWidget *comboBox)
 {
 	tbComboBox = comboBox;
 
@@ -125,6 +125,7 @@ void TextureBrowserShow(GtkWindow *parent, GtkWidget *comboBox)
 	adw_dialog_set_title(window, "Texture Browser");
 	adw_dialog_set_content_width(window, 700);
 	adw_dialog_set_content_height(window, 500);
+	tbWindow = window;
 
 	GtkWidget *mainStack = gtk_box_new(GTK_ORIENTATION_VERTICAL, 8);
 	gtk_widget_set_margin_start(mainStack, 12);
@@ -215,8 +216,6 @@ void TextureBrowserShow(GtkWindow *parent, GtkWidget *comboBox)
 	gtk_widget_set_hexpand(buttonBox, TRUE);
 
 	adw_dialog_set_child(window, mainStack);
-
-	tbWindow = window;
 
 	adw_dialog_present(window, GTK_WIDGET(parent));
 }

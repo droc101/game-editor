@@ -66,6 +66,7 @@ void BMWindowShow(GtkWindow *parent)
 	adw_dialog_set_title(window, "Generate Benchmark");
 	adw_dialog_set_content_height(window, -1);
 	adw_dialog_set_content_width(window, 600);
+	bmWindow = window;
 
 	GtkWidget *mainStack = gtk_box_new(GTK_ORIENTATION_VERTICAL, 8);
 	gtk_widget_set_margin_start(mainStack, 12);
@@ -135,8 +136,6 @@ void BMWindowShow(GtkWindow *parent)
 	gtk_widget_set_hexpand(buttonBox, TRUE);
 
 	adw_dialog_set_child(window, mainStack);
-
-	bmWindow = window;
 
 	adw_dialog_present(bmWindow, GTK_WIDGET(parent));
 }

@@ -7,6 +7,6 @@
 
 #include <gtk/gtk.h>
 
-void TextureBrowserShow(GtkWindow *parent, GtkWidget *comboBox);
+void TextureBrowserShow(GtkWidget *parent, GtkWidget *comboBox);
 
 #endif //TEXTUREBROWSERWINDOW_H

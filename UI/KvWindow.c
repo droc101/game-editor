@@ -340,6 +340,7 @@ void KvWindowShow(GtkWindow *parent, Actor *actor)
 	AdwDialog *window = adw_dialog_new();
 	adw_dialog_set_title(window, "Actor Parameters");
 	adw_dialog_set_content_width(window, 600);
+	kvWindow = window;
 
 	GtkWidget *mainStack = gtk_box_new(GTK_ORIENTATION_VERTICAL, 8);
 	gtk_widget_set_margin_start(mainStack, 12);
@@ -412,8 +413,6 @@ void KvWindowShow(GtkWindow *parent, Actor *actor)
 	gtk_widget_set_hexpand(buttonBox, TRUE);
 
 	adw_dialog_set_child(window, mainStack);
-
-	kvWindow = window;
 
 	adw_dialog_present(window, GTK_WIDGET(parent));
 }

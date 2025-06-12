@@ -13,5 +13,6 @@ void mb_exit_callback(GObject *, GAsyncResult *, gpointer)
 void MessageWindowShow(GtkWindow *parent, const char *title, const char *message, const GAsyncReadyCallback callback)
 {
 	GtkWidget *dialog = adw_message_dialog_new(parent, title, message);
+	adw_message_dialog_add_response(ADW_MESSAGE_DIALOG(dialog), "ok", "OK");
 	adw_message_dialog_choose(ADW_MESSAGE_DIALOG(dialog), NULL, callback, NULL);
 }

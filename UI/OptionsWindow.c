@@ -95,6 +95,7 @@ void OptionsWindowShow(GtkWindow *parent, const bool required)
 	AdwDialog *window = adw_dialog_new();
 	adw_dialog_set_title(window, "Setup");
 	adw_dialog_set_content_width(window, 400);
+	optionsWindow = window;
 
 	GtkWidget *mainStack = gtk_box_new(GTK_ORIENTATION_VERTICAL, 8);
 	gtk_widget_set_margin_start(mainStack, 12);
@@ -157,7 +158,6 @@ void OptionsWindowShow(GtkWindow *parent, const bool required)
 
 	adw_dialog_set_child(window, mainStack);
 
-	optionsWindow = window;
 	optionsRequired = required;
 
 	g_signal_connect(window, "destroy", G_CALLBACK(options_closed), NULL);
