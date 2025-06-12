@@ -121,21 +121,21 @@ void TextureBrowseButtonPressed(GtkButton *self, gpointer *)
 	TextureBrowserShow(wnd, comboBox);
 }
 
-GtkWidget *CreateTextureComboBox(const char *selected, GtkWidget *comboBox, GtkWindow *window)
+GtkWidget *CreateTextureComboBox(const char *selected, GtkWidget **comboBox, GtkWindow *window)
 {
 	GtkWidget *hBox = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 4);
 	gtk_widget_set_hexpand(hBox, TRUE);
 
-	comboBox = gtk_combo_box_text_new_with_entry();
-	PopulateComboBoxTextures(comboBox);
-	GtkEntry *entry = GTK_ENTRY(gtk_combo_box_get_child(GTK_COMBO_BOX(comboBox)));
+	*comboBox = gtk_combo_box_text_new_with_entry();
+	PopulateComboBoxTextures(*comboBox);
+	GtkEntry *entry = GTK_ENTRY(gtk_combo_box_get_child(GTK_COMBO_BOX(*comboBox)));
 	gtk_entry_set_max_length(entry, 60);
 	gtk_entry_buffer_set_text(gtk_entry_get_buffer(entry), selected, -1);
-	gtk_box_append(GTK_BOX(hBox), comboBox);
+	gtk_box_append(GTK_BOX(hBox), *comboBox);
 
 	GtkWidget *browseButton = gtk_button_new_with_label("Browse");
 	gtk_widget_set_size_request(browseButton, 80, -1);
-	g_object_set_data(G_OBJECT(browseButton), "comboBox", comboBox);
+	g_object_set_data(G_OBJECT(browseButton), "comboBox", *comboBox);
 	g_object_set_data(G_OBJECT(browseButton), "window", window);
 	g_signal_connect(browseButton, "clicked", G_CALLBACK(TextureBrowseButtonPressed), NULL);
 	gtk_box_append(GTK_BOX(hBox), browseButton);

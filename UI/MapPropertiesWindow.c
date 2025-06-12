@@ -162,7 +162,7 @@ GtkWidget *SetupPropsView()
 	gtk_label_set_xalign(GTK_LABEL(ceilOrSkyLabel), 0);
 	gtk_box_append(GTK_BOX(rightSidebarVLayout), ceilOrSkyLabel);
 	GtkWidget *ceilOrSkyTex = NULL;
-	GtkWidget *ceilOrSkyBox = CreateTextureComboBox(l->ceilOrSkyTex, ceilOrSkyTex, GTK_WINDOW(mpWindow));
+	GtkWidget *ceilOrSkyBox = CreateTextureComboBox(l->ceilOrSkyTex, &ceilOrSkyTex, GTK_WINDOW(mpWindow));
 	GtkEntry *entry = GTK_ENTRY(gtk_combo_box_get_child(GTK_COMBO_BOX(ceilOrSkyTex)));
 	gtk_entry_set_max_length(entry, 60);
 	g_signal_connect(entry, "changed", G_CALLBACK(level_ceil_or_sky_tex_changed), NULL);
@@ -172,7 +172,7 @@ GtkWidget *SetupPropsView()
 	gtk_label_set_xalign(GTK_LABEL(floorTexLabel), 0);
 	gtk_box_append(GTK_BOX(rightSidebarVLayout), floorTexLabel);
 	GtkWidget *floorTex = NULL;
-	GtkWidget *floorTexBox = CreateTextureComboBox(l->floorTex, floorTex, GTK_WINDOW(mpWindow));
+	GtkWidget *floorTexBox = CreateTextureComboBox(l->floorTex, &floorTex, GTK_WINDOW(mpWindow));
 	entry = GTK_ENTRY(gtk_combo_box_get_child(GTK_COMBO_BOX(floorTex)));
 	gtk_entry_set_max_length(entry, 60);
 	g_signal_connect(entry, "changed", G_CALLBACK(level_floor_tex_changed), NULL);

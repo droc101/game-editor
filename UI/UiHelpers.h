@@ -22,6 +22,6 @@ void PopulateComboBoxSounds(GtkWidget *box);
 
 void PopulateComboBoxLevels(GtkWidget *box);
 
-GtkWidget *CreateTextureComboBox(const char *selected, GtkWidget *comboBox, GtkWindow *window);
+GtkWidget *CreateTextureComboBox(const char *selected, GtkWidget **comboBox, GtkWindow *window);
 
 #endif //UIHELPERS_H

@@ -643,7 +643,7 @@ GtkWidget *SetupRSidebar()
 	gtk_label_set_xalign(GTK_LABEL(textureLabel), 0);
 	gtk_box_append(GTK_BOX(rightSidebarVLayout), textureLabel);
 	GtkWidget *textureComboBox = NULL;
-	GtkWidget *textureHBox = CreateTextureComboBox(newWallTex, textureComboBox, mainWindow);
+	GtkWidget *textureHBox = CreateTextureComboBox(newWallTex, &textureComboBox, mainWindow);
 	GtkEntry *entry = GTK_ENTRY(gtk_combo_box_get_child(GTK_COMBO_BOX(textureComboBox)));
 	gtk_entry_set_max_length(entry, 60);
 	g_signal_connect(entry, "changed", G_CALLBACK(default_wall_tex_changed), NULL);
@@ -687,7 +687,7 @@ GtkWidget *SetupLSidebar_WallSelection(const Wall *w)
 	gtk_label_set_xalign(GTK_LABEL(textureLabel), 0);
 	gtk_box_append(GTK_BOX(wallSelectionSidebar), textureLabel);
 	GtkWidget *textureComboBox = NULL;
-	GtkWidget *textureHBox = CreateTextureComboBox(w->tex, textureComboBox, mainWindow);
+	GtkWidget *textureHBox = CreateTextureComboBox(w->tex, &textureComboBox, mainWindow);
 	GtkEntry *entry = GTK_ENTRY(gtk_combo_box_get_child(GTK_COMBO_BOX(textureComboBox)));
 	gtk_entry_set_max_length(entry, 60);
 	g_signal_connect(entry, "changed", G_CALLBACK(wall_texture_changed), NULL);

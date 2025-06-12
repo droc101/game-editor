@@ -79,6 +79,7 @@ GdkPixbuf *CreatePixbuf(Image *img)
 
 gboolean filterfunc(GtkFlowBoxChild *fb_child, gpointer)
 {
+	if (!tbFilter) return true;
 	GtkWidget *child = gtk_flow_box_child_get_child(fb_child);
 	const Image *img = (Image *)g_object_get_data(G_OBJECT(child), "image");
 	GtkEntryBuffer *buf = gtk_entry_get_buffer(GTK_ENTRY(tbFilter));
