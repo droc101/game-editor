@@ -1,4 +1,6 @@
 # game-editor
+**WARNING: This repo is archived in favor of tools we are developing for future game versions. It may not work with the latest version of game.**
+
 Level editor for the engine used by "game"
 Written in C using GTK4 for UI
 
